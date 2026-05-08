@@ -141,11 +141,39 @@ source /vol/eecs391/cadence.env
 bash scripts/run_moore_sva_eval.sh
 ```
 
+Run the SVA repair benchmark with injected syntax, signal, reset, and temporal property bugs:
+
+```bash
+python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_local.json
+```
+
+Run the same repair loop with JasperGold re-check after each candidate:
+
+```bash
+python evaluation/run_sva_repair_eval.py --jasper-check --out evaluation/results/sva_repair_jasper_moore.json
+```
+
+On `moore`:
+
+```bash
+source /vol/eecs391/cadence.env
+bash scripts/run_moore_sva_repair_eval.sh
+```
+
+The current JasperGold repair result table is tracked in `evaluation/results/sva_repair_results.md`.
+
 The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
 
 ```bash
 JASPERLOOP_LLM_CMD="python path/to/your_llm_wrapper.py" \
   python evaluation/run_agent_eval.py --all-systems --llm --out evaluation/results/agent_eval_llm.json
+```
+
+This repository includes a Codex CLI JSON adapter for local non-interactive experiments. It reads the agent prompt from stdin and writes the final Codex message to stdout:
+
+```bash
+JASPERLOOP_LLM_CMD="python copilot/llm_adapters/codex_json.py --schema copilot/schemas/sva_repair_candidate.schema.json --cd ." \
+  python evaluation/run_sva_repair_eval.py --llm --out evaluation/results/sva_repair_codex_local.json
 ```
 
 You can inspect the exact prompt sent to the DV triage agent:

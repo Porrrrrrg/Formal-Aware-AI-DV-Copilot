@@ -243,6 +243,7 @@ def summarize_check(
         "jasper_returncode": returncode,
         "proof_status": proof_status,
         "vacuity_status": vacuity_status,
+        "feedback": summarize_feedback(report_dir, properties, vacuity, syntax_pass),
         "report_dir": str(report_dir),
         "properties_report": str(report_dir / "properties.rpt"),
         "vacuity_report": str(report_dir / "vacuity.rpt") if (report_dir / "vacuity.rpt").exists() else None,
@@ -258,6 +259,52 @@ def find_status(results: list[dict[str, object]], property_id: str) -> str | Non
     if len(results) == 1:
         return str(results[0].get("status"))
     return None
+
+
+def summarize_feedback(
+    report_dir: Path,
+    properties: list[dict[str, object]],
+    vacuity: list[dict[str, object]],
+    syntax_pass: bool | None,
+) -> str:
+    if syntax_pass is False:
+        log_path = report_dir / "jg.log"
+        if log_path.exists():
+            return "\n".join(select_log_lines(log_path.read_text(errors="ignore").splitlines()))
+        return "JasperGold failed before producing a property report."
+    vacuous = [
+        f"{item.get('property_id')}: {item.get('status')}"
+        for item in vacuity
+        if item.get("property_id") and str(item.get("status", "")).lower() == "vacuous"
+    ]
+    if vacuous:
+        return "Vacuity results: " + "; ".join(vacuous[:8])
+    if properties:
+        rendered = [
+            f"{item.get('property_id')}: {item.get('status')}"
+            for item in properties
+            if item.get("property_id")
+        ]
+        if rendered:
+            return "Property results: " + "; ".join(rendered[:8])
+    if vacuity:
+        rendered = [
+            f"{item.get('property_id')}: {item.get('status')}"
+            for item in vacuity
+            if item.get("property_id")
+        ]
+        if rendered:
+            return "Vacuity results: " + "; ".join(rendered[:8])
+    return "No JasperGold status lines were parsed."
+
+
+def select_log_lines(lines: list[str], limit: int = 20) -> list[str]:
+    keywords = ["error", "syntax", "unknown", "failed", "can't", "cannot", "not found"]
+    selected = [line.strip() for line in lines if any(keyword in line.lower() for keyword in keywords)]
+    selected = [line for line in selected if line]
+    if not selected:
+        selected = [line.strip() for line in lines[-limit:] if line.strip()]
+    return selected[-limit:]
 
 
 def resolve_repo_path(path: Path) -> Path:

@@ -21,11 +21,15 @@
 - Added direct and structured SVA generation systems plus `evaluation/run_sva_eval.py`.
 - Added JasperGold re-check for generated SVA candidates, including temporary generated property/harness files, prove reports, trace dumps, and vacuity reports.
 - On `moore`, all 27 direct and 27 structured generated SVA candidates pass JasperGold syntax/proof re-check in the deterministic scaffold.
+- Added an 18-case SVA repair benchmark with injected syntax, unknown-signal, reset, overbroad, and temporal/semantic assertion bugs.
+- Added a three-round SVA repair runner that feeds JasperGold syntax/proof/vacuity feedback back into the repair agent.
+- Added a Codex CLI JSON adapter so `JASPERLOOP_LLM_CMD` can point directly at Codex for non-interactive local experiments.
+- On `moore`, the full 18-case SVA repair benchmark passes JasperGold re-check with 100% final repair success and 1.0 average rounds to success in deterministic fallback mode.
 
 ## Next Milestones
 
-1. Add SVA repair cases with injected syntax/signal/temporal errors.
-2. Implement the three-round JasperGold-in-the-loop SVA repair runner.
-3. Connect a hosted or local LLM wrapper and run `raw_log` vs `structured` prompting with the same evaluation runner.
+1. Run Codex-backed SVA repair prompts on a small subset and compare against the deterministic structured fallback.
+2. Connect Codex-backed `raw_log` vs `structured` triage prompting with the same evaluation runner.
+3. Add repair-loop ablations, especially no-Jasper-feedback vs Jasper-feedback repair.
 4. Add coverage-mode witness extraction and vacuity-mode packet fields.
 5. Expand semantic counterexample heuristics for ready/valid and APB-specific failures.
