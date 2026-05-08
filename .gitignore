@@ -19,6 +19,7 @@ jasper/reports/*
 INCA_libs/
 xcelium.d/
 .formal/
+jgproject/
 
 # Local secrets and model configs
 .env
