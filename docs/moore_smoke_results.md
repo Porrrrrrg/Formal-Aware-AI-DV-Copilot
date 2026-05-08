@@ -18,10 +18,13 @@ python: python3.11
 | --- | --- | --- | --- | --- |
 | `arbiter_rr2` | `correct` | prove | 12 proven, 0 cex | pass |
 | `arbiter_rr2` | `bug_double_grant` | prove | 8 proven, 4 cex | fail |
+| `arbiter_rr2` | `bug_turn_update` | prove | 10 proven, 2 cex | fail |
 | `rv_buffer` | `correct` | prove | 9 proven, 0 cex | pass |
 | `rv_buffer` | `bug_overwrite` | prove | 8 proven, 1 cex | fail |
+| `rv_buffer` | `bug_inready` | prove | 8 proven, 1 cex | fail |
 | `apb_regblock` | `correct` | prove | 9 proven, 0 cex | pass |
 | `apb_regblock` | `bug_wrong_addr` | prove | 5 proven, 4 cex | fail |
+| `apb_regblock` | `bug_read_latency` | prove | 7 proven, 2 cex | fail |
 
 ## Notes
 
@@ -44,6 +47,8 @@ JasperGold properties.rpt
 ```
 
 The resulting scaffold diagnosis classified the case as `rtl_design_bug` with next action `fix_rtl`.
+
+After expanding the benchmark to 30 labeled cases, `scripts/build_all_evidence_packets.py` was validated on `moore` with `num_cases=30`, `num_with_reports=30`, and `num_with_trace_dirs=30`.
 
 The counterexample summary now prioritizes the focused failing property trace. For `p_mutex`, the generated evidence reports:
 

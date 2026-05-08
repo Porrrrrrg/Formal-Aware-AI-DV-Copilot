@@ -11,6 +11,7 @@
 - Signal role maps are loaded into evidence packets, and counterexample summaries now include semantic role-annotated events.
 - Primary benchmark expanded to 30 labeled cases across arbiter, ready/valid buffer, and APB-lite.
 - Added `scripts/build_all_evidence_packets.py` to generate evidence packets for all labeled cases.
+- On `moore`, all 30 cases now build evidence packets with Jasper reports and trace directories available.
 
 ## Next Milestones
 
