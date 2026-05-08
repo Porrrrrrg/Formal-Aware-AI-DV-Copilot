@@ -113,6 +113,7 @@ def raw_log_fallback(packet: dict[str, object], raw_context: str | None = None) 
     raw_context = raw_context if raw_context is not None else collect_raw_context(packet)
     issue = infer_issue_type_from_raw(packet, raw_context)
     return {
+        "source": "raw_log_fallback",
         "case_id": str(packet.get("case_id", "unknown")),
         "predicted_issue_type": issue,
         "root_cause_ranked": [
@@ -179,6 +180,7 @@ def normalize_output(
     if not isinstance(roots, list) or not roots:
         roots = raw_log_fallback(packet, raw_context)["root_cause_ranked"]
     return {
+        "source": "llm",
         "case_id": str(output.get("case_id", packet.get("case_id", "unknown"))),
         "predicted_issue_type": issue,
         "root_cause_ranked": roots,

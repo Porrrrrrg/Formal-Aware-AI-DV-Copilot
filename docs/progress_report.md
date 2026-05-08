@@ -31,6 +31,7 @@
 - Codex CLI health check works when network access is allowed. Added an explicit opt-in wrapper for Codex-backed SVA repair, triage, and coverage experiments so benchmark content is not sent externally without acknowledgement.
 - The Codex wrapper healthcheck now passes end to end through `scripts/run_codex_llm_eval.py --task healthcheck`; benchmark subset execution is gated behind `--acknowledge-external-send`.
 - Added a local Codex prompt preview/audit tool so SVA repair, triage, and coverage prompts can be inspected before external submission.
+- Triage and coverage evaluation now track output source, fallback rate, LLM error rate, and hallucinated suspect-signal rate for future Codex-backed experiments.
 
 ## Next Milestones
 

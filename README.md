@@ -214,3 +214,4 @@ The core claim is not that the LLM is the oracle. JasperGold remains the oracle 
 - Failure triage: `issue_type_accuracy`, `next_action_accuracy`, `top1/top3_root_cause_accuracy`, `evidence_precision`
 - Coverage closure: `gap_type_accuracy`, `action_accuracy`, `wrong_test_suggestion_rate`
 - Output quality: `valid_json_rate`, `hallucinated_signal_rate`, `unsupported_recommendation_rate`
+- LLM integration quality: `source_counts`, `llm_success_rate`, `fallback_rate`, `llm_error_rate`

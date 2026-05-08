@@ -16,6 +16,7 @@ from copilot.agents.coverage_closure_agent import recommend as structured_recomm
 from copilot.baselines.raw_log_llm import diagnose_from_raw_log  # noqa: E402
 from copilot.json_utils import coerce_string_list  # noqa: E402
 from evaluation.metrics import accuracy  # noqa: E402
+from evaluation.output_quality import source_summary  # noqa: E402
 from scripts.build_all_evidence_packets import iter_case_files, resolve_repo_path  # noqa: E402
 from tools.build_evidence_packet import build_packet  # noqa: E402
 
@@ -65,6 +66,7 @@ def coverage_from_diagnosis(
     if not isinstance(coverage, dict):
         coverage = {}
     return {
+        "source": diagnosis.get("source", "raw_log_fallback"),
         "case_id": diagnosis.get("case_id", packet.get("case_id", "unknown")),
         "coverage_gap_type": gap_type,
         "recommended_next_action": action,
@@ -102,6 +104,8 @@ def evaluate_system(
                 "system": system,
                 "case_id": case.get("case_id"),
                 "design_id": case.get("design_id"),
+                "source": prediction.get("source", "unknown"),
+                "llm_error": prediction.get("llm_error"),
                 "coverage_goal": case.get("property_id"),
                 "gold_gap_type": case.get("expected_issue_type"),
                 "predicted_gap_type": prediction.get("coverage_gap_type"),
@@ -131,7 +135,7 @@ def summarize_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         for row in reachable_rows
         if isinstance(row.get("directed_sequence_len"), int) and row["directed_sequence_len"] > 0
     ]
-    return {
+    summary = {
         "num_cases": len(rows),
         "cases_by_design": dict(sorted(collections.Counter(row["design_id"] for row in rows).items())),
         "gap_type_accuracy": accuracy(rows, "predicted_gap_type", "gold_gap_type"),
@@ -150,6 +154,8 @@ def summarize_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         ),
         "rows": rows,
     }
+    summary.update(source_summary(rows))
+    return summary
 
 
 def compact_summary(summaries: dict[str, dict[str, object]]) -> dict[str, dict[str, object]]:
@@ -181,7 +187,11 @@ def main() -> int:
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
-    case_paths = iter_case_files(args.cases)
+    case_paths = [
+        path
+        for path in iter_case_files(args.cases)
+        if json.loads(path.read_text()).get("task_type") == "coverage_closure"
+    ]
     if args.limit is not None:
         case_paths = case_paths[: args.limit]
     packet_root = resolve_repo_path(args.packet_root)

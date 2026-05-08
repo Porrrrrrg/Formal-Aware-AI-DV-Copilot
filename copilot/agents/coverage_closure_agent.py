@@ -54,6 +54,7 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
         evidence = collect_structured_evidence(coverage, evidence_packet, reachable=False)
 
     return {
+        "source": "structured_fallback",
         "case_id": packet.get("case_id", "unknown"),
         "coverage_gap_type": gap_type,
         "recommended_next_action": action,
@@ -130,6 +131,7 @@ def normalize_recommendation(packet: dict[str, object], output: dict[str, object
             else "prove_unreachable_or_waive_coverage_goal"
         )
     return {
+        "source": "llm",
         "case_id": str(output.get("case_id", packet.get("case_id", "unknown"))),
         "coverage_gap_type": gap_type,
         "recommended_next_action": action,

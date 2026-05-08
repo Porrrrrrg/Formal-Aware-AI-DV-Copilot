@@ -54,6 +54,7 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     root = infer_root_cause(packet, issue_type)
 
     return {
+        "source": "structured_fallback",
         "case_id": case_id,
         "predicted_issue_type": issue_type,
         "root_cause_ranked": [
@@ -237,6 +238,7 @@ def normalize_diagnosis(packet: dict[str, object], output: dict[str, object]) ->
     if not isinstance(roots, list) or not roots:
         roots = structured_fallback(packet)["root_cause_ranked"]
     return {
+        "source": "llm",
         "case_id": str(output.get("case_id", packet.get("case_id", "unknown"))),
         "predicted_issue_type": issue,
         "root_cause_ranked": roots,

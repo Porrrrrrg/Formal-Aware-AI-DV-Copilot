@@ -28,6 +28,7 @@ ACTION_BY_ISSUE = {
 def predict(packet: dict[str, object]) -> dict[str, object]:
     issue = infer_issue_type(packet)
     return {
+        "source": "heuristic",
         "case_id": str(packet.get("case_id", "unknown")),
         "predicted_issue_type": issue,
         "root_cause_ranked": [
