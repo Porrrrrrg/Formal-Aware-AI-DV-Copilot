@@ -10,4 +10,6 @@
 
 | System | Cases | Issue Acc. | Action Acc. | Notes |
 | --- | ---: | ---: | ---: | --- |
-| Structured fallback agent | 30 | 1.000 | 1.000 | Deterministic local scaffold; validates packet/evaluation plumbing, not final LLM performance. |
+| Heuristic baseline | 30 | 0.933 | 0.933 | Deterministic packet-metadata baseline; validates baseline plumbing, not final LLM performance. |
+| Raw-log fallback | 30 | 0.400 | 0.400 | Deterministic raw-log scaffold without hosted LLM. |
+| Structured fallback agent | 30 | 1.000 | 1.000 | Deterministic structured scaffold; validates packet/evaluation plumbing, not final LLM performance. |

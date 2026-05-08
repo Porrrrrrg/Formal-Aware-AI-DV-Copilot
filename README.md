@@ -107,17 +107,38 @@ Run the current formal-aware triage agent scaffold on all 30 cases:
 python evaluation/run_agent_eval.py --out evaluation/results/agent_eval_local.json
 ```
 
+Run the deterministic baseline comparison without an LLM:
+
+```bash
+python evaluation/run_agent_eval.py --all-systems --out evaluation/results/agent_eval_all_local.json
+```
+
+Run the structured-packet ablation scaffold:
+
+```bash
+python evaluation/run_agent_eval.py \
+  --systems structured \
+  --ablations no_assertion_manifest no_assumption_manifest no_jasper_cex no_coverage_context minimal_packet \
+  --out evaluation/results/agent_eval_ablation_local.json
+```
+
 The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
 
 ```bash
 JASPERLOOP_LLM_CMD="python path/to/your_llm_wrapper.py" \
-  python evaluation/run_agent_eval.py --llm --out evaluation/results/agent_eval_llm.json
+  python evaluation/run_agent_eval.py --all-systems --llm --out evaluation/results/agent_eval_llm.json
 ```
 
 You can inspect the exact prompt sent to the DV triage agent:
 
 ```bash
 python copilot/agents/dv_triage_agent.py jasper/reports/case_packets/arbiter_rr2/arbiter_A1/evidence_packet.json --prompt-out /tmp/triage_prompt.txt
+```
+
+You can also inspect the raw-log baseline prompt:
+
+```bash
+python copilot/baselines/raw_log_llm.py jasper/reports/case_packets/arbiter_rr2/arbiter_A1/evidence_packet.json --prompt-out /tmp/raw_log_prompt.txt
 ```
 
 ## Research Claim
