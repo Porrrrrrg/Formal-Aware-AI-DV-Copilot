@@ -23,5 +23,5 @@ proc jl_rtl {} {
 
 proc jl_report_property_status {} {
   set report_dir [jl_report_dir]
-  redirect -file "$report_dir/properties.rpt" {report -property -all}
+  report -summary -results -detailed -file "$report_dir/properties.rpt" -force
 }

@@ -19,11 +19,11 @@ set report_dir [jl_report_dir]
 
 if {$mode == "cover"} {
   cover -all
-  redirect -file "$report_dir/cover.rpt" {report -cover -all}
+  report -summary -results -detailed -file "$report_dir/cover.rpt" -force
 } elseif {$mode == "vacuity"} {
   check_vacuity -all
-  redirect -file "$report_dir/vacuity.rpt" {report -vacuity -all}
+  report -summary -results -detailed -file "$report_dir/vacuity.rpt" -force
 } else {
   prove -all
-  redirect -file "$report_dir/properties.rpt" {report -property -all}
+  report -summary -results -detailed -file "$report_dir/properties.rpt" -force
 }
