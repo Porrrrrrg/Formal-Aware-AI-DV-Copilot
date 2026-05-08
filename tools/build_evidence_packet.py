@@ -54,6 +54,7 @@ def build_packet(
     trace_dir: Path | None = None,
     rtl_paths: list[Path] | None = None,
     signal_role_map_path: Path | None = None,
+    include_gold: bool = False,
 ) -> dict[str, object]:
     case = json.loads(case_path.read_text())
     if signal_role_map_path is None:
@@ -91,7 +92,7 @@ def build_packet(
 
     rtl_context = extract_context(rtl_paths or []) if rtl_paths else {}
 
-    return {
+    packet = {
         "case_id": case["case_id"],
         "design_id": case["design_id"],
         "variant": case.get("variant"),
@@ -100,7 +101,6 @@ def build_packet(
         "failing_property": {
             "property_id": case.get("property_id"),
             "intent": case.get("property_intent"),
-            "expected_issue_type": case.get("expected_issue_type"),
         },
         "active_assumptions": case.get("active_assumptions", []),
         "jasper_result": {
@@ -118,12 +118,16 @@ def build_packet(
         "assumption_risks": case.get("assumption_risks", []),
         "allowed_issue_types": ALLOWED_ISSUE_TYPES,
         "allowed_next_actions": ALLOWED_NEXT_ACTIONS,
-        "gold_label": {
+    }
+
+    if include_gold:
+        packet["gold_label"] = {
             "issue_type": case.get("expected_issue_type"),
             "next_action": case.get("expected_next_action"),
             "root_cause": case.get("root_cause"),
-        },
-    }
+        }
+
+    return packet
 
 
 def sort_trace_paths(
@@ -159,6 +163,7 @@ def main() -> int:
     parser.add_argument("--trace-dir", type=Path)
     parser.add_argument("--rtl", nargs="*", type=Path)
     parser.add_argument("--signal-role-map", type=Path)
+    parser.add_argument("--include-gold", action="store_true")
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
 
@@ -169,6 +174,7 @@ def main() -> int:
         args.trace_dir,
         args.rtl,
         args.signal_role_map,
+        args.include_gold,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(packet, indent=2) + "\n")

@@ -12,11 +12,14 @@
 - Primary benchmark expanded to 30 labeled cases across arbiter, ready/valid buffer, and APB-lite.
 - Added `scripts/build_all_evidence_packets.py` to generate evidence packets for all labeled cases.
 - On `moore`, all 30 cases now build evidence packets with Jasper reports and trace directories available.
+- Added a model-agnostic LLM command backend via `JASPERLOOP_LLM_CMD`.
+- Added formal-aware DV triage and coverage-closure agent entrypoints with deterministic structured fallbacks.
+- Added `evaluation/run_agent_eval.py` to run the 30-case benchmark through the current agent scaffold without exposing gold labels to the agent input.
 
 ## Next Milestones
 
-1. Replace placeholder agents with an actual model backend and JSON repair loop.
+1. Connect a hosted or local LLM wrapper and compare raw-log vs structured-packet prompting.
 2. Add SVA generation/repair evaluation cases.
 3. Add coverage-mode witness extraction and vacuity-mode packet fields.
 4. Expand semantic counterexample heuristics for ready/valid and APB-specific failures.
-5. Run the 30-case benchmark through heuristic, raw-log, and structured-agent baselines.
+5. Add ablations for assertion manifest, assumption manifest, counterexample summary, coverage plan, and repair loop.

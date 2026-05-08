@@ -10,6 +10,7 @@ env/
 # JasperGold and EDA outputs
 jasper/reports/*
 !jasper/reports/.gitkeep
+evaluation/results/agent_eval*.json
 *.jou
 *.log
 *.rpt

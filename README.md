@@ -101,6 +101,25 @@ Build evidence packets for all labeled cases:
 python scripts/build_all_evidence_packets.py
 ```
 
+Run the current formal-aware triage agent scaffold on all 30 cases:
+
+```bash
+python evaluation/run_agent_eval.py --out evaluation/results/agent_eval_local.json
+```
+
+The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
+
+```bash
+JASPERLOOP_LLM_CMD="python path/to/your_llm_wrapper.py" \
+  python evaluation/run_agent_eval.py --llm --out evaluation/results/agent_eval_llm.json
+```
+
+You can inspect the exact prompt sent to the DV triage agent:
+
+```bash
+python copilot/agents/dv_triage_agent.py jasper/reports/case_packets/arbiter_rr2/arbiter_A1/evidence_packet.json --prompt-out /tmp/triage_prompt.txt
+```
+
 ## Research Claim
 
 The core claim is not that the LLM is the oracle. JasperGold remains the oracle for syntax, proof, counterexamples, cover reachability, and vacuity. The LLM is constrained by structured formal evidence and used as an assistant for interpretation, repair suggestions, diagnosis, and next actions.

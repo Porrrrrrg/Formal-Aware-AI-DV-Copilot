@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Coverage Closure Output",
+  "type": "object",
+  "required": [
+    "coverage_gap_type",
+    "recommended_next_action",
+    "directed_sequence",
+    "evidence"
+  ],
+  "properties": {
+    "case_id": { "type": "string" },
+    "coverage_gap_type": {
+      "type": "string",
+      "enum": [
+        "reachable_coverage_gap",
+        "unreachable_or_invalid_coverage_goal"
+      ]
+    },
+    "recommended_next_action": {
+      "type": "string",
+      "enum": [
+        "add_directed_test_or_sequence",
+        "prove_unreachable_or_waive_coverage_goal",
+        "fix_assumption_constraint",
+        "rerun_jaspergold"
+      ]
+    },
+    "directed_sequence": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}
