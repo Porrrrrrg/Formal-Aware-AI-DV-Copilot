@@ -136,18 +136,19 @@ def infer_issue_type_from_raw(packet: dict[str, object], raw_context: str) -> st
     if isinstance(failing_property, dict):
         property_id = str(failing_property.get("property_id", "")).lower()
     task_type = str(packet.get("task_type", ""))
+    property_blob = "\n".join(line for line in text.splitlines() if property_id and property_id in line)
 
-    if "vacuous" in text:
+    if "vacuous" in property_blob:
         return "assumption_constraint_bug"
-    if "unreachable" in text and ("cover" in text or property_id.startswith("cov_")):
-        return "unreachable_or_invalid_coverage_goal"
     if task_type == "coverage_closure" or property_id.startswith("cov_"):
-        if "covered" in text or "reachable" in text:
+        if "unreachable" in property_blob and "covered" not in property_blob:
+            return "unreachable_or_invalid_coverage_goal"
+        if "covered" in property_blob or "reachable" in property_blob:
             return "reachable_coverage_gap"
         return "reachable_coverage_gap"
     if property_id.endswith("_bad") or "_bad" in property_id:
         return "assertion_property_bug"
-    if "falsified" in text or "cex" in text or "failed" in text:
+    if "falsified" in property_blob or "cex" in property_blob or "failed" in property_blob:
         return "rtl_design_bug"
     return "assertion_property_bug"
 
