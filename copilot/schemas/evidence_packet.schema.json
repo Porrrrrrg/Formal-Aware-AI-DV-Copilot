@@ -28,6 +28,14 @@
     },
     "jasper_result": { "type": "object" },
     "counterexample_summary": { "type": "object" },
+    "trace_summaries": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "signal_role_map": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
     "coverage_context": { "type": "object" },
     "rtl_context": { "type": "object" },
     "assertion_intent": { "type": "object" },

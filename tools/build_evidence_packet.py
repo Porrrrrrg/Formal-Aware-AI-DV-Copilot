@@ -9,11 +9,13 @@ import re
 from pathlib import Path
 
 try:
+    from tools.manifest_utils import infer_signal_role_map_path, load_signal_role_map
     from tools.parse_jg_report import parse_report, summarize_properties
     from tools.parse_jg_trace import parse_trace
     from tools.simple_rtl_context import extract_context
     from tools.summarize_counterexample import summarize
 except ModuleNotFoundError:
+    from manifest_utils import infer_signal_role_map_path, load_signal_role_map
     from parse_jg_report import parse_report, summarize_properties
     from parse_jg_trace import parse_trace
     from simple_rtl_context import extract_context
@@ -51,8 +53,12 @@ def build_packet(
     trace_path: Path | None = None,
     trace_dir: Path | None = None,
     rtl_paths: list[Path] | None = None,
+    signal_role_map_path: Path | None = None,
 ) -> dict[str, object]:
     case = json.loads(case_path.read_text())
+    if signal_role_map_path is None:
+        signal_role_map_path = infer_signal_role_map_path(case_path)
+    signal_roles = load_signal_role_map(signal_role_map_path)
     property_results = parse_report(report_path) if report_path and report_path.exists() else []
     result_summary = summarize_properties(property_results)
 
@@ -75,7 +81,7 @@ def build_packet(
             "trace_file": trace.get("trace_file"),
             "trace_format": trace.get("trace_format"),
             "property_id": trace.get("property_id"),
-            "summary": summarize(trace, case.get("property_id")),
+            "summary": summarize(trace, case.get("property_id"), signal_roles),
         }
         for trace in parsed_traces
     ]
@@ -105,6 +111,7 @@ def build_packet(
         },
         "counterexample_summary": cex_summary,
         "trace_summaries": trace_summaries,
+        "signal_role_map": signal_roles,
         "coverage_context": case.get("coverage_context", {}),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),
@@ -151,10 +158,18 @@ def main() -> int:
     parser.add_argument("--trace", type=Path)
     parser.add_argument("--trace-dir", type=Path)
     parser.add_argument("--rtl", nargs="*", type=Path)
+    parser.add_argument("--signal-role-map", type=Path)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
 
-    packet = build_packet(args.case, args.report, args.trace, args.trace_dir, args.rtl)
+    packet = build_packet(
+        args.case,
+        args.report,
+        args.trace,
+        args.trace_dir,
+        args.rtl,
+        args.signal_role_map,
+    )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(packet, indent=2) + "\n")
     return 0

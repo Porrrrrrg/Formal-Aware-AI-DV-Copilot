@@ -42,6 +42,8 @@ The evidence packet is the central interface between formal tooling and LLM reas
 - RTL source excerpts and signal role maps
 - allowed issue labels and next actions
 
+Counterexample summaries are role-aware. The raw VCD-derived signal events are preserved, and the packet also includes semantic events that annotate signals with manifest roles such as `client 0 request`, `client 1 grant`, or `APB write data`. This gives the LLM a compact DV explanation without hiding the formal evidence.
+
 ## Agent Modes
 
 ### Mode 1: SVA Generation

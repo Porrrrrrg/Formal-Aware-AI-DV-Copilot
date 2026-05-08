@@ -56,6 +56,7 @@ falsified_properties:
 
 first_trace_property: p_mutex
 key event: req0=1, req1=1, gnt0=1, gnt1=1, rst=0
+semantic observation: Multiple grant outputs are asserted while multiple requests are active.
 ```
 
 JasperGold may emit compressed VCD data with either `.vcd` or `.vcd.gz` names. `tools/parse_jg_trace.py` detects gzip content by file magic bytes rather than extension.
