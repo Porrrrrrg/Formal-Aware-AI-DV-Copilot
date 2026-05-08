@@ -86,13 +86,31 @@ def parse_report(path: Path) -> list[dict[str, object]]:
     return results
 
 
+def summarize_properties(results: list[dict[str, object]]) -> dict[str, object]:
+    counts: dict[str, int] = {}
+    by_status: dict[str, list[str]] = {}
+    for result in results:
+        status = str(result.get("status", "unknown"))
+        property_id = str(result.get("property_id", "unknown"))
+        counts[status] = counts.get(status, 0) + 1
+        by_status.setdefault(status, []).append(property_id)
+    return {
+        "counts_by_status": counts,
+        "falsified_properties": by_status.get("falsified", []),
+        "proven_properties": by_status.get("proven", []),
+        "covered_properties": by_status.get("covered", []),
+        "unreachable_properties": by_status.get("unreachable", []),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("report", type=Path)
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
-    payload = {"properties": parse_report(args.report)}
+    properties = parse_report(args.report)
+    payload = {"summary": summarize_properties(properties), "properties": properties}
     text = json.dumps(payload, indent=2)
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)

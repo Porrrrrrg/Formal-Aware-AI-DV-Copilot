@@ -22,6 +22,7 @@ done
 "${PYTHON_BIN}" tools/build_evidence_packet.py \
   --case benchmarks/arbiter_rr2/cases/rtl_bug_double_grant.json \
   --report jasper/reports/arbiter_rr2_bug_double_grant_prove/properties.rpt \
+  --trace-dir jasper/reports/arbiter_rr2_bug_double_grant_prove/traces \
   --rtl benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_double_grant.sv \
   --out jasper/reports/arbiter_rr2_bug_double_grant_prove/evidence_packet.json
 

@@ -24,6 +24,7 @@ if {$mode == "cover"} {
   check_vacuity -all
   report -summary -results -detailed -file "$report_dir/vacuity.rpt" -force
 } else {
-  prove -all
+  file mkdir "$report_dir/traces"
+  prove -all -dump_trace -dump_trace_type vcd -dump_trace_dir "$report_dir/traces"
   report -summary -results -detailed -file "$report_dir/properties.rpt" -force
 }

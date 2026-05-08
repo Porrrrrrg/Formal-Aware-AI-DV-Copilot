@@ -8,12 +8,12 @@ import json
 from pathlib import Path
 
 try:
-    from tools.parse_jg_report import parse_report
+    from tools.parse_jg_report import parse_report, summarize_properties
     from tools.parse_jg_trace import parse_trace
     from tools.simple_rtl_context import extract_context
     from tools.summarize_counterexample import summarize
 except ModuleNotFoundError:
-    from parse_jg_report import parse_report
+    from parse_jg_report import parse_report, summarize_properties
     from parse_jg_trace import parse_trace
     from simple_rtl_context import extract_context
     from summarize_counterexample import summarize
@@ -48,12 +48,32 @@ def build_packet(
     case_path: Path,
     report_path: Path | None = None,
     trace_path: Path | None = None,
+    trace_dir: Path | None = None,
     rtl_paths: list[Path] | None = None,
 ) -> dict[str, object]:
     case = json.loads(case_path.read_text())
     property_results = parse_report(report_path) if report_path and report_path.exists() else []
-    trace = parse_trace(trace_path) if trace_path and trace_path.exists() else {}
-    cex_summary = summarize(trace, case.get("property_id")) if trace else {}
+    result_summary = summarize_properties(property_results)
+
+    trace_paths: list[Path] = []
+    if trace_path and trace_path.exists():
+        trace_paths.append(trace_path)
+    if trace_dir and trace_dir.exists():
+        trace_paths.extend(sorted(trace_dir.glob("*.vcd")))
+
+    parsed_traces = [parse_trace(path) for path in trace_paths]
+    trace_summaries = [
+        {
+            "trace_file": trace.get("trace_file"),
+            "trace_format": trace.get("trace_format"),
+            "summary": summarize(trace, case.get("property_id")),
+        }
+        for trace in parsed_traces
+    ]
+    cex_summary = trace_summaries[0]["summary"] if trace_summaries else {}
+    if isinstance(cex_summary, dict):
+        cex_summary["falsified_properties"] = result_summary.get("falsified_properties", [])
+
     rtl_context = extract_context(rtl_paths or []) if rtl_paths else {}
 
     return {
@@ -69,10 +89,13 @@ def build_packet(
         },
         "active_assumptions": case.get("active_assumptions", []),
         "jasper_result": {
+            "summary": result_summary,
             "properties": property_results,
             "source_report": str(report_path) if report_path else None,
+            "trace_files": [str(path) for path in trace_paths],
         },
         "counterexample_summary": cex_summary,
+        "trace_summaries": trace_summaries,
         "coverage_context": case.get("coverage_context", {}),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),
@@ -92,11 +115,12 @@ def main() -> int:
     parser.add_argument("--case", required=True, type=Path)
     parser.add_argument("--report", type=Path)
     parser.add_argument("--trace", type=Path)
+    parser.add_argument("--trace-dir", type=Path)
     parser.add_argument("--rtl", nargs="*", type=Path)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
 
-    packet = build_packet(args.case, args.report, args.trace, args.rtl)
+    packet = build_packet(args.case, args.report, args.trace, args.trace_dir, args.rtl)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(packet, indent=2) + "\n")
     return 0
