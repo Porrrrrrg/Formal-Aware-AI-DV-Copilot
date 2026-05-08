@@ -15,7 +15,7 @@ evaluation/results/sva_eval*.json
 evaluation/results/sva_repair*.json
 evaluation/results/coverage_eval*.json
 evaluation/prompt_previews/
-copilot/baselines/*(1).py
+copilot/baselines/*([0-9]).py
 *.jou
 *.log
 *.rpt

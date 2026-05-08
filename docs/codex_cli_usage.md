@@ -52,3 +52,24 @@ python scripts/export_codex_prompts.py --task sva_repair --limit 3
 Use `--redact-evidence` for triage or coverage previews that remove RTL context and trace events from the preview packet.
 
 The runner uses `copilot/llm_adapters/codex_json.py`, which asks Codex for schema-constrained JSON and returns that JSON to the existing evaluation scripts.
+
+## Offline Replay
+
+If benchmark prompts must be run in a separate approved environment, save each
+LLM output as JSONL and replay it locally without another network call:
+
+```jsonl
+{"task":"sva_repair","case_id":"repair_arbiter_mutex_syntax","property_id":"p_mutex","round":1,"response":{"property_id":"p_mutex","sva":"p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));","explanation":"Adds the missing assertion terminator."}}
+```
+
+Then point `JASPERLOOP_LLM_CMD` at the replay adapter:
+
+```bash
+JASPERLOOP_LLM_CMD="python copilot/llm_adapters/replay_json.py --responses evaluation/fixtures/replay_sample_outputs.jsonl" \
+  python evaluation/run_sva_repair_eval.py --llm --limit 1
+```
+
+The replay adapter matches by `case_id`, `property_id`, optional `round`, or
+`prompt_sha256`. It exits nonzero when no response is available, so the existing
+evaluation runner records `llm_error` and falls back in the same way it does for
+a failed hosted LLM call.

@@ -33,6 +33,7 @@
 - Added a local Codex prompt preview/audit tool so SVA repair, triage, and coverage prompts can be inspected before external submission.
 - Triage and coverage evaluation now track output source, fallback rate, LLM error rate, and hallucinated suspect-signal rate for future Codex-backed experiments.
 - Added `scripts/refresh_eval_results.py` to regenerate the scaffold markdown result tables from the current evaluation runners.
+- Added an offline JSON replay adapter so Codex/LLM outputs generated in another approved environment can be imported into the same evaluation path without another network call.
 
 ## Next Milestones
 

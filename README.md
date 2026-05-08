@@ -191,6 +191,7 @@ JASPERLOOP_LLM_CMD="python copilot/llm_adapters/codex_json.py --schema copilot/s
 ```
 
 For a safer opt-in wrapper around Codex CLI experiments, see `docs/codex_cli_usage.md`. The wrapper requires `--acknowledge-external-send` before sending local benchmark content to Codex/OpenAI.
+The same guide also documents `copilot/llm_adapters/replay_json.py` for replaying previously generated Codex/LLM JSON outputs without another network call.
 Current Codex CLI smoke-test status is tracked in `evaluation/results/codex_cli_results.md`.
 Use `scripts/export_codex_prompts.py --summary-only` to audit prompt size and content categories before any external Codex run.
 
