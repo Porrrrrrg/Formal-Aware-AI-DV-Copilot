@@ -35,4 +35,18 @@ Use `--dry-run` to print the exact command without calling Codex:
 python scripts/run_codex_llm_eval.py --task sva_repair --limit 3 --dry-run
 ```
 
+Before sending benchmark prompts externally, audit the exact prompts locally:
+
+```bash
+python scripts/export_codex_prompts.py --task all --limit 3 --summary-only
+```
+
+To write local prompt preview files:
+
+```bash
+python scripts/export_codex_prompts.py --task sva_repair --limit 3
+```
+
+Use `--redact-evidence` for triage or coverage previews that remove RTL context and trace events from the preview packet.
+
 The runner uses `copilot/llm_adapters/codex_json.py`, which asks Codex for schema-constrained JSON and returns that JSON to the existing evaluation scripts.

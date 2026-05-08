@@ -14,6 +14,7 @@ evaluation/results/agent_eval*.json
 evaluation/results/sva_eval*.json
 evaluation/results/sva_repair*.json
 evaluation/results/coverage_eval*.json
+evaluation/prompt_previews/
 *.jou
 *.log
 *.rpt
