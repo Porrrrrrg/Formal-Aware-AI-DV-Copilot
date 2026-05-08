@@ -12,7 +12,7 @@ module rv_buffer_assumptions #(
   input logic             full
 );
 
-  a_reset_initial: assume property (@(posedge clk) $initstate |-> rst);
+  // Initial reset is supplied by the JasperGold `reset rst` command in run_jg.tcl.
   a_reset_deasserts: assume property (@(posedge clk) rst |=> !rst);
   a_no_x_controls: assume property (@(posedge clk) !$isunknown({rst, in_valid, out_ready}));
 

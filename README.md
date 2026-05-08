@@ -65,6 +65,14 @@ The wrapper expects a JasperGold executable named `jg` by default. Override it w
 JASPER_BIN=jaspergold python3 tools/run_jasper.py --design arbiter_rr2 --variant correct --mode prove
 ```
 
+On `moore`, the default `python3` can be too old for this codebase. Use `python3.11` and the JasperGold binary found under Xcelium 2018:
+
+```bash
+source /vol/eecs391/cadence.env
+JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg \
+  python3.11 tools/run_jasper.py --design arbiter_rr2 --variant correct --mode prove
+```
+
 ## Initial Commands
 
 Build a structured evidence packet from existing reports:

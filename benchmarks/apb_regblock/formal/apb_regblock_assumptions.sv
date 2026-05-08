@@ -13,7 +13,7 @@ module apb_regblock_assumptions (
   input logic [31:0] reg1
 );
 
-  a_reset_initial: assume property (@(posedge pclk) $initstate |-> !presetn);
+  // Initial reset is supplied by the JasperGold reset command in run_jg.tcl.
   a_reset_deasserts: assume property (@(posedge pclk) !presetn |=> presetn);
   a_no_x_controls: assume property (@(posedge pclk) !$isunknown({presetn, psel, penable, pwrite, paddr}));
   a_apb_enable_follows_setup: assume property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);
