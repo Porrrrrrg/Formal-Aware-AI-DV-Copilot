@@ -1,0 +1,17 @@
+{
+  "case_id": "arbiter_A6",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_persistent_fairness0",
+  "active_assumptions": [
+    {
+      "id": "a_no_simultaneous_requests",
+      "intent": "Forbids req0 and req1 from being high at the same time."
+    }
+  ],
+  "property_intent": "Under persistent contention, client 0 should receive service within a bounded window.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The no-simultaneous-requests assumption makes contention unreachable and turns fairness checks into vacuous proofs."
+}

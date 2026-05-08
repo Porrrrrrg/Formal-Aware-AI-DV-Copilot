@@ -1,0 +1,17 @@
+{
+  "case_id": "arbiter_A7",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_mutex",
+  "active_assumptions": [
+    {
+      "id": "a_reset_stays_high",
+      "intent": "Keeps rst asserted throughout formal analysis."
+    }
+  ],
+  "property_intent": "The arbiter must never grant both clients after reset.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "Keeping reset asserted disables reset-qualified assertions and prevents meaningful post-reset behavior from being checked."
+}

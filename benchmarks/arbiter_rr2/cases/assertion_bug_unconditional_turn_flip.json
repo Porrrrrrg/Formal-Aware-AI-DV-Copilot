@@ -1,0 +1,15 @@
+{
+  "case_id": "arbiter_A5",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_turn_flips_on_any_grant_bad",
+  "property_intent": "The turn bit should flip after any grant.",
+  "design_intent": [
+    "The turn bit only changes after contested grants.",
+    "Single-request grants do not need to consume round-robin priority."
+  ],
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The property incorrectly requires turn updates for uncontested single-client grants."
+}

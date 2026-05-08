@@ -1,0 +1,22 @@
+{
+  "case_id": "arbiter_A9",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_alternating_grants",
+  "coverage_context": {
+    "coverage_goal": "cov_alternating_grants",
+    "observed_hits": 0,
+    "expected_reachable": true,
+    "jasper_cover_result": "reachable",
+    "related_signals": ["req0", "req1", "gnt0", "gnt1", "turn"],
+    "suggested_sequence": [
+      "Deassert reset.",
+      "Hold req0 and req1 high for at least two cycles.",
+      "Observe a grant to one client followed by a grant to the other client."
+    ]
+  },
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "The cover goal is reachable under formal analysis and needs a directed persistent-contention stimulus."
+}

@@ -1,0 +1,15 @@
+{
+  "case_id": "rv_B5",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_data_stable_bad",
+  "property_intent": "out_data must remain stable whenever out_ready is low.",
+  "design_intent": [
+    "Output data stability is only required while out_valid is asserted.",
+    "When out_valid is low, out_data is not a meaningful transfer payload."
+  ],
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The property omits the out_valid guard and constrains out_data during invalid output cycles."
+}

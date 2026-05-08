@@ -1,0 +1,15 @@
+{
+  "case_id": "apb_C6",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_read_next_cycle_bad",
+  "property_intent": "A read response should appear one cycle after the APB access.",
+  "design_intent": [
+    "This register block is zero-wait-state.",
+    "prdata is expected during the same access phase."
+  ],
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The property assumes a one-cycle read latency that is not part of this APB-lite block's specification."
+}

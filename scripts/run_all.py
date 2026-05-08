@@ -12,7 +12,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> int:
     commands = [
-        [sys.executable, "evaluation/run_eval.py", "--cases", "benchmarks/arbiter_rr2/cases"],
+        [
+            sys.executable,
+            "evaluation/run_eval.py",
+            "--cases",
+            "benchmarks/arbiter_rr2/cases",
+            "benchmarks/rv_buffer/cases",
+            "benchmarks/apb_regblock/cases",
+        ],
+        [sys.executable, "scripts/build_all_evidence_packets.py"],
     ]
     for cmd in commands:
         subprocess.run(cmd, cwd=ROOT, check=True)

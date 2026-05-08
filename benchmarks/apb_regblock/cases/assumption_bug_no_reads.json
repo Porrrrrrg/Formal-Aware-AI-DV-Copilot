@@ -1,0 +1,17 @@
+{
+  "case_id": "apb_C7",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_read_returns_reg0",
+  "active_assumptions": [
+    {
+      "id": "a_writes_only",
+      "intent": "Forces pwrite high for every APB access."
+    }
+  ],
+  "property_intent": "Reads should return selected register data.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The writes-only assumption makes read accesses unreachable, so read-response properties and coverage cannot be meaningfully checked."
+}

@@ -1,0 +1,17 @@
+{
+  "case_id": "rv_B10",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_dequeue_when_empty",
+  "coverage_context": {
+    "coverage_goal": "cov_dequeue_when_empty",
+    "observed_hits": 0,
+    "expected_reachable": false,
+    "jasper_cover_result": "unreachable",
+    "related_signals": ["full", "out_valid", "out_ready"]
+  },
+  "expected_issue_type": "unreachable_or_invalid_coverage_goal",
+  "expected_next_action": "prove_unreachable_or_waive_coverage_goal",
+  "root_cause": "A dequeue requires out_valid, and out_valid is equivalent to full; dequeue-while-empty is an illegal coverage target."
+}

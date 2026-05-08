@@ -1,0 +1,15 @@
+{
+  "case_id": "apb_C4",
+  "design_id": "apb_regblock",
+  "variant": "bug_read_latency",
+  "task_type": "failure_triage",
+  "property_id": "p_read_returns_reg0",
+  "property_intent": "A valid APB read to address 0x00 returns reg0 during the access phase.",
+  "design_intent": [
+    "The tiny APB block is zero-wait-state.",
+    "Read data is combinationally available in the access phase."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The read-latency bug registers prdata and returns the previous-cycle value instead of current selected register data."
+}

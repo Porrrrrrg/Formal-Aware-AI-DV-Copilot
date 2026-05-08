@@ -91,7 +91,7 @@ Primary benchmark:
 - single-entry ready/valid buffer
 - tiny APB-lite register block
 
-Each design has correct RTL, bug variants, assertions, assumptions, coverage goals, manifests, and labeled diagnosis cases.
+Each design has correct RTL, bug variants, assertions, assumptions, coverage goals, manifests, and labeled diagnosis cases. The target primary set is 30 labeled cases: 10 per design, covering RTL bugs, assertion bugs, assumption bugs, testbench/stimulus bugs, reachable coverage gaps, and invalid/unreachable coverage goals.
 
 ## Evaluation
 

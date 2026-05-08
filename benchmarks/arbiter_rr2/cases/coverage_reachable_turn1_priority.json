@@ -1,0 +1,22 @@
+{
+  "case_id": "arbiter_A10",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_turn1_contested_grant",
+  "coverage_context": {
+    "coverage_goal": "cov_turn1_contested_grant",
+    "observed_hits": 0,
+    "expected_reachable": true,
+    "jasper_cover_result": "reachable",
+    "related_signals": ["req0", "req1", "gnt1", "turn"],
+    "suggested_sequence": [
+      "Drive both requests high when turn is 0 to grant client 0.",
+      "Keep both requests high for one more cycle.",
+      "Observe turn=1 and gnt1 asserted."
+    ]
+  },
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "The goal is a reachable round-robin state but current simulation does not steer the arbiter into turn=1 contention."
+}

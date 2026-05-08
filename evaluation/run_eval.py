@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 from pathlib import Path
 
@@ -44,6 +45,15 @@ def main() -> int:
 
     summary = {
         "num_cases": len(rows),
+        "cases_by_design": dict(
+            sorted(collections.Counter(case.get("design_id") for case in cases).items())
+        ),
+        "cases_by_issue_type": dict(
+            sorted(collections.Counter(case.get("expected_issue_type") for case in cases).items())
+        ),
+        "cases_by_next_action": dict(
+            sorted(collections.Counter(case.get("expected_next_action") for case in cases).items())
+        ),
         "issue_type_accuracy_oracle_scaffold": accuracy(
             rows, "predicted_issue_type", "gold_issue_type"
         ),

@@ -1,0 +1,17 @@
+{
+  "case_id": "rv_B7",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "cov_simultaneous_enqueue_dequeue",
+  "active_assumptions": [
+    {
+      "id": "a_no_input_when_full",
+      "intent": "Forbids in_valid when the buffer is full."
+    }
+  ],
+  "property_intent": "Exercise simultaneous enqueue and dequeue while full.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The assumption forbids the input side from presenting data while full, making simultaneous enqueue/dequeue coverage unreachable."
+}

@@ -1,0 +1,15 @@
+{
+  "case_id": "rv_B4",
+  "design_id": "rv_buffer",
+  "variant": "bug_inready",
+  "task_type": "failure_triage",
+  "property_id": "p_in_ready_when_full_and_out_ready",
+  "property_intent": "The buffer should accept new input while full if the output side is ready in the same cycle.",
+  "design_intent": [
+    "A full single-entry buffer can perform simultaneous enqueue and dequeue.",
+    "in_ready should be true when full and out_ready is true."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The in_ready bug only asserts in_ready when the buffer is empty, blocking legal simultaneous enqueue/dequeue."
+}

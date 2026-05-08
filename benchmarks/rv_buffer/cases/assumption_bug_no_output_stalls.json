@@ -1,0 +1,17 @@
+{
+  "case_id": "rv_B6",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_data_stable_while_stalled",
+  "active_assumptions": [
+    {
+      "id": "a_no_output_stalls",
+      "intent": "Forces out_ready high whenever out_valid is high."
+    }
+  ],
+  "property_intent": "Data must remain stable while a valid output is stalled.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The no-output-stalls assumption makes the stalled-output antecedent unreachable, producing vacuous stability evidence."
+}

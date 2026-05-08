@@ -1,0 +1,22 @@
+{
+  "case_id": "apb_C9",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_invalid_address",
+  "coverage_context": {
+    "coverage_goal": "cov_invalid_address",
+    "observed_hits": 0,
+    "expected_reachable": true,
+    "jasper_cover_result": "reachable",
+    "related_signals": ["psel", "penable", "paddr", "pslverr"],
+    "suggested_sequence": [
+      "Drive a valid APB access phase.",
+      "Use an address other than 0x00 or 0x04.",
+      "Observe pslverr asserted."
+    ]
+  },
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "Invalid-address behavior is reachable and should be covered by an error-response directed test."
+}

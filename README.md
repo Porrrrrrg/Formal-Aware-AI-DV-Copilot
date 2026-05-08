@@ -39,7 +39,7 @@ The primary benchmark is local and DV-focused:
 - `rv_buffer`: single-entry ready/valid buffer
 - `apb_regblock`: tiny APB-lite register block
 
-Each benchmark is structured around correct RTL, bug variants, SVA properties, assumptions, coverage goals, manifests, and labeled cases.
+Each benchmark is structured around correct RTL, bug variants, SVA properties, assumptions, coverage goals, manifests, and labeled cases. The current primary benchmark contains 30 labeled DV triage / coverage-closure cases, 10 per design.
 
 ## JasperGold Environment
 
@@ -93,6 +93,12 @@ Run the scaffold-level evaluation:
 
 ```bash
 python evaluation/run_eval.py --cases benchmarks/arbiter_rr2/cases benchmarks/rv_buffer/cases benchmarks/apb_regblock/cases
+```
+
+Build evidence packets for all labeled cases:
+
+```bash
+python scripts/build_all_evidence_packets.py
 ```
 
 ## Research Claim

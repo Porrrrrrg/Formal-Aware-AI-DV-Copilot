@@ -1,0 +1,22 @@
+{
+  "case_id": "rv_B9",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_stall_then_dequeue",
+  "coverage_context": {
+    "coverage_goal": "cov_stall_then_dequeue",
+    "observed_hits": 0,
+    "expected_reachable": true,
+    "jasper_cover_result": "reachable",
+    "related_signals": ["out_valid", "out_ready", "out_data"],
+    "suggested_sequence": [
+      "Enqueue one data beat.",
+      "Hold out_ready low for one cycle while out_valid is high.",
+      "Assert out_ready and observe the dequeue."
+    ]
+  },
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "Formal cover shows the stall-then-dequeue behavior is reachable and needs directed stimulus."
+}

@@ -1,0 +1,15 @@
+{
+  "case_id": "apb_C5",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_write_updates_in_setup_bad",
+  "property_intent": "A write should update the selected register when psel and pwrite are high.",
+  "design_intent": [
+    "APB writes occur in the access phase.",
+    "The setup phase has psel high and penable low but must not update state."
+  ],
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The property omits penable and incorrectly expects writes during APB setup instead of access."
+}

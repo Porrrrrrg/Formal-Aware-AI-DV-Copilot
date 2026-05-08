@@ -1,0 +1,15 @@
+{
+  "case_id": "arbiter_A4",
+  "design_id": "arbiter_rr2",
+  "variant": "bug_turn_update",
+  "task_type": "failure_triage",
+  "property_id": "p_persistent_fairness1",
+  "property_intent": "Under persistent contention, client 1 should eventually receive a grant after client 0 has been served.",
+  "design_intent": [
+    "The turn bit must update after contested grants.",
+    "Persistent two-client contention should alternate service."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The turn-update bug never advances the round-robin priority state during contention, so one requester can be starved."
+}
