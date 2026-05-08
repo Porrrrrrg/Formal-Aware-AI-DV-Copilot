@@ -1,0 +1,272 @@
+[
+  {
+    "case_id": "sva_arbiter_p_mutex",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_mutex",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "gnt0", "gnt1"],
+    "intent": "The arbiter must never grant both clients in the same cycle.",
+    "reference_sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));"
+  },
+  {
+    "case_id": "sva_arbiter_no_spurious_gnt0",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_no_spurious_gnt0",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "gnt0"],
+    "intent": "Grant 0 may only be asserted when request 0 is asserted.",
+    "reference_sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) gnt0 |-> req0);"
+  },
+  {
+    "case_id": "sva_arbiter_no_spurious_gnt1",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_no_spurious_gnt1",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req1", "gnt1"],
+    "intent": "Grant 1 may only be asserted when request 1 is asserted.",
+    "reference_sva": "p_no_spurious_gnt1: assert property (@(posedge clk) disable iff (rst) gnt1 |-> req1);"
+  },
+  {
+    "case_id": "sva_arbiter_single_req0",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_single_req0_grant",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "req1", "gnt0", "gnt1"],
+    "intent": "If only client 0 requests service, the arbiter grants client 0 and not client 1.",
+    "reference_sva": "p_single_req0_grant: assert property (@(posedge clk) disable iff (rst) req0 && !req1 |-> gnt0 && !gnt1);"
+  },
+  {
+    "case_id": "sva_arbiter_single_req1",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_single_req1_grant",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "req1", "gnt0", "gnt1"],
+    "intent": "If only client 1 requests service, the arbiter grants client 1 and not client 0.",
+    "reference_sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) !req0 && req1 |-> !gnt0 && gnt1);"
+  },
+  {
+    "case_id": "sva_arbiter_turn0_priority",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_both_req_priority_turn0",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "req1", "gnt0", "gnt1", "turn"],
+    "intent": "When both clients request and turn is 0, grant client 0 only.",
+    "reference_sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !turn |-> gnt0 && !gnt1);"
+  },
+  {
+    "case_id": "sva_arbiter_turn1_priority",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_both_req_priority_turn1",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "req1", "gnt0", "gnt1", "turn"],
+    "intent": "When both clients request and turn is 1, grant client 1 only.",
+    "reference_sva": "p_both_req_priority_turn1: assert property (@(posedge clk) disable iff (rst) req0 && req1 && turn |-> !gnt0 && gnt1);"
+  },
+  {
+    "case_id": "sva_arbiter_turn_update_gnt0",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_turn_updates_on_contested_grant0",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "req1", "gnt0", "turn"],
+    "intent": "After a contested grant to client 0, the next priority turn should point to client 1.",
+    "reference_sva": "p_turn_updates_on_contested_grant0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && gnt0 |=> turn);"
+  },
+  {
+    "case_id": "sva_arbiter_reset_priority",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_reset_initial_priority",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "turn"],
+    "intent": "After reset, the arbiter initial priority turn should be 0.",
+    "reference_sva": "p_reset_initial_priority: assert property (@(posedge clk) rst |=> !turn);"
+  },
+  {
+    "case_id": "sva_arbiter_fairness0",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_persistent_fairness0",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "req0", "req1", "gnt0"],
+    "intent": "If client 0 remains in contention and was not granted, it should be granted next unless contention ends.",
+    "reference_sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !gnt0 |=> (!req0 || !req1 || gnt0));"
+  },
+  {
+    "case_id": "sva_buffer_reset_empty",
+    "design_id": "rv_buffer",
+    "property_id": "p_reset_empty",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "out_valid"],
+    "intent": "After reset, the buffer should be empty and output valid should be low.",
+    "reference_sva": "p_reset_empty: assert property (@(posedge clk) rst |=> !full && !out_valid);"
+  },
+  {
+    "case_id": "sva_buffer_out_valid_equals_full",
+    "design_id": "rv_buffer",
+    "property_id": "p_out_valid_equals_full",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "out_valid", "full"],
+    "intent": "Output valid should equal the full state of the one-entry buffer.",
+    "reference_sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == full);"
+  },
+  {
+    "case_id": "sva_buffer_in_ready_empty",
+    "design_id": "rv_buffer",
+    "property_id": "p_in_ready_when_empty",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "in_ready"],
+    "intent": "The buffer should be ready for input when it is empty.",
+    "reference_sva": "p_in_ready_when_empty: assert property (@(posedge clk) disable iff (rst) !full |-> in_ready);"
+  },
+  {
+    "case_id": "sva_buffer_in_ready_full_out_ready",
+    "design_id": "rv_buffer",
+    "property_id": "p_in_ready_when_full_and_out_ready",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "out_ready", "in_ready"],
+    "intent": "A full buffer should accept new input when the output side is ready in the same cycle.",
+    "reference_sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);"
+  },
+  {
+    "case_id": "sva_buffer_stable_stalled",
+    "design_id": "rv_buffer",
+    "property_id": "p_data_stable_while_stalled",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "out_valid", "out_ready", "out_data"],
+    "intent": "Stored output data must not change while valid output is stalled.",
+    "reference_sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));"
+  },
+  {
+    "case_id": "sva_buffer_capture_fire",
+    "design_id": "rv_buffer",
+    "property_id": "p_capture_on_input_fire",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "in_valid", "in_ready", "full", "out_data", "in_data"],
+    "intent": "On an input handshake, the buffer stores the input data and becomes full.",
+    "reference_sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) in_valid && in_ready |=> full && out_data == $past(in_data));"
+  },
+  {
+    "case_id": "sva_buffer_full_set",
+    "design_id": "rv_buffer",
+    "property_id": "p_full_set_on_enqueue",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "in_valid", "in_ready", "out_ready", "full"],
+    "intent": "An enqueue without output dequeue should set the full state on the next cycle.",
+    "reference_sva": "p_full_set_on_enqueue: assert property (@(posedge clk) disable iff (rst) in_valid && in_ready && !out_ready |=> full);"
+  },
+  {
+    "case_id": "sva_buffer_full_clear",
+    "design_id": "rv_buffer",
+    "property_id": "p_full_clear_on_dequeue",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "out_valid", "out_ready", "in_valid", "full"],
+    "intent": "A dequeue without simultaneous input should clear the full state on the next cycle.",
+    "reference_sva": "p_full_clear_on_dequeue: assert property (@(posedge clk) disable iff (rst) out_valid && out_ready && !in_valid |=> !full);"
+  },
+  {
+    "case_id": "sva_buffer_simultaneous_semantics",
+    "design_id": "rv_buffer",
+    "property_id": "p_simultaneous_enqueue_dequeue_semantics",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "in_valid", "in_ready", "out_ready", "out_data", "in_data"],
+    "intent": "A simultaneous enqueue and dequeue while full keeps the buffer full and stores new input data.",
+    "reference_sva": "p_simultaneous_enqueue_dequeue_semantics: assert property (@(posedge clk) disable iff (rst) full && in_valid && in_ready && out_ready |=> full && out_data == $past(in_data));"
+  },
+  {
+    "case_id": "sva_apb_setup_enable",
+    "design_id": "apb_regblock",
+    "property_id": "p_setup_then_enable",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable"],
+    "intent": "An APB setup phase should be followed by an access phase.",
+    "reference_sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);"
+  },
+  {
+    "case_id": "sva_apb_write_reg0",
+    "design_id": "apb_regblock",
+    "property_id": "p_write_updates_reg0",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable", "pwrite", "pready", "paddr", "pwdata", "reg0"],
+    "intent": "A valid APB write to address 0x00 updates reg0 with pwdata.",
+    "reference_sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && pwrite && pready && paddr == 8'h00 |=> reg0 == $past(pwdata));"
+  },
+  {
+    "case_id": "sva_apb_write_reg1",
+    "design_id": "apb_regblock",
+    "property_id": "p_write_updates_reg1",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable", "pwrite", "pready", "paddr", "pwdata", "reg1"],
+    "intent": "A valid APB write to address 0x04 updates reg1 with pwdata.",
+    "reference_sva": "p_write_updates_reg1: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && pwrite && pready && paddr == 8'h04 |=> reg1 == $past(pwdata));"
+  },
+  {
+    "case_id": "sva_apb_read_reg0",
+    "design_id": "apb_regblock",
+    "property_id": "p_read_returns_reg0",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable", "pwrite", "paddr", "prdata", "reg0"],
+    "intent": "A valid APB read to address 0x00 returns reg0.",
+    "reference_sva": "p_read_returns_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !pwrite && paddr == 8'h00 |-> prdata == reg0);"
+  },
+  {
+    "case_id": "sva_apb_read_reg1",
+    "design_id": "apb_regblock",
+    "property_id": "p_read_returns_reg1",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable", "pwrite", "paddr", "prdata", "reg1"],
+    "intent": "A valid APB read to address 0x04 returns reg1.",
+    "reference_sva": "p_read_returns_reg1: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !pwrite && paddr == 8'h04 |-> prdata == reg1);"
+  },
+  {
+    "case_id": "sva_apb_pready",
+    "design_id": "apb_regblock",
+    "property_id": "p_pready_response_valid",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable", "pready"],
+    "intent": "During an APB access phase, pready should be asserted for a zero-wait-state response.",
+    "reference_sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) psel && penable |-> pready);"
+  },
+  {
+    "case_id": "sva_apb_reset_clear",
+    "design_id": "apb_regblock",
+    "property_id": "p_reset_clears_registers",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "reg0", "reg1"],
+    "intent": "Reset should clear both APB registers.",
+    "reference_sva": "p_reset_clears_registers: assert property (@(posedge pclk) !presetn |=> reg0 == 32'h0 && reg1 == 32'h0);"
+  },
+  {
+    "case_id": "sva_apb_invalid_address",
+    "design_id": "apb_regblock",
+    "property_id": "p_invalid_address_behavior",
+    "clock": "pclk",
+    "reset": "presetn",
+    "signals": ["pclk", "presetn", "psel", "penable", "paddr", "pslverr"],
+    "intent": "Invalid APB addresses assert pslverr during the access phase.",
+    "reference_sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);"
+  }
+]

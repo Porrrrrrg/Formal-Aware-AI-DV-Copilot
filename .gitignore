@@ -11,6 +11,7 @@ env/
 jasper/reports/*
 !jasper/reports/.gitkeep
 evaluation/results/agent_eval*.json
+evaluation/results/sva_eval*.json
 *.jou
 *.log
 *.rpt

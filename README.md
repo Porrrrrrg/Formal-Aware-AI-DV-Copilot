@@ -122,6 +122,12 @@ python evaluation/run_agent_eval.py \
   --out evaluation/results/agent_eval_ablation_local.json
 ```
 
+Run SVA generation scaffold evaluation on the local property-intent set:
+
+```bash
+python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
+```
+
 The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
 
 ```bash
@@ -139,6 +145,12 @@ You can also inspect the raw-log baseline prompt:
 
 ```bash
 python copilot/baselines/raw_log_llm.py jasper/reports/case_packets/arbiter_rr2/arbiter_A1/evidence_packet.json --prompt-out /tmp/raw_log_prompt.txt
+```
+
+For SVA generation prompts:
+
+```bash
+python copilot/agents/sva_generation_agent.py benchmarks/sva_generation_cases.json --prompt-out /tmp/sva_generation_prompt.txt
 ```
 
 ## Research Claim
