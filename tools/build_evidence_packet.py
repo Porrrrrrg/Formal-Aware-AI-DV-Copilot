@@ -63,7 +63,11 @@ def build_packet(
         trace_paths.extend(sorted(trace_dir.glob("*.vcd")))
         trace_paths.extend(sorted(trace_dir.glob("*.vcd.gz")))
 
-    trace_paths = sort_trace_paths(trace_paths, result_summary.get("falsified_properties", []))
+    trace_paths = sort_trace_paths(
+        trace_paths,
+        result_summary.get("falsified_properties", []),
+        case.get("property_id"),
+    )
 
     parsed_traces = [parse_trace(path) for path in trace_paths]
     trace_summaries = [
@@ -115,13 +119,19 @@ def build_packet(
     }
 
 
-def sort_trace_paths(paths: list[Path], falsified_properties: object) -> list[Path]:
+def sort_trace_paths(
+    paths: list[Path],
+    falsified_properties: object,
+    focus_property: object = None,
+) -> list[Path]:
     falsified = set(falsified_properties if isinstance(falsified_properties, list) else [])
+    focus = str(focus_property) if focus_property else None
 
     def key(path: Path) -> tuple[int, str]:
         property_id = infer_property_from_name(path.name)
+        is_focus = property_id == focus
         is_falsified = property_id in falsified
-        return (0 if is_falsified else 1, path.name)
+        return (0 if is_focus else 1, 0 if is_falsified else 1, path.name)
 
     unique = {str(path): path for path in paths}
     return sorted(unique.values(), key=key)

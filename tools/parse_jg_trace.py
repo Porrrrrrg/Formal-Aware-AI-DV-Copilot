@@ -71,14 +71,26 @@ def parse_vcd(path: Path, max_events: int = 200) -> dict[str, object]:
     snapshots: dict[int, dict[str, str]] = {}
     values: dict[str, str] = {}
     in_header = True
+    scope_stack: list[str] = []
 
     for raw_line in read_trace_text(path).splitlines():
         line = raw_line.strip()
         if not line:
             continue
+        if line.startswith("$scope "):
+            parts = line.split()
+            if len(parts) >= 3:
+                scope_stack.append(parts[2])
+            continue
+        if line.startswith("$upscope"):
+            if scope_stack:
+                scope_stack.pop()
+            continue
         var_match = VCD_VAR_RE.match(line)
         if var_match:
-            code_to_signal[var_match.group("code")] = normalize_signal(var_match.group("name"))
+            signal_name = var_match.group("name")
+            if should_keep_vcd_signal(scope_stack, signal_name):
+                code_to_signal[var_match.group("code")] = normalize_signal(signal_name)
             continue
         if line == "$enddefinitions $end":
             in_header = False
@@ -143,6 +155,14 @@ def infer_property_from_trace_path(path: Path) -> str | None:
     if match:
         return match.group(1)
     return None
+
+
+def should_keep_vcd_signal(scope_stack: list[str], signal_name: str) -> bool:
+    if signal_name.startswith("\\:"):
+        return False
+    if "properties_i" in scope_stack or "assumptions_i" in scope_stack:
+        return False
+    return True
 
 
 def main() -> int:
