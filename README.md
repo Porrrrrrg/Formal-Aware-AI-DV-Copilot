@@ -168,6 +168,12 @@ Run the coverage-closure benchmark on coverage-only cases:
 python evaluation/run_coverage_eval.py --all-systems --out evaluation/results/coverage_eval_local.json
 ```
 
+Refresh the scaffold markdown result tables from the current evaluation runners:
+
+```bash
+python scripts/refresh_eval_results.py
+```
+
 The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
 
 ```bash
