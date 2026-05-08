@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 try:
@@ -60,12 +61,16 @@ def build_packet(
         trace_paths.append(trace_path)
     if trace_dir and trace_dir.exists():
         trace_paths.extend(sorted(trace_dir.glob("*.vcd")))
+        trace_paths.extend(sorted(trace_dir.glob("*.vcd.gz")))
+
+    trace_paths = sort_trace_paths(trace_paths, result_summary.get("falsified_properties", []))
 
     parsed_traces = [parse_trace(path) for path in trace_paths]
     trace_summaries = [
         {
             "trace_file": trace.get("trace_file"),
             "trace_format": trace.get("trace_format"),
+            "property_id": trace.get("property_id"),
             "summary": summarize(trace, case.get("property_id")),
         }
         for trace in parsed_traces
@@ -108,6 +113,25 @@ def build_packet(
             "root_cause": case.get("root_cause"),
         },
     }
+
+
+def sort_trace_paths(paths: list[Path], falsified_properties: object) -> list[Path]:
+    falsified = set(falsified_properties if isinstance(falsified_properties, list) else [])
+
+    def key(path: Path) -> tuple[int, str]:
+        property_id = infer_property_from_name(path.name)
+        is_falsified = property_id in falsified
+        return (0 if is_falsified else 1, path.name)
+
+    unique = {str(path): path for path in paths}
+    return sorted(unique.values(), key=key)
+
+
+def infer_property_from_name(name: str) -> str | None:
+    match = re.search(r"\.(?:properties_i|assumptions_i)\.([A-Za-z0-9_:]+)\.", name)
+    if match:
+        return match.group(1)
+    return None
 
 
 def main() -> int:

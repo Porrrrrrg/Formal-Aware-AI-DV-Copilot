@@ -10,6 +10,7 @@ Supported inputs:
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import re
 from pathlib import Path
@@ -28,14 +29,14 @@ def normalize_signal(name: str) -> str:
 
 
 def parse_trace(path: Path) -> dict[str, object]:
-    if path.suffix.lower() == ".vcd":
+    if path.name.lower().endswith((".vcd", ".vcd.gz")):
         return parse_vcd(path)
 
     cycles: dict[int, dict[str, str]] = {}
     raw_events: list[str] = []
     current_cycle: int | None = None
 
-    for line in path.read_text(errors="ignore").splitlines():
+    for line in read_trace_text(path).splitlines():
         cycle_match = CYCLE_RE.search(line)
         if cycle_match:
             current_cycle = int(cycle_match.group("cycle"))
@@ -71,7 +72,7 @@ def parse_vcd(path: Path, max_events: int = 200) -> dict[str, object]:
     values: dict[str, str] = {}
     in_header = True
 
-    for raw_line in path.read_text(errors="ignore").splitlines():
+    for raw_line in read_trace_text(path).splitlines():
         line = raw_line.strip()
         if not line:
             continue
@@ -112,6 +113,7 @@ def parse_vcd(path: Path, max_events: int = 200) -> dict[str, object]:
     return {
         "trace_file": str(path),
         "trace_format": "vcd",
+        "property_id": infer_property_from_trace_path(path),
         "signals": sorted(set(code_to_signal.values())),
         "events": events,
     }
@@ -125,6 +127,21 @@ def parse_vcd_value_change(line: str) -> tuple[str, str] | None:
         if len(parts) != 2:
             return None
         return parts[1], parts[0][1:].lower()
+    return None
+
+
+def read_trace_text(path: Path) -> str:
+    data = path.read_bytes()
+    if data.startswith(b"\x1f\x8b"):
+        data = gzip.decompress(data)
+    return data.decode(errors="ignore")
+
+
+def infer_property_from_trace_path(path: Path) -> str | None:
+    name = path.name
+    match = re.search(r"\.(?:properties_i|assumptions_i)\.([A-Za-z0-9_:]+)\.", name)
+    if match:
+        return match.group(1)
     return None
 
 
