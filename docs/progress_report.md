@@ -19,11 +19,13 @@
 - Added triage ablations for assertion context, assumption context, Jasper counterexample summaries, coverage context, and minimal packets.
 - Added a 27-case local SVA generation property-intent set across arbiter, ready/valid buffer, and APB-lite.
 - Added direct and structured SVA generation systems plus `evaluation/run_sva_eval.py`.
+- Added JasperGold re-check for generated SVA candidates, including temporary generated property/harness files, prove reports, trace dumps, and vacuity reports.
+- On `moore`, all 27 direct and 27 structured generated SVA candidates pass JasperGold syntax/proof re-check in the deterministic scaffold.
 
 ## Next Milestones
 
-1. Add JasperGold syntax/proof re-check for generated SVA candidates.
-2. Add SVA repair cases with injected syntax/signal/temporal errors.
+1. Add SVA repair cases with injected syntax/signal/temporal errors.
+2. Implement the three-round JasperGold-in-the-loop SVA repair runner.
 3. Connect a hosted or local LLM wrapper and run `raw_log` vs `structured` prompting with the same evaluation runner.
 4. Add coverage-mode witness extraction and vacuity-mode packet fields.
 5. Expand semantic counterexample heuristics for ready/valid and APB-specific failures.

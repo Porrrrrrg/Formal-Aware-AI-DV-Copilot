@@ -128,6 +128,19 @@ Run SVA generation scaffold evaluation on the local property-intent set:
 python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
 ```
 
+Run SVA generation with JasperGold syntax/proof/vacuity re-check:
+
+```bash
+python evaluation/run_sva_eval.py --jasper-check --out evaluation/results/sva_eval_jasper_moore.json
+```
+
+On `moore`, the convenience script sets the JasperGold binary path:
+
+```bash
+source /vol/eecs391/cadence.env
+bash scripts/run_moore_sva_eval.sh
+```
+
 The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
 
 ```bash
