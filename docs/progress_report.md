@@ -26,11 +26,13 @@
 - Added a Codex CLI JSON adapter so `JASPERLOOP_LLM_CMD` can point directly at Codex for non-interactive local experiments.
 - On `moore`, the full 18-case SVA repair benchmark passes JasperGold re-check with 100% final repair success and 1.0 average rounds to success in deterministic fallback mode.
 - The Codex-backed repair path now records `source` and `llm_error` per repair action; the local smoke run reached Codex CLI, but the current account is usage-limited until May 10, 2026 2:40 PM, so the runner correctly fell back to the structured repair path.
+- Evidence packets now enrich coverage cases with coverage-plan intent/expression fields, structured coverage evidence, and a vacuity context.
+- Added a dedicated coverage-closure evaluation runner for reachable-gap vs invalid/unreachable-goal handling.
 
 ## Next Milestones
 
 1. Rerun Codex-backed SVA repair prompts after the Codex usage limit resets and compare against the deterministic structured fallback.
 2. Connect Codex-backed `raw_log` vs `structured` triage prompting with the same evaluation runner.
 3. Add repair-loop ablations, especially no-Jasper-feedback vs Jasper-feedback repair.
-4. Add coverage-mode witness extraction and vacuity-mode packet fields.
+4. Add real JasperGold cover witness trace dumps for coverage goals and feed those traces into `coverage_evidence.witness_events`.
 5. Expand semantic counterexample heuristics for ready/valid and APB-specific failures.

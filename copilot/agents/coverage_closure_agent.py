@@ -35,25 +35,61 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     coverage = packet.get("coverage_context", {})
     if not isinstance(coverage, dict):
         coverage = {}
-    reachable = coverage.get("jasper_cover_result") == "reachable"
-    expected = coverage.get("expected_reachable", True)
+    evidence_packet = packet.get("coverage_evidence", {})
+    if not isinstance(evidence_packet, dict):
+        evidence_packet = {}
+    cover_status = str(
+        evidence_packet.get("formal_cover_status") or coverage.get("jasper_cover_result") or ""
+    ).lower()
+    expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable", True))
+    reachable = cover_status in {"reachable", "covered"}
 
     if reachable and expected:
         gap_type = "reachable_coverage_gap"
         action = "add_directed_test_or_sequence"
-        evidence = ["JasperGold cover evidence indicates the goal is reachable."]
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
     else:
         gap_type = "unreachable_or_invalid_coverage_goal"
         action = "prove_unreachable_or_waive_coverage_goal"
-        evidence = ["Coverage goal is unreachable, invalid, or contradicts expected behavior."]
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=False)
 
     return {
         "case_id": packet.get("case_id", "unknown"),
         "coverage_gap_type": gap_type,
         "recommended_next_action": action,
-        "directed_sequence": coverage.get("suggested_sequence", []),
+        "directed_sequence": evidence_packet.get("suggested_sequence") or coverage.get("suggested_sequence", []),
         "evidence": evidence,
     }
+
+
+def collect_structured_evidence(
+    coverage: dict[str, object],
+    evidence_packet: dict[str, object],
+    reachable: bool,
+) -> list[str]:
+    evidence = []
+    goal = evidence_packet.get("coverage_goal") or coverage.get("coverage_goal")
+    if goal:
+        evidence.append(f"Coverage goal: {goal}")
+    status = evidence_packet.get("formal_cover_status") or coverage.get("jasper_cover_result")
+    if status:
+        evidence.append(f"JasperGold cover result: {status}")
+    expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable"))
+    if expected is not None:
+        evidence.append(f"Expected reachable: {expected}")
+    expression = evidence_packet.get("expression") or coverage.get("expression")
+    if expression:
+        evidence.append(f"Coverage expression: {expression}")
+    witness_events = evidence_packet.get("witness_events")
+    if isinstance(witness_events, list) and witness_events:
+        evidence.append("Witness trace starts with: " + str(witness_events[0]))
+    if not evidence:
+        evidence.append(
+            "JasperGold cover evidence indicates the goal is reachable."
+            if reachable
+            else "Coverage goal is unreachable, invalid, or contradicts expected behavior."
+        )
+    return evidence[:5]
 
 
 def build_prompt(packet: dict[str, object]) -> str:

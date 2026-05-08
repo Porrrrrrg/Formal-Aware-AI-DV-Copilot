@@ -9,12 +9,14 @@ import re
 from pathlib import Path
 
 try:
+    from tools.coverage_utils import build_coverage_evidence, enrich_coverage_context
     from tools.manifest_utils import infer_signal_role_map_path, load_signal_role_map
     from tools.parse_jg_report import parse_report, summarize_properties
     from tools.parse_jg_trace import parse_trace
     from tools.simple_rtl_context import extract_context
     from tools.summarize_counterexample import summarize
 except ModuleNotFoundError:
+    from coverage_utils import build_coverage_evidence, enrich_coverage_context
     from manifest_utils import infer_signal_role_map_path, load_signal_role_map
     from parse_jg_report import parse_report, summarize_properties
     from parse_jg_trace import parse_trace
@@ -91,6 +93,7 @@ def build_packet(
         cex_summary["falsified_properties"] = result_summary.get("falsified_properties", [])
 
     rtl_context = extract_context(rtl_paths or []) if rtl_paths else {}
+    coverage_context = enrich_coverage_context(case_path, case)
 
     packet = {
         "case_id": case["case_id"],
@@ -112,7 +115,9 @@ def build_packet(
         "counterexample_summary": cex_summary,
         "trace_summaries": trace_summaries,
         "signal_role_map": signal_roles,
-        "coverage_context": case.get("coverage_context", {}),
+        "coverage_context": coverage_context,
+        "coverage_evidence": build_coverage_evidence(coverage_context, trace_summaries),
+        "vacuity_context": build_vacuity_context(case, property_results, result_summary),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),
         "assumption_risks": case.get("assumption_risks", []),
@@ -128,6 +133,34 @@ def build_packet(
         }
 
     return packet
+
+
+def build_vacuity_context(
+    case: dict[str, object],
+    property_results: list[dict[str, object]],
+    result_summary: dict[str, object],
+) -> dict[str, object]:
+    vacuous_properties = result_summary.get("vacuous_properties", [])
+    if not vacuous_properties:
+        vacuous_properties = [
+            result.get("property_id")
+            for result in property_results
+            if str(result.get("status", "")).lower() == "vacuous"
+        ]
+    active_assumptions = case.get("active_assumptions", [])
+    suspect_assumptions = [
+        item.get("id")
+        for item in active_assumptions
+        if isinstance(item, dict) and item.get("id")
+    ]
+    return {
+        "vacuity_status": "vacuous" if vacuous_properties else "not_observed",
+        "vacuous_properties": [str(item) for item in vacuous_properties if item],
+        "suspect_assumptions": [str(item) for item in suspect_assumptions],
+        "reason": "Active assumptions may make the target antecedent or coverage goal unreachable."
+        if vacuous_properties and suspect_assumptions
+        else "",
+    }
 
 
 def sort_trace_paths(

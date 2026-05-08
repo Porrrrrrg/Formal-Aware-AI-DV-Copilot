@@ -37,6 +37,8 @@
       "additionalProperties": { "type": "string" }
     },
     "coverage_context": { "type": "object" },
+    "coverage_evidence": { "type": "object" },
+    "vacuity_context": { "type": "object" },
     "rtl_context": { "type": "object" },
     "assertion_intent": { "type": "object" },
     "assumption_risks": {

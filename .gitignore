@@ -13,6 +13,7 @@ jasper/reports/*
 evaluation/results/agent_eval*.json
 evaluation/results/sva_eval*.json
 evaluation/results/sva_repair*.json
+evaluation/results/coverage_eval*.json
 *.jou
 *.log
 *.rpt

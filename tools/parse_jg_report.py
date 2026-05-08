@@ -100,6 +100,7 @@ def summarize_properties(results: list[dict[str, object]]) -> dict[str, object]:
         "proven_properties": by_status.get("proven", []),
         "covered_properties": by_status.get("covered", []),
         "unreachable_properties": by_status.get("unreachable", []),
+        "vacuous_properties": by_status.get("vacuous", []),
     }
 
 

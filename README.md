@@ -162,6 +162,12 @@ bash scripts/run_moore_sva_repair_eval.sh
 
 The current JasperGold repair result table is tracked in `evaluation/results/sva_repair_results.md`.
 
+Run the coverage-closure benchmark on coverage-only cases:
+
+```bash
+python evaluation/run_coverage_eval.py --all-systems --out evaluation/results/coverage_eval_local.json
+```
+
 The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
 
 ```bash
