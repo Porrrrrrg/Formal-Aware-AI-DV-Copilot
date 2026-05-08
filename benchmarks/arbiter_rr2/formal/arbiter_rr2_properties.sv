@@ -18,8 +18,8 @@ module arbiter_rr2_properties (
   p_turn_updates_on_contested_grant0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && gnt0 |=> turn);
   p_turn_updates_on_contested_grant1: assert property (@(posedge clk) disable iff (rst) req0 && req1 && gnt1 |=> !turn);
   p_reset_initial_priority: assert property (@(posedge clk) rst |=> !turn);
-  p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) req0 && req1 ##1 req0 && req1 |-> ##[0:1] gnt0);
-  p_persistent_fairness1: assert property (@(posedge clk) disable iff (rst) req0 && req1 ##1 req0 && req1 |-> ##[0:1] gnt1);
+  p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !gnt0 |=> (!req0 || !req1 || gnt0));
+  p_persistent_fairness1: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !gnt1 |=> (!req0 || !req1 || gnt1));
 
   cov_alternating_grants: cover property (@(posedge clk) disable iff (rst) req0 && req1 && gnt0 ##1 req0 && req1 && gnt1);
   cov_illegal_double_grant: cover property (@(posedge clk) disable iff (rst) gnt0 && gnt1);

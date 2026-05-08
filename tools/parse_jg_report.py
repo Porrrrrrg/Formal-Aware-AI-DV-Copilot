@@ -42,6 +42,17 @@ PROPERTY_RE = re.compile(
 BOUND_RE = re.compile(r"\b(?:bound|depth|cycle)\s*[=:]\s*(?P<bound>\d+)\b", re.IGNORECASE)
 
 
+def parse_table_metadata(line: str, status: str) -> tuple[str | None, int | None]:
+    """Extract proof engine and bound from JasperGold table rows."""
+    after_status = line.split(status, 1)[-1].split()
+    if len(after_status) < 2:
+        return None, None
+    proof_engine = after_status[0]
+    bound_token = after_status[1]
+    bound = int(bound_token) if bound_token.isdigit() else None
+    return proof_engine, bound
+
+
 def parse_report(path: Path) -> list[dict[str, object]]:
     results: list[dict[str, object]] = []
     seen: set[tuple[str, str]] = set()
@@ -54,6 +65,7 @@ def parse_report(path: Path) -> list[dict[str, object]]:
         raw_status = match.group("status").lower()
         status = STATUS_MAP[raw_status]
         bound_match = BOUND_RE.search(line)
+        proof_engine, table_bound = parse_table_metadata(line, match.group("status"))
         key = (property_id, status)
         if key in seen:
             continue
@@ -63,7 +75,8 @@ def parse_report(path: Path) -> list[dict[str, object]]:
                 "property_id": property_id,
                 "status": status,
                 "engine": "jaspergold",
-                "bound": int(bound_match.group("bound")) if bound_match else None,
+                "proof_engine": proof_engine,
+                "bound": int(bound_match.group("bound")) if bound_match else table_bound,
                 "result_file": str(path),
                 "line": line_no,
                 "raw_line": line.strip(),
