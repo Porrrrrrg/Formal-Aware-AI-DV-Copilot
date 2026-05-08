@@ -177,6 +177,7 @@ def main() -> int:
     parser.add_argument("--systems", nargs="+", choices=ALL_SYSTEMS, default=DEFAULT_SYSTEMS)
     parser.add_argument("--all-systems", action="store_true")
     parser.add_argument("--ablations", nargs="*", choices=ABLATIONS, default=[])
+    parser.add_argument("--limit", type=int)
     parser.add_argument("--llm", action="store_true")
     parser.add_argument("--llm-command")
     parser.add_argument("--out", type=Path)
@@ -184,6 +185,8 @@ def main() -> int:
 
     packet_root = resolve_repo_path(args.packet_root)
     case_paths = iter_case_files(args.cases)
+    if args.limit is not None:
+        case_paths = case_paths[: args.limit]
     systems = resolve_systems(args)
 
     summaries = {}

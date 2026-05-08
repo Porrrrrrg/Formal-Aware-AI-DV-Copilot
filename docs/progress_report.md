@@ -28,11 +28,13 @@
 - The Codex-backed repair path now records `source` and `llm_error` per repair action; the local smoke run reached Codex CLI, but the current account is usage-limited until May 10, 2026 2:40 PM, so the runner correctly fell back to the structured repair path.
 - Evidence packets now enrich coverage cases with coverage-plan intent/expression fields, structured coverage evidence, and a vacuity context.
 - Added a dedicated coverage-closure evaluation runner for reachable-gap vs invalid/unreachable-goal handling.
+- Codex CLI health check works when network access is allowed. Added an explicit opt-in wrapper for Codex-backed SVA repair, triage, and coverage experiments so benchmark content is not sent externally without acknowledgement.
+- The Codex wrapper healthcheck now passes end to end through `scripts/run_codex_llm_eval.py --task healthcheck`; benchmark subset execution is gated behind `--acknowledge-external-send`.
 
 ## Next Milestones
 
-1. Rerun Codex-backed SVA repair prompts after the Codex usage limit resets and compare against the deterministic structured fallback.
-2. Connect Codex-backed `raw_log` vs `structured` triage prompting with the same evaluation runner.
+1. Run `scripts/run_codex_llm_eval.py --task sva_repair --limit 3 --acknowledge-external-send` after approving external prompt export and compare against the deterministic structured fallback.
+2. Use the same Codex wrapper for `triage` and `coverage` subsets, then scale to the full benchmark if JSON validity and signal hallucination rates are acceptable.
 3. Add repair-loop ablations, especially no-Jasper-feedback vs Jasper-feedback repair.
 4. Add real JasperGold cover witness trace dumps for coverage goals and feed those traces into `coverage_evidence.witness_events`.
 5. Expand semantic counterexample heuristics for ready/valid and APB-specific failures.

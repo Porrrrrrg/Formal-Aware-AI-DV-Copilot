@@ -182,6 +182,9 @@ JASPERLOOP_LLM_CMD="python copilot/llm_adapters/codex_json.py --schema copilot/s
   python evaluation/run_sva_repair_eval.py --llm --out evaluation/results/sva_repair_codex_local.json
 ```
 
+For a safer opt-in wrapper around Codex CLI experiments, see `docs/codex_cli_usage.md`. The wrapper requires `--acknowledge-external-send` before sending local benchmark content to Codex/OpenAI.
+Current Codex CLI smoke-test status is tracked in `evaluation/results/codex_cli_results.md`.
+
 You can inspect the exact prompt sent to the DV triage agent:
 
 ```bash

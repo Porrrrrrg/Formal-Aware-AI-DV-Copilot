@@ -173,12 +173,15 @@ def main() -> int:
     parser.add_argument("--packet-root", type=Path, default=Path("jasper/reports/case_packets"))
     parser.add_argument("--systems", nargs="+", choices=SYSTEMS, default=["structured"])
     parser.add_argument("--all-systems", action="store_true")
+    parser.add_argument("--limit", type=int)
     parser.add_argument("--llm", action="store_true")
     parser.add_argument("--llm-command")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
     case_paths = iter_case_files(args.cases)
+    if args.limit is not None:
+        case_paths = case_paths[: args.limit]
     packet_root = resolve_repo_path(args.packet_root)
     systems = SYSTEMS if args.all_systems else args.systems
     summaries = {}
