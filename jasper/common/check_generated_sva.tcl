@@ -1,0 +1,53 @@
+clear -all
+source jasper/common/jg_common.tcl
+
+set rtl_file [jl_rtl]
+set assumptions_file [jl_getenv JASPERLOOP_ASSUMPTIONS ""]
+set generated_properties_file [jl_getenv JASPERLOOP_GENERATED_PROPERTIES ""]
+set generated_harness_file [jl_getenv JASPERLOOP_GENERATED_HARNESS ""]
+set top_module [jl_getenv JASPERLOOP_TOP ""]
+set clock_signal [jl_getenv JASPERLOOP_CLOCK ""]
+set reset_command [jl_getenv JASPERLOOP_RESET_CMD ""]
+set report_dir [jl_report_dir]
+
+if {$rtl_file == ""} {
+  error "JASPERLOOP_RTL is required"
+}
+if {$assumptions_file == ""} {
+  error "JASPERLOOP_ASSUMPTIONS is required"
+}
+if {$generated_properties_file == ""} {
+  error "JASPERLOOP_GENERATED_PROPERTIES is required"
+}
+if {$generated_harness_file == ""} {
+  error "JASPERLOOP_GENERATED_HARNESS is required"
+}
+if {$top_module == ""} {
+  error "JASPERLOOP_TOP is required"
+}
+if {$clock_signal == ""} {
+  error "JASPERLOOP_CLOCK is required"
+}
+
+analyze -sv $rtl_file
+analyze -sv $assumptions_file
+analyze -sv $generated_properties_file
+analyze -sv $generated_harness_file
+elaborate -top $top_module
+clock $clock_signal
+
+if {$reset_command != ""} {
+  eval $reset_command
+}
+
+file mkdir "$report_dir/traces"
+prove -all -dump_trace -dump_trace_type vcd -dump_trace_dir "$report_dir/traces"
+report -summary -results -detailed -file "$report_dir/properties.rpt" -force
+
+if {[catch {check_vacuity -all} vacuity_error]} {
+  set fh [open "$report_dir/vacuity_error.txt" "w"]
+  puts $fh $vacuity_error
+  close $fh
+} else {
+  report -summary -results -detailed -file "$report_dir/vacuity.rpt" -force
+}

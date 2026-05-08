@@ -16,6 +16,7 @@ from copilot.agents.sva_generation_agent import generate as generate_structured 
 from copilot.baselines.direct_sva_llm import generate_direct  # noqa: E402
 from copilot.sva_library import hallucinated_identifiers, normalize_sva, syntax_scaffold_ok  # noqa: E402
 from evaluation.metrics import accuracy  # noqa: E402
+from tools.check_generated_sva import check_generated_sva  # noqa: E402
 
 ALL_SYSTEMS = ["direct", "structured"]
 
@@ -49,12 +50,31 @@ def evaluate_system(
     cases: list[dict[str, object]],
     use_llm: bool = False,
     llm_command: str | None = None,
+    jasper_check: bool = False,
+    jasper_dry_run: bool = False,
+    jasper_out_root: Path | None = None,
 ) -> tuple[dict[str, object], list[dict[str, object]]]:
     rows = []
     predictions = []
     for case in cases:
         prediction = predict(system, case, use_llm=use_llm, llm_command=llm_command)
         row = evaluate_prediction(system, case, prediction)
+        if jasper_check or jasper_dry_run:
+            jasper_result = check_generated_sva(
+                case=case,
+                prediction=prediction,
+                system=system,
+                out_root=jasper_out_root,
+                dry_run=jasper_dry_run,
+            )
+            row.update(
+                {
+                    "jasper_syntax_pass": jasper_result.get("syntax_pass"),
+                    "jasper_proof_status": jasper_result.get("proof_status"),
+                    "jasper_vacuity_status": jasper_result.get("vacuity_status"),
+                    "jasper_report_dir": jasper_result.get("report_dir"),
+                }
+            )
         rows.append(row)
         predictions.append({"system": system, "case": sanitized_case(case), "prediction": prediction, "metrics": row})
     return summarize_rows(rows), predictions
@@ -105,7 +125,7 @@ def summarize_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         for row in rows
     ]
     hallucinated = sum(1 for row in rows if row["has_hallucinated_signal"])
-    return {
+    summary = {
         "num_cases": len(rows),
         "cases_by_design": dict(sorted(collections.Counter(row["design_id"] for row in rows).items())),
         "syntax_scaffold_rate": accuracy(syntax_rows, "pred", "gold"),
@@ -114,6 +134,25 @@ def summarize_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         "no_hallucinated_signal_rate": accuracy(hallucination_rows, "pred", "gold"),
         "rows": rows,
     }
+    jasper_rows = [row for row in rows if row.get("jasper_syntax_pass") is not None]
+    if jasper_rows:
+        proven = sum(1 for row in jasper_rows if row.get("jasper_proof_status") == "proven")
+        vacuous = sum(1 for row in jasper_rows if row.get("jasper_vacuity_status") == "vacuous")
+        summary.update(
+            {
+                "jasper_checked_cases": len(jasper_rows),
+                "jasper_syntax_pass_rate": (
+                    sum(1 for row in jasper_rows if row.get("jasper_syntax_pass")) / len(jasper_rows)
+                    if jasper_rows
+                    else 0.0
+                ),
+                "jasper_proven_rate": proven / len(jasper_rows) if jasper_rows else 0.0,
+                "jasper_vacuous_rate": vacuous / len(jasper_rows) if jasper_rows else 0.0,
+            }
+        )
+    elif any("jasper_syntax_pass" in row for row in rows):
+        summary["jasper_dry_run_cases"] = len(rows)
+    return summary
 
 
 def sanitized_case(case: dict[str, object]) -> dict[str, object]:
@@ -133,16 +172,30 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cases", type=Path, default=Path("benchmarks/sva_generation_cases.json"))
     parser.add_argument("--systems", nargs="+", choices=ALL_SYSTEMS, default=ALL_SYSTEMS)
+    parser.add_argument("--limit", type=int)
     parser.add_argument("--llm", action="store_true")
     parser.add_argument("--llm-command")
+    parser.add_argument("--jasper-check", action="store_true")
+    parser.add_argument("--jasper-dry-run", action="store_true")
+    parser.add_argument("--jasper-out-root", type=Path, default=Path("jasper/reports/sva_generation"))
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
     cases = load_cases(args.cases)
+    if args.limit is not None:
+        cases = cases[: args.limit]
     summaries = {}
     all_predictions = []
     for system in args.systems:
-        summary, predictions = evaluate_system(system, cases, use_llm=args.llm, llm_command=args.llm_command)
+        summary, predictions = evaluate_system(
+            system,
+            cases,
+            use_llm=args.llm,
+            llm_command=args.llm_command,
+            jasper_check=args.jasper_check,
+            jasper_dry_run=args.jasper_dry_run,
+            jasper_out_root=resolve_repo_path(args.jasper_out_root),
+        )
         summaries[system] = summary
         all_predictions.extend(predictions)
 
