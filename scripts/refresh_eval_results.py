@@ -11,6 +11,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evaluation" / "results"
+DEFAULT_PACKET_ROOT = Path("jasper/reports/case_packets")
+CASE_DIRS = [
+    Path("benchmarks/arbiter_rr2/cases"),
+    Path("benchmarks/rv_buffer/cases"),
+    Path("benchmarks/apb_regblock/cases"),
+]
 
 ABLATIONS = [
     "no_assertion_manifest",
@@ -48,6 +54,59 @@ ABLATION_NOTES = {
 def run_summary(cmd: list[str]) -> dict[str, object]:
     result = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True)
     return json.loads(result.stdout)
+
+
+def count_case_files() -> int:
+    return sum(1 for case_dir in CASE_DIRS for _ in (ROOT / case_dir).glob("*.json"))
+
+
+def count_actual_packets(packet_root: Path) -> int:
+    return sum(1 for _ in packet_root.glob("*/*/evidence_packet.json"))
+
+
+def packet_has_formal_evidence(packet_path: Path) -> bool:
+    try:
+        packet = json.loads(packet_path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return False
+    jasper_result = packet.get("jasper_result", {})
+    if isinstance(jasper_result, dict):
+        summary = jasper_result.get("summary", {})
+        if isinstance(summary, dict) and summary.get("counts_by_status"):
+            return True
+        if jasper_result.get("source_report") or jasper_result.get("trace_files"):
+            return True
+    coverage_evidence = packet.get("coverage_evidence", {})
+    return isinstance(coverage_evidence, dict) and bool(coverage_evidence.get("cover_status"))
+
+
+def count_formal_packets(packet_root: Path) -> int:
+    return sum(
+        1
+        for packet_path in packet_root.glob("*/*/evidence_packet.json")
+        if packet_has_formal_evidence(packet_path)
+    )
+
+
+def ensure_actual_packets(packet_root: Path, allow_rebuild_packets: bool) -> None:
+    expected = count_case_files()
+    actual = count_actual_packets(packet_root)
+    formal = count_formal_packets(packet_root)
+    if actual >= expected and formal >= expected:
+        return
+    if allow_rebuild_packets:
+        return
+    try:
+        packet_root_display = str(packet_root.relative_to(ROOT))
+    except ValueError:
+        packet_root_display = str(packet_root)
+    raise SystemExit(
+        "Missing actual evidence packets: "
+        f"found {actual} packets and {formal} with formal evidence, expected {expected} "
+        f"under {packet_root_display}. "
+        "Run this on moore after Jasper packet generation, or pass "
+        "--allow-rebuild-packets for a local scaffold refresh."
+    )
 
 
 def fmt(value: object) -> str:
@@ -275,16 +334,28 @@ def write_output_quality_results(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.parse_args()
+    parser.add_argument("--packet-root", type=Path, default=DEFAULT_PACKET_ROOT)
+    parser.add_argument("--packet-source", choices=["actual", "minimal"], default="actual")
+    parser.add_argument(
+        "--allow-rebuild-packets",
+        action="store_true",
+        help="Allow evaluation runners to build missing packets from case metadata.",
+    )
+    args = parser.parse_args()
 
     RESULTS.mkdir(parents=True, exist_ok=True)
+    packet_root = args.packet_root if args.packet_root.is_absolute() else ROOT / args.packet_root
+    if args.packet_source == "actual":
+        ensure_actual_packets(packet_root, args.allow_rebuild_packets)
     agent_payload = run_summary(
         [
             sys.executable,
             "evaluation/run_agent_eval.py",
             "--all-systems",
             "--packet-source",
-            "actual",
+            args.packet_source,
+            "--packet-root",
+            str(packet_root),
         ]
     )
     ablation_payload = run_summary(
@@ -296,7 +367,9 @@ def main() -> int:
             "--ablations",
             *ABLATIONS,
             "--packet-source",
-            "actual",
+            args.packet_source,
+            "--packet-root",
+            str(packet_root),
         ]
     )
     coverage_payload = run_summary(
@@ -305,7 +378,9 @@ def main() -> int:
             "evaluation/run_coverage_eval.py",
             "--all-systems",
             "--packet-source",
-            "actual",
+            args.packet_source,
+            "--packet-root",
+            str(packet_root),
         ]
     )
 

@@ -11,7 +11,7 @@
 | System | Cases | Issue Acc. | Action Acc. | Hallucinated Signal | Notes |
 | --- | ---: | ---: | ---: | ---: | --- |
 | Heuristic baseline | 30 | 0.933 | 0.933 | 0.000 | Deterministic packet-metadata baseline; validates baseline plumbing, not final LLM performance. |
-| Raw-log fallback | 30 | 0.400 | 0.400 | 0.000 | Deterministic raw JasperGold report/trace scaffold, without hosted LLM. |
+| Raw-log fallback | 30 | 0.633 | 0.633 | 0.000 | Deterministic raw JasperGold report/trace scaffold, without hosted LLM. |
 | Structured fallback agent | 30 | 1.000 | 1.000 | 0.000 | Deterministic structured scaffold; validates packet/evaluation plumbing, not final LLM performance. |
 
 Source/fallback metrics for Codex-backed runs are tracked in `evaluation/results/output_quality_results.md`.
