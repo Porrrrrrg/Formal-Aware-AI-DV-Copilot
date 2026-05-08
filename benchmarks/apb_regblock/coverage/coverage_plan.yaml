@@ -1,0 +1,9 @@
+coverage_goals:
+  - id: cov_write_reg0_then_read
+    intent: Exercise a write to reg0 followed by a read from reg0.
+    expression: write access to 0x00 followed by read access to 0x00
+    expected_reachable: true
+  - id: cov_invalid_address
+    intent: Exercise APB invalid address error response.
+    expression: psel && penable && paddr == 8'h08 && pslverr
+    expected_reachable: true

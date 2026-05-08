@@ -1,0 +1,7 @@
+assumptions:
+  - id: a_apb_enable_follows_setup
+    intent: APB setup phase is followed by access phase.
+    risk: Valid protocol constraint, but can hide testbench protocol bugs.
+  - id: a_valid_addresses_only
+    intent: Restricts traffic to implemented addresses.
+    risk: Makes invalid-address error coverage vacuous or unreachable.

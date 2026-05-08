@@ -1,0 +1,21 @@
+{
+  "case_id": "rv_B3",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_simultaneous_enqueue_dequeue",
+  "coverage_context": {
+    "coverage_goal": "cov_simultaneous_enqueue_dequeue",
+    "expected_reachable": true,
+    "jasper_cover_result": "reachable",
+    "related_signals": ["full", "in_valid", "in_ready", "out_ready"],
+    "suggested_sequence": [
+      "Fill the buffer with one input handshake.",
+      "Keep out_ready high while asserting in_valid.",
+      "Observe simultaneous enqueue and dequeue while full."
+    ]
+  },
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "The goal is reachable under formal cover and needs simulation stimulus or a directed sequence."
+}

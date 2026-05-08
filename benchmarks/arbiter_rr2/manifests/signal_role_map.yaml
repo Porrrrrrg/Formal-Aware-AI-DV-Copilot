@@ -1,0 +1,8 @@
+signals:
+  clk: clock
+  rst: active-high reset
+  req0: client 0 request
+  req1: client 1 request
+  gnt0: client 0 grant
+  gnt1: client 1 grant
+  turn: round-robin priority state

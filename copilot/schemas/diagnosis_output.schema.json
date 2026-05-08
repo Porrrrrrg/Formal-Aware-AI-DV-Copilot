@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DV Diagnosis Output",
+  "type": "object",
+  "required": [
+    "case_id",
+    "predicted_issue_type",
+    "root_cause_ranked",
+    "recommended_next_action",
+    "debug_checklist"
+  ],
+  "properties": {
+    "case_id": { "type": "string" },
+    "predicted_issue_type": {
+      "type": "string",
+      "enum": [
+        "rtl_design_bug",
+        "assertion_property_bug",
+        "assumption_constraint_bug",
+        "testbench_stimulus_bug",
+        "reachable_coverage_gap",
+        "unreachable_or_invalid_coverage_goal"
+      ]
+    },
+    "root_cause_ranked": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rank", "hypothesis", "evidence"],
+        "properties": {
+          "rank": { "type": "integer" },
+          "hypothesis": { "type": "string" },
+          "evidence": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "suspect_rtl_signals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "suspect_assertions_or_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "recommended_next_action": {
+      "type": "string",
+      "enum": [
+        "fix_rtl",
+        "fix_assertion_property",
+        "fix_assumption_constraint",
+        "fix_testbench_or_stimulus",
+        "add_directed_test_or_sequence",
+        "prove_unreachable_or_waive_coverage_goal",
+        "rerun_jaspergold"
+      ]
+    },
+    "debug_checklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# JasperGold and EDA outputs
+jasper/reports/*
+!jasper/reports/.gitkeep
+*.jou
+*.log
+*.rpt
+*.vcd
+*.fsdb
+*.wlf
+INCA_libs/
+xcelium.d/
+.formal/
+
+# Local secrets and model configs
+.env
+*.local.json
+*.local.yaml
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

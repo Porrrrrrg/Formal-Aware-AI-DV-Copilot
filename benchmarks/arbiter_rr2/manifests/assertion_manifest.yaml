@@ -1,0 +1,20 @@
+assertions:
+  - id: p_mutex
+    intent: The arbiter must never grant both clients in the same cycle.
+    type: safety
+    signals: [gnt0, gnt1]
+    common_property_bugs:
+      - Missing reset disable.
+      - Checking during invalid reset state.
+  - id: p_persistent_fairness0
+    intent: If req0 remains asserted under contention, gnt0 must occur within a bounded window.
+    type: bounded_liveness
+    signals: [req0, req1, gnt0, turn]
+    required_assumptions:
+      - req0 remains high during the response window.
+  - id: p_persistent_fairness1
+    intent: If req1 remains asserted under contention, gnt1 must occur within a bounded window.
+    type: bounded_liveness
+    signals: [req0, req1, gnt1, turn]
+    required_assumptions:
+      - req1 remains high during the response window.

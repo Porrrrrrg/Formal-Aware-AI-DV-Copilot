@@ -1,0 +1,17 @@
+{
+  "case_id": "apb_C2",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "cov_invalid_address",
+  "active_assumptions": [
+    {
+      "id": "a_valid_addresses_only",
+      "intent": "Restricts paddr to 0x00 or 0x04."
+    }
+  ],
+  "property_intent": "Invalid APB addresses should assert pslverr.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The valid-address-only assumption overconstrains invalid-address error coverage."
+}

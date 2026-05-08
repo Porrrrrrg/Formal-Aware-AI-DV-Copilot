@@ -1,0 +1,9 @@
+assertions:
+  - id: p_data_stable_while_stalled
+    intent: Stored output data must not change while valid output is stalled.
+    type: safety
+    signals: [out_valid, out_ready, out_data]
+  - id: p_simultaneous_enqueue_dequeue_semantics
+    intent: A simultaneous enqueue and dequeue while full keeps the buffer full and stores new input data.
+    type: temporal
+    signals: [full, in_valid, in_ready, out_ready, in_data, out_data]

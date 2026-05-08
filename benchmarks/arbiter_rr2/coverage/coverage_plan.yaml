@@ -1,0 +1,9 @@
+coverage_goals:
+  - id: cov_alternating_grants
+    intent: Exercise persistent contention and observe alternating grants.
+    expression: req0 && req1 && gnt0 ##1 req0 && req1 && gnt1
+    expected_reachable: true
+  - id: cov_illegal_double_grant
+    intent: Illegal state; should be proven unreachable, not normal functional coverage.
+    expression: gnt0 && gnt1
+    expected_reachable: false

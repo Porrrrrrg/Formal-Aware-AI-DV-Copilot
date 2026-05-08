@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SVA Repair Output",
+  "type": "object",
+  "required": ["property_id", "rounds", "final_status"],
+  "properties": {
+    "property_id": { "type": "string" },
+    "rounds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["round", "sva", "jasper_status"],
+        "properties": {
+          "round": { "type": "integer" },
+          "sva": { "type": "string" },
+          "jasper_status": { "type": "string" },
+          "feedback": { "type": "string" }
+        }
+      }
+    },
+    "final_status": { "type": "string" }
+  },
+  "additionalProperties": false
+}

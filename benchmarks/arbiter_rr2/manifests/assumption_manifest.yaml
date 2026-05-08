@@ -1,0 +1,7 @@
+assumptions:
+  - id: a_no_x_inputs
+    intent: Inputs are not X.
+    risk: Usually safe.
+  - id: a_no_simultaneous_requests
+    intent: Forbids req0 and req1 from being high together.
+    risk: Can make arbiter fairness and alternation properties vacuous.

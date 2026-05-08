@@ -1,0 +1,15 @@
+{
+  "case_id": "rv_B1",
+  "design_id": "rv_buffer",
+  "variant": "bug_overwrite",
+  "task_type": "failure_triage",
+  "property_id": "p_data_stable_while_stalled",
+  "property_intent": "Stored output data must not change while valid output is stalled.",
+  "design_intent": [
+    "When out_valid is high and out_ready is low, the consumer has not accepted the data.",
+    "The buffered output data must remain stable until the handshake completes."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The overwrite bug accepts new input while full and stalled, replacing out_data before output handshake."
+}

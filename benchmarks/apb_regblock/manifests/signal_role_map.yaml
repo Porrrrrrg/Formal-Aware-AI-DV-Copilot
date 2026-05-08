@@ -1,0 +1,13 @@
+signals:
+  pclk: APB clock
+  presetn: active-low reset
+  psel: APB select
+  penable: APB enable/access phase
+  pwrite: APB write/read control
+  paddr: APB address
+  pwdata: APB write data
+  prdata: APB read data
+  pready: APB ready response
+  pslverr: APB error response
+  reg0: register at address 0x00
+  reg1: register at address 0x04

@@ -1,0 +1,10 @@
+signals:
+  clk: clock
+  rst: active-high reset
+  in_valid: input channel valid
+  in_ready: input channel ready
+  in_data: input payload
+  out_valid: output channel valid
+  out_ready: output channel ready
+  out_data: output payload
+  full: one-entry storage state

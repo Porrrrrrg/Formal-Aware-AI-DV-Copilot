@@ -1,0 +1,13 @@
+assertions:
+  - id: p_write_updates_reg0
+    intent: A valid APB write to address 0x00 updates reg0 with pwdata.
+    type: temporal
+    signals: [psel, penable, pwrite, pready, paddr, pwdata, reg0]
+  - id: p_read_returns_reg0
+    intent: A valid APB read to address 0x00 returns reg0.
+    type: safety
+    signals: [psel, penable, pwrite, paddr, prdata, reg0]
+  - id: p_invalid_address_behavior
+    intent: Invalid APB addresses assert pslverr during the access phase.
+    type: safety
+    signals: [psel, penable, paddr, pslverr]

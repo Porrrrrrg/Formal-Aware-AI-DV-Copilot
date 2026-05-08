@@ -1,0 +1,15 @@
+{
+  "case_id": "arbiter_A2",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_persistent_fairness0_bad",
+  "property_intent": "If req0 asks once, it should receive a grant within one cycle.",
+  "design_intent": [
+    "Fairness only applies while a request remains asserted.",
+    "The arbiter is not required to grant a client that withdraws its request."
+  ],
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The fairness property lacks a persistence condition for req0 during the response window."
+}

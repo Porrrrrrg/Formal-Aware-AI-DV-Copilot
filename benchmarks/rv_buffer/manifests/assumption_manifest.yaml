@@ -1,0 +1,7 @@
+assumptions:
+  - id: a_no_x_controls
+    intent: Ready/valid controls and reset are not X.
+    risk: Usually safe.
+  - id: a_no_output_stalls
+    intent: Forbids output stalls.
+    risk: Can make data-stable-while-stalled properties vacuous.

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JasperLoop Evidence Packet",
+  "type": "object",
+  "required": [
+    "case_id",
+    "design_id",
+    "task_type",
+    "allowed_issue_types",
+    "allowed_next_actions"
+  ],
+  "properties": {
+    "case_id": { "type": "string" },
+    "design_id": { "type": "string" },
+    "variant": { "type": "string" },
+    "task_type": {
+      "type": "string",
+      "enum": ["sva_generation", "sva_repair", "failure_triage", "coverage_closure"]
+    },
+    "design_intent": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "failing_property": { "type": "object" },
+    "active_assumptions": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "jasper_result": { "type": "object" },
+    "counterexample_summary": { "type": "object" },
+    "coverage_context": { "type": "object" },
+    "rtl_context": { "type": "object" },
+    "assertion_intent": { "type": "object" },
+    "assumption_risks": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "allowed_issue_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "rtl_design_bug",
+          "assertion_property_bug",
+          "assumption_constraint_bug",
+          "testbench_stimulus_bug",
+          "reachable_coverage_gap",
+          "unreachable_or_invalid_coverage_goal"
+        ]
+      }
+    },
+    "allowed_next_actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "fix_rtl",
+          "fix_assertion_property",
+          "fix_assumption_constraint",
+          "fix_testbench_or_stimulus",
+          "add_directed_test_or_sequence",
+          "prove_unreachable_or_waive_coverage_goal",
+          "rerun_jaspergold"
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,14 @@
+{
+  "case_id": "apb_C3",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_setup_then_enable",
+  "property_intent": "An APB setup phase should be followed by an access phase.",
+  "design_intent": [
+    "APB testbench stimulus should drive psel high with penable low for setup, then penable high for access."
+  ],
+  "expected_issue_type": "testbench_stimulus_bug",
+  "expected_next_action": "fix_testbench_or_stimulus",
+  "root_cause": "The stimulus drops psel or fails to assert penable after setup, violating the APB protocol sequence."
+}

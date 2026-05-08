@@ -1,0 +1,9 @@
+coverage_goals:
+  - id: cov_simultaneous_enqueue_dequeue
+    intent: Exercise full-buffer replacement when dequeue and enqueue happen together.
+    expression: full && in_valid && in_ready && out_ready
+    expected_reachable: true
+  - id: cov_stall_then_dequeue
+    intent: Exercise output stall followed by successful dequeue.
+    expression: out_valid && !out_ready ##1 out_valid && out_ready
+    expected_reachable: true

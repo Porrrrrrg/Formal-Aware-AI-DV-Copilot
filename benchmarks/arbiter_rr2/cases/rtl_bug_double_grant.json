@@ -1,0 +1,15 @@
+{
+  "case_id": "arbiter_A1",
+  "design_id": "arbiter_rr2",
+  "variant": "bug_double_grant",
+  "task_type": "failure_triage",
+  "property_id": "p_mutex",
+  "property_intent": "The arbiter must never grant both clients in the same cycle.",
+  "design_intent": [
+    "At most one client can be granted per cycle.",
+    "Under contention, grant follows the round-robin turn bit."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The bug variant asserts both gnt0 and gnt1 when req0 and req1 are both high."
+}

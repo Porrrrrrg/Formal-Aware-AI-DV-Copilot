@@ -1,0 +1,15 @@
+{
+  "case_id": "apb_C1",
+  "design_id": "apb_regblock",
+  "variant": "bug_wrong_addr",
+  "task_type": "failure_triage",
+  "property_id": "p_write_updates_reg0",
+  "property_intent": "A valid APB write to address 0x00 updates reg0 with pwdata.",
+  "design_intent": [
+    "Address 0x00 selects reg0.",
+    "Address 0x04 selects reg1."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The wrong-address bug swaps the address decode for reg0 and reg1."
+}
