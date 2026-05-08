@@ -55,7 +55,16 @@ def run_jasper(design: str, variant: str, mode: str, dry_run: bool = False) -> P
     env["JASPERLOOP_REPORT_DIR"] = str(report_dir)
 
     jasper_bin = env.get("JASPER_BIN", "jg")
-    cmd = [jasper_bin, "-batch", "-tcl", str(run_tcl)]
+    project_dir = report_dir / "jgproject"
+    cmd = [
+        jasper_bin,
+        "-batch",
+        "-allow_unsupported_OS",
+        "-proj",
+        str(project_dir),
+        "-tcl",
+        str(run_tcl),
+    ]
     (report_dir / "run_command.txt").write_text(" ".join(cmd) + "\n")
 
     if dry_run:
