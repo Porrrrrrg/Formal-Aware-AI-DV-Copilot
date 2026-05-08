@@ -14,7 +14,10 @@ sys.path.insert(0, str(ROOT))
 
 from copilot.agents.sva_repair_agent import repair_once  # noqa: E402
 from copilot.sva_library import hallucinated_identifiers, normalize_sva, syntax_scaffold_ok  # noqa: E402
+from evaluation.output_quality import source_summary  # noqa: E402
 from tools.check_generated_sva import check_generated_sva  # noqa: E402
+
+FEEDBACK_MODES = ["jasper", "scaffold", "none"]
 
 
 def load_cases(path: Path) -> list[dict[str, object]]:
@@ -32,6 +35,7 @@ def run_repair_case(
     jasper_check: bool = False,
     jasper_dry_run: bool = False,
     jasper_out_root: Path | None = None,
+    feedback_mode: str = "jasper",
 ) -> dict[str, object]:
     rounds = []
     current_sva = str(case.get("broken_sva", ""))
@@ -66,7 +70,7 @@ def run_repair_case(
         repair = repair_once(
             case=case,
             failed_sva=current_sva,
-            feedback=str(check.get("feedback", "")),
+            feedback=repair_feedback(check, feedback_mode),
             round_index=round_index + 1,
             use_llm=use_llm,
             llm_command=llm_command,
@@ -81,6 +85,7 @@ def run_repair_case(
         "design_id": case.get("design_id"),
         "property_id": case.get("property_id"),
         "bug_type": case.get("bug_type"),
+        "feedback_mode": feedback_mode,
         "rounds": rounds,
         "final_status": rounds[-1]["jasper_status"] if rounds else "not_run",
         "success": final_round is not None,
@@ -142,6 +147,27 @@ def is_success(case: dict[str, object], check: dict[str, object]) -> bool:
     return False
 
 
+def repair_feedback(check: dict[str, object], feedback_mode: str) -> str:
+    if feedback_mode == "none":
+        return "No tool feedback is available."
+    if feedback_mode == "scaffold":
+        return scaffold_feedback(check)
+    if feedback_mode == "jasper":
+        return str(check.get("feedback", "") or scaffold_feedback(check))
+    raise ValueError(f"Unknown repair feedback mode: {feedback_mode}")
+
+
+def scaffold_feedback(check: dict[str, object]) -> str:
+    if check.get("has_hallucinated_signal"):
+        hallucinated = ", ".join(str(item) for item in check.get("hallucinated_identifiers", []))
+        return f"Candidate uses identifiers outside the allowed signal/property names: {hallucinated}."
+    if not check.get("syntax_scaffold_ok"):
+        return "Candidate failed the local SVA syntax scaffold check."
+    if not check.get("exact_match"):
+        return "Candidate does not match the reference SVA behavior in the local scaffold check."
+    return "Candidate passed the local scaffold checks."
+
+
 def status_from_check(check: dict[str, object]) -> str:
     if "jasper_syntax_pass" in check:
         if check.get("jasper_syntax_pass") is False:
@@ -164,32 +190,75 @@ def summarize(results: list[dict[str, object]]) -> dict[str, object]:
         rounds = result.get("rounds", [])
         first = rounds[0] if rounds else {}
         final = rounds[-1] if rounds else {}
+        final_metrics = final.get("metrics", {}) if isinstance(final, dict) else {}
         rows.append(
             {
                 "case_id": result.get("case_id"),
                 "design_id": result.get("design_id"),
                 "bug_type": result.get("bug_type"),
+                "feedback_mode": result.get("feedback_mode"),
                 "round0_status": first.get("jasper_status"),
                 "final_status": result.get("final_status"),
                 "success": result.get("success"),
                 "rounds_to_success": result.get("rounds_to_success"),
                 "round0_exact_match": first.get("metrics", {}).get("exact_match") if isinstance(first, dict) else None,
-                "final_exact_match": final.get("metrics", {}).get("exact_match") if isinstance(final, dict) else None,
+                "final_exact_match": final_metrics.get("exact_match") if isinstance(final_metrics, dict) else None,
+                "final_has_hallucinated_signal": final_metrics.get("has_hallucinated_signal")
+                if isinstance(final_metrics, dict)
+                else None,
+                "final_jasper_syntax_pass": final_metrics.get("jasper_syntax_pass")
+                if isinstance(final_metrics, dict)
+                else None,
+                "final_jasper_proof_status": final_metrics.get("jasper_proof_status")
+                if isinstance(final_metrics, dict)
+                else None,
+                "final_jasper_vacuity_status": final_metrics.get("jasper_vacuity_status")
+                if isinstance(final_metrics, dict)
+                else None,
             }
         )
+    action_rows = repair_action_rows(results)
     successes = [row for row in rows if row["success"]]
     round_counts = [row["rounds_to_success"] for row in successes if isinstance(row["rounds_to_success"], int)]
-    return {
+    proof_rows = [row for row in rows if row["final_jasper_proof_status"] is not None]
+    syntax_rows = [row for row in rows if row["final_jasper_syntax_pass"] is not None]
+    vacuity_rows = [row for row in rows if row["final_jasper_vacuity_status"] is not None]
+    summary = {
         "num_cases": len(rows),
         "cases_by_design": dict(sorted(collections.Counter(row["design_id"] for row in rows).items())),
         "cases_by_bug_type": dict(sorted(collections.Counter(row["bug_type"] for row in rows).items())),
+        "cases_by_feedback_mode": dict(sorted(collections.Counter(row["feedback_mode"] for row in rows).items())),
         "syntax_pass_round0": rate(rows, lambda row: row["round0_status"] not in {"syntax_fail"}),
         "repair_success_rate": len(successes) / len(rows) if rows else 0.0,
         "exact_match_round0": rate(rows, lambda row: row["round0_exact_match"] is True),
         "exact_match_final": rate(rows, lambda row: row["final_exact_match"] is True),
+        "hallucinated_signal_rate": rate(rows, lambda row: row["final_has_hallucinated_signal"] is True),
+        "jasper_syntax_pass_final": rate(syntax_rows, lambda row: row["final_jasper_syntax_pass"] is True),
+        "proven_final": rate(proof_rows, lambda row: row["final_jasper_proof_status"] == "proven"),
+        "vacuous_final": rate(vacuity_rows, lambda row: row["final_jasper_vacuity_status"] == "vacuous"),
         "average_rounds_to_success": sum(round_counts) / len(round_counts) if round_counts else 0.0,
         "rows": rows,
     }
+    summary.update(source_summary(action_rows))
+    return summary
+
+
+def repair_action_rows(results: list[dict[str, object]]) -> list[dict[str, object]]:
+    rows = []
+    for result in results:
+        for round_record in result.get("rounds", []):
+            if not isinstance(round_record, dict):
+                continue
+            action = round_record.get("repair_action")
+            if isinstance(action, dict):
+                rows.append(
+                    {
+                        "case_id": result.get("case_id"),
+                        "source": action.get("source", "unknown"),
+                        "llm_error": action.get("llm_error"),
+                    }
+                )
+    return rows
 
 
 def rate(rows: list[dict[str, object]], predicate) -> float:
@@ -212,6 +281,7 @@ def main() -> int:
     parser.add_argument("--jasper-check", action="store_true")
     parser.add_argument("--jasper-dry-run", action="store_true")
     parser.add_argument("--jasper-out-root", type=Path, default=Path("jasper/reports/sva_repair"))
+    parser.add_argument("--feedback-mode", choices=FEEDBACK_MODES, default="jasper")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
@@ -227,6 +297,7 @@ def main() -> int:
             jasper_check=args.jasper_check,
             jasper_dry_run=args.jasper_dry_run,
             jasper_out_root=resolve_repo_path(args.jasper_out_root),
+            feedback_mode=args.feedback_mode,
         )
         for case in cases
     ]
