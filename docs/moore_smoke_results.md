@@ -37,9 +37,25 @@ The following chain was validated on `arbiter_rr2/bug_double_grant`:
 
 ```text
 JasperGold properties.rpt
+-> JasperGold VCD traces from prove -dump_trace
 -> tools/build_evidence_packet.py
 -> copilot/schemas/evidence_packet.schema.json
 -> copilot/agents/dv_triage_agent.py
 ```
 
 The resulting scaffold diagnosis classified the case as `rtl_design_bug` with next action `fix_rtl`.
+
+The counterexample summary now prioritizes the focused failing property trace. For `p_mutex`, the generated evidence reports:
+
+```text
+falsified_properties:
+  p_mutex
+  p_both_req_priority_turn0
+  p_both_req_priority_turn1
+  p_turn_updates_on_contested_grant1
+
+first_trace_property: p_mutex
+key event: req0=1, req1=1, gnt0=1, gnt1=1, rst=0
+```
+
+JasperGold may emit compressed VCD data with either `.vcd` or `.vcd.gz` names. `tools/parse_jg_trace.py` detects gzip content by file magic bytes rather than extension.
