@@ -71,6 +71,7 @@ def run_repair_case(
             use_llm=use_llm,
             llm_command=llm_command,
         )
+        round_record["repair_action"] = repair
         current_property_id = str(repair.get("property_id", current_property_id))
         current_sva = str(repair.get("sva", current_sva))
         feedback = str(repair.get("explanation", ""))

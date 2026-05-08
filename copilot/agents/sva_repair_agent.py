@@ -44,6 +44,7 @@ def structured_fallback(case: dict[str, object]) -> dict[str, object]:
     if not sva:
         sva = str(case.get("broken_sva", ""))
     return {
+        "source": "structured_fallback",
         "property_id": property_id,
         "sva": sva,
         "explanation": "Repaired by selecting the structured reference template for the intended property.",
@@ -84,6 +85,7 @@ def normalize_repair(case: dict[str, object], output: dict[str, object]) -> dict
     if not sva:
         sva = structured_fallback(case)["sva"]
     return {
+        "source": "llm",
         "property_id": property_id,
         "sva": sva,
         "explanation": str(output.get("explanation", "")),
