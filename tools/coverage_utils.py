@@ -64,6 +64,8 @@ def lookup_coverage_goal(goals: list[dict[str, object]], goal_id: object) -> dic
 def enrich_coverage_context(case_path: Path, case: dict[str, object]) -> dict[str, object]:
     """Merge case coverage fields with the design coverage plan."""
     context = case.get("coverage_context", {})
+    if case.get("task_type") != "coverage_closure" and not context:
+        return {}
     coverage = dict(context) if isinstance(context, dict) else {}
     goal_id = coverage.get("coverage_goal") or case.get("property_id")
     coverage.setdefault("coverage_goal", goal_id)

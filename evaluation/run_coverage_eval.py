@@ -26,10 +26,10 @@ def packet_path_for(case: dict[str, object], packet_root: Path) -> Path:
     return packet_root / str(case["design_id"]) / str(case["case_id"]) / "evidence_packet.json"
 
 
-def load_or_build_packet(case_path: Path, packet_root: Path) -> dict[str, object]:
+def load_or_build_packet(case_path: Path, packet_root: Path, packet_source: str = "actual") -> dict[str, object]:
     case = json.loads(case_path.read_text())
     packet_path = packet_path_for(case, packet_root)
-    if packet_path.exists():
+    if packet_source == "actual" and packet_path.exists():
         packet = json.loads(packet_path.read_text())
         if "coverage_evidence" in packet and "vacuity_context" in packet:
             return packet
@@ -85,6 +85,7 @@ def evaluate_system(
     system: str,
     case_paths: list[Path],
     packet_root: Path,
+    packet_source: str = "actual",
     use_llm: bool = False,
     llm_command: str | None = None,
 ) -> tuple[dict[str, object], list[dict[str, object]]]:
@@ -94,7 +95,7 @@ def evaluate_system(
         case = json.loads(case_path.read_text())
         if case.get("task_type") != "coverage_closure":
             continue
-        packet = load_or_build_packet(case_path, packet_root)
+        packet = load_or_build_packet(case_path, packet_root, packet_source)
         prediction = predict(system, packet, use_llm=use_llm, llm_command=llm_command)
         rows.append(
             {
@@ -171,6 +172,7 @@ def main() -> int:
         ],
     )
     parser.add_argument("--packet-root", type=Path, default=Path("jasper/reports/case_packets"))
+    parser.add_argument("--packet-source", choices=["actual", "minimal"], default="actual")
     parser.add_argument("--systems", nargs="+", choices=SYSTEMS, default=["structured"])
     parser.add_argument("--all-systems", action="store_true")
     parser.add_argument("--limit", type=int)
@@ -191,6 +193,7 @@ def main() -> int:
             system,
             case_paths,
             packet_root,
+            packet_source=args.packet_source,
             use_llm=args.llm,
             llm_command=args.llm_command,
         )

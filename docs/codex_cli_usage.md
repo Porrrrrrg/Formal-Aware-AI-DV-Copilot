@@ -29,6 +29,8 @@ python scripts/run_codex_llm_eval.py \
   --acknowledge-external-send
 ```
 
+For Codex-backed triage and coverage runs, the wrapper defaults to `--packet-source minimal` to avoid sending large trace/report packets. Use `--packet-source actual` only when you intentionally want full JasperGold evidence in the prompt.
+
 Use `--dry-run` to print the exact command without calling Codex:
 
 ```bash

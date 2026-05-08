@@ -82,13 +82,18 @@ def infer_issue_type(packet: dict[str, object]) -> str:
     coverage = packet.get("coverage_context", {})
     active_assumptions = packet.get("active_assumptions", [])
     failing_property = packet.get("failing_property", {})
+    vacuity = packet.get("vacuity_context", {})
     property_id = ""
     if isinstance(failing_property, dict):
         property_id = str(failing_property.get("property_id", "")).lower()
 
     if isinstance(active_assumptions, list) and active_assumptions:
         return "assumption_constraint_bug"
-    if "vacuous" in text or "overconstrain" in text or "unreachable antecedent" in text:
+    if isinstance(vacuity, dict) and (
+        vacuity.get("vacuity_status") == "vacuous" or vacuity.get("vacuous_properties")
+    ):
+        return "assumption_constraint_bug"
+    if "overconstrain" in text or "unreachable antecedent" in text:
         return "assumption_constraint_bug"
 
     if isinstance(coverage, dict) and coverage:

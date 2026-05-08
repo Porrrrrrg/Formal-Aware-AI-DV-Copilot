@@ -25,6 +25,8 @@ python scripts/export_codex_prompts.py --task all --limit 3 --summary-only
 | Prompts with RTL context | 0 |
 | Prompts with Jasper evidence | 9 |
 
+On `moore`, actual packet previews are much larger because generated JasperGold report and trace packet fields are present. A 2-case-per-task preview had max prompt size around 66k characters. Codex subset runs should therefore use the wrapper default `--packet-source minimal` unless the experiment explicitly needs full report/trace evidence.
+
 Redacted triage preview:
 
 ```bash

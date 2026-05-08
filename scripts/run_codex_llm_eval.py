@@ -91,6 +91,8 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--llm",
             "--limit",
             str(args.limit),
+            "--packet-source",
+            args.packet_source,
         ]
         default_out = ROOT / "evaluation" / "results" / "agent_eval_codex_subset.json"
     elif args.task == "coverage":
@@ -104,6 +106,8 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--llm",
             "--limit",
             str(args.limit),
+            "--packet-source",
+            args.packet_source,
         ]
         default_out = ROOT / "evaluation" / "results" / "coverage_eval_codex_subset.json"
     else:
@@ -132,6 +136,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--model")
     parser.add_argument("--out")
+    parser.add_argument("--packet-source", choices=["minimal", "actual"], default="minimal")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--acknowledge-external-send", action="store_true")
     args = parser.parse_args()
