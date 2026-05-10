@@ -4,11 +4,35 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import statistics
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.core.artifacts import (
+    make_attempt_id,
+    make_candidate_id,
+    make_outcome_id,
+    make_problem_id,
+    make_run_id as make_core_run_id,
+    short_hash,
+)
+from app.models.core import (
+    CORE_SCHEMA_ID,
+    RUN_ID_PATTERN,
+    Candidate,
+    Diagnostic,
+    DiagnosticLevel,
+    ErrorKind,
+    ErrorRecord,
+    Language,
+    ProblemSpec,
+    ToolName,
+    VerificationStatus,
+    VerifierOutcome,
+)
 from app.retrieval.benchmark_registry import (
     contamination_evidence,
     load_json,
@@ -19,11 +43,45 @@ from app.retrieval.benchmark_registry import (
 from app.retrieval.symbol_index import SymbolIndex, timed_search
 from app.retrieval.vector_index import VectorRetriever
 
-FAILURE_BUCKETS = ["syntax_error", "missing_premise", "timeout", "solver_fail", "schema_drift"]
+FAILURE_BUCKETS = [
+    "syntax_error",
+    "missing_premise",
+    "timeout",
+    "solver_fail",
+    ErrorKind.SCHEMA_DRIFT.value,
+]
+_RUN_ID_RE = re.compile(RUN_ID_PATTERN)
+ZERO_GIT_SHA = "0" * 12
 
 
 def make_run_id(prefix: str = "run") -> str:
-    return f"{prefix}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+    now = datetime.now(timezone.utc)
+    nonce = None if prefix == "run" else short_hash(f"{prefix}:{now.isoformat()}", 6)
+    return make_core_run_id(current_git_sha(), now=now, nonce=nonce)
+
+
+def current_git_sha() -> str:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=Path(__file__).resolve().parents[2],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    except OSError:
+        return ZERO_GIT_SHA
+    sha = completed.stdout.strip().lower()
+    if re.fullmatch(r"[a-f0-9]{7,64}", sha):
+        return sha
+    return ZERO_GIT_SHA
+
+
+def ensure_canonical_run_id(run_id: str) -> str:
+    if _RUN_ID_RE.fullmatch(run_id):
+        return run_id
+    return make_core_run_id(current_git_sha(), nonce=short_hash(run_id, 6))
 
 
 def item_query(item: dict[str, Any]) -> str:
@@ -68,7 +126,7 @@ def classify_failure(
     schema_error: str | None = None,
 ) -> str | None:
     if schema_error:
-        return "schema_drift"
+        return ErrorKind.SCHEMA_DRIFT.value
     if elapsed_ms > timeout_ms:
         return "timeout"
     if gold_doc_ids and not matched:
@@ -249,8 +307,8 @@ def summary_markdown(
             "## Notes",
             "",
             "- Retrieval path evaluated: sparse symbolic index.",
-            "- Verifier outcome aggregation is marked `unspecified` for this retrieval run; no JasperGold",
-            "  solver invocation is performed by the retrieval evaluator.",
+            "- A canonical `VerifierOutcome` is written for CI gating; no JasperGold solver",
+            "  invocation is performed by the retrieval evaluator.",
             "- Vector retrieval is available only when Qdrant and query-vector configuration are supplied.",
             "",
         ]
@@ -268,12 +326,26 @@ def write_report(
     vector_status: dict[str, str],
     out_root: Path,
 ) -> Path:
+    run_id = ensure_canonical_run_id(run_id)
     report_dir = resolve_repo_path(out_root) / benchmark / run_id
     report_dir.mkdir(parents=True, exist_ok=True)
+    problem, candidate, outcome = benchmark_core_artifacts(
+        benchmark=benchmark,
+        run_id=run_id,
+        split=split,
+        top_k=top_k,
+        payload=payload,
+        vector_status=vector_status,
+    )
     failures_payload = {
+        "schema_version": "v1",
+        "canonical_schema": CORE_SCHEMA_ID,
         "run_id": run_id,
         "benchmark": benchmark,
         "split": split,
+        "problem_spec_ref": "problem_spec.json",
+        "candidate_ref": "candidate.json",
+        "verifier_outcome_ref": "verifier_outcome.json",
         "taxonomy": FAILURE_BUCKETS,
         "failure_buckets": payload["metrics"]["failure_buckets"],
         "failures": payload["failures"],
@@ -291,7 +363,132 @@ def write_report(
     (report_dir / "summary.md").write_text(
         summary_markdown(benchmark, run_id, split, top_k, registry, payload, vector_status)
     )
+    (report_dir / "problem_spec.json").write_text(
+        json.dumps(problem.model_dump(mode="json"), indent=2) + "\n"
+    )
+    (report_dir / "candidate.json").write_text(
+        json.dumps(candidate.model_dump(mode="json"), indent=2) + "\n"
+    )
+    (report_dir / "verifier_outcome.json").write_text(
+        json.dumps(outcome.model_dump(mode="json"), indent=2) + "\n"
+    )
     return report_dir
+
+
+def benchmark_core_artifacts(
+    *,
+    benchmark: str,
+    run_id: str,
+    split: str,
+    top_k: int,
+    payload: dict[str, Any],
+    vector_status: dict[str, str],
+) -> tuple[ProblemSpec, Candidate, VerifierOutcome]:
+    statement = json.dumps(
+        {
+            "benchmark": benchmark,
+            "kind": "retrieval_benchmark",
+            "split": split,
+            "top_k": top_k,
+        },
+        sort_keys=True,
+    )
+    problem_id = make_problem_id(ToolName.Z3, statement)
+    attempt_id = make_attempt_id(0)
+    candidate_content = json.dumps(
+        {
+            "case_count": len(payload["rows"]),
+            "failure_buckets": payload["metrics"]["failure_buckets"],
+            "metrics": payload["metrics"],
+            "vector_backend": vector_status,
+        },
+        sort_keys=True,
+    )
+    candidate_id = make_candidate_id(attempt_id, "retrieval_benchmark", candidate_content)
+    problem = ProblemSpec(
+        problem_id=problem_id,
+        tool=ToolName.Z3,
+        language=Language.SMT2,
+        statement=statement,
+        metadata={
+            "benchmark": benchmark,
+            "benchmark_kind": "retrieval",
+            "verifier_invoked": False,
+        },
+    )
+    candidate = Candidate(
+        candidate_id=candidate_id,
+        run_id=run_id,
+        problem_id=problem_id,
+        attempt_id=attempt_id,
+        producer="retrieval_benchmark",
+        content=candidate_content,
+        content_type="application/json",
+        metadata={"split": split, "top_k": top_k},
+    )
+    failure_buckets = payload["metrics"]["failure_buckets"]
+    schema_drift_count = int(failure_buckets.get("schema_drift", 0))
+    ok = schema_drift_count == 0
+    diagnostics = [
+        Diagnostic(
+            level=DiagnosticLevel.WARNING,
+            message=f"{bucket}: {count}",
+            code=bucket,
+        )
+        for bucket, count in failure_buckets.items()
+        if count
+    ]
+    error = None
+    if schema_drift_count:
+        message = "Retrieval benchmark report contains schema_drift failures."
+        diagnostics.append(
+            Diagnostic(level=DiagnosticLevel.ERROR, message=message, code=ErrorKind.SCHEMA_DRIFT.value)
+        )
+        error = ErrorRecord(kind=ErrorKind.SCHEMA_DRIFT, message=message)
+    outcome_payload = json.dumps(
+        {
+            "candidate_id": candidate_id,
+            "failure_buckets": failure_buckets,
+            "ok": ok,
+            "run_id": run_id,
+        },
+        sort_keys=True,
+    )
+    return (
+        problem,
+        candidate,
+        VerifierOutcome(
+            outcome_id=make_outcome_id(attempt_id, ToolName.Z3, outcome_payload),
+            run_id=run_id,
+            problem_id=problem_id,
+            candidate_id=candidate_id,
+            attempt_id=attempt_id,
+            ok=ok,
+            status=VerificationStatus.PASSED if ok else VerificationStatus.FAILED,
+            tool=ToolName.Z3,
+            exit_code=0 if ok else 1,
+            stdout_ref="metrics.json",
+            stderr_ref="failures.json",
+            diagnostics=diagnostics,
+            artifact_refs=[
+                "metrics.json",
+                "failures.json",
+                "summary.md",
+                "problem_spec.json",
+                "candidate.json",
+            ],
+            error=error,
+            metadata={
+                "benchmark": benchmark,
+                "benchmark_kind": "retrieval",
+                "failure_buckets": failure_buckets,
+                "split": split,
+                "top_k": top_k,
+                "verifier_invoked": False,
+                "vector_backend": vector_status,
+            },
+        ),
+    )
 
 
 def main() -> int:
