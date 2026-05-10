@@ -29,7 +29,7 @@ OOMs and acceptable p95 latency on real JasperLoop prompts.
 - `run_vllm.sh`: environment probe plus vLLM OpenAI-compatible server.
 - `run_sglang.sh`: SGLang fallback server.
 - `run_ollama.md`: Ollama fallback notes.
-- `healthcheck.py`: localhost healthcheck, simple benchmark, GPU/OOM logging.
+- `healthcheck.py`: localhost healthcheck, latency probe, GPU/OOM logging.
 
 ## Setup flow
 
@@ -89,7 +89,7 @@ Smoke request:
 curl http://127.0.0.1:8000/v1/models
 ```
 
-## Healthcheck and benchmark
+## Healthcheck and Manifest
 
 ```bash
 source ops/local-llm/.env
@@ -160,5 +160,5 @@ ARTIFACT_READY: localhost:8000 已提供 Qwen OpenAI-compatible endpoint；默�
 For Research/Eval:
 
 ```text
-ARTIFACT_READY: local serving benchmark 已生成，含 tokens/s、p95 latency、OOM 统计。
+ARTIFACT_READY: local Qwen healthcheck manifest scaffold 已生成；未运行真实 Qwen benchmark。
 ```

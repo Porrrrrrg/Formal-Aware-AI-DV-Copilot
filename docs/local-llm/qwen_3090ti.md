@@ -214,5 +214,5 @@ ARTIFACT_READY: localhost:8000 已提供 Qwen OpenAI-compatible endpoint；默�
 To Research/Eval:
 
 ```text
-ARTIFACT_READY: local serving benchmark 已生成，含 tokens/s、p95 latency、OOM 统计。
+ARTIFACT_READY: local Qwen healthcheck manifest scaffold 已生成；未运行真实 Qwen benchmark。
 ```
