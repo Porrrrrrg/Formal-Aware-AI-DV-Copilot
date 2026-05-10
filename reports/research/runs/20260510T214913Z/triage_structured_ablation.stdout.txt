@@ -1,0 +1,208 @@
+{
+  "num_cases": 30,
+  "systems": {
+    "structured": {
+      "num_cases": 30,
+      "cases_by_design": {
+        "apb_regblock": 10,
+        "arbiter_rr2": 10,
+        "rv_buffer": 10
+      },
+      "issue_type_accuracy": 1.0,
+      "next_action_accuracy": 1.0,
+      "hallucinated_signal_rate": 0.0,
+      "predicted_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "gold_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "source_counts": {
+        "structured_fallback": 30
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 30
+    },
+    "structured:no_assertion_manifest": {
+      "num_cases": 30,
+      "cases_by_design": {
+        "apb_regblock": 10,
+        "arbiter_rr2": 10,
+        "rv_buffer": 10
+      },
+      "issue_type_accuracy": 0.9333333333333333,
+      "next_action_accuracy": 0.9333333333333333,
+      "hallucinated_signal_rate": 0.0,
+      "predicted_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 8,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 1,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "gold_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "source_counts": {
+        "structured_fallback": 30
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 30
+    },
+    "structured:no_assumption_manifest": {
+      "num_cases": 30,
+      "cases_by_design": {
+        "apb_regblock": 10,
+        "arbiter_rr2": 10,
+        "rv_buffer": 10
+      },
+      "issue_type_accuracy": 0.8,
+      "next_action_accuracy": 0.8,
+      "hallucinated_signal_rate": 0.0,
+      "predicted_issue_distribution": {
+        "assertion_property_bug": 12,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "gold_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "source_counts": {
+        "structured_fallback": 30
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 30
+    },
+    "structured:no_jasper_cex": {
+      "num_cases": 30,
+      "cases_by_design": {
+        "apb_regblock": 10,
+        "arbiter_rr2": 10,
+        "rv_buffer": 10
+      },
+      "issue_type_accuracy": 1.0,
+      "next_action_accuracy": 1.0,
+      "hallucinated_signal_rate": 0.0,
+      "predicted_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "gold_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "source_counts": {
+        "structured_fallback": 30
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 30
+    },
+    "structured:no_coverage_context": {
+      "num_cases": 30,
+      "cases_by_design": {
+        "apb_regblock": 10,
+        "arbiter_rr2": 10,
+        "rv_buffer": 10
+      },
+      "issue_type_accuracy": 0.6333333333333333,
+      "next_action_accuracy": 0.6333333333333333,
+      "hallucinated_signal_rate": 0.0,
+      "predicted_issue_distribution": {
+        "assertion_property_bug": 17,
+        "assumption_constraint_bug": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 1
+      },
+      "gold_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "source_counts": {
+        "structured_fallback": 30
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 30
+    },
+    "structured:minimal_packet": {
+      "num_cases": 30,
+      "cases_by_design": {
+        "apb_regblock": 10,
+        "arbiter_rr2": 10,
+        "rv_buffer": 10
+      },
+      "issue_type_accuracy": 0.4,
+      "next_action_accuracy": 0.4,
+      "hallucinated_signal_rate": 0.0,
+      "predicted_issue_distribution": {
+        "assertion_property_bug": 24,
+        "rtl_design_bug": 6
+      },
+      "gold_issue_distribution": {
+        "assertion_property_bug": 6,
+        "assumption_constraint_bug": 6,
+        "reachable_coverage_gap": 6,
+        "rtl_design_bug": 6,
+        "testbench_stimulus_bug": 3,
+        "unreachable_or_invalid_coverage_goal": 3
+      },
+      "source_counts": {
+        "structured_fallback": 30
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 30
+    }
+  }
+}

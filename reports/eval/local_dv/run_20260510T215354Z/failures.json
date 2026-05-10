@@ -1,0 +1,20 @@
+{
+  "run_id": "run_20260510T215354Z",
+  "benchmark": "local_dv",
+  "split": "all",
+  "taxonomy": [
+    "syntax_error",
+    "missing_premise",
+    "timeout",
+    "solver_fail",
+    "schema_drift"
+  ],
+  "failure_buckets": {
+    "syntax_error": 0,
+    "missing_premise": 0,
+    "timeout": 0,
+    "solver_fail": 0,
+    "schema_drift": 0
+  },
+  "failures": []
+}
