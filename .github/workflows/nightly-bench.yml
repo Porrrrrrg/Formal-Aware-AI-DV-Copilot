@@ -57,11 +57,12 @@ jobs:
           cache: pip
 
       - name: Install benchmark dependencies
-        run: python -m pip install -e .
+        run: python -m pip install -e ".[dev]"
 
       - name: Run nightly benchmark suite
         run: |
           mkdir -p artifacts/nightly
+          make nightly-bench OUT_ROOT=artifacts/nightly/retrieval
           python scripts/build_all_evidence_packets.py \
             --out-dir artifacts/nightly/case_packets \
             > artifacts/nightly/case_packets_summary.json

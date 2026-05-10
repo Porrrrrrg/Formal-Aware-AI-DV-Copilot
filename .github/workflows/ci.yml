@@ -110,13 +110,155 @@ jobs:
           cache: pip
 
       - name: Install CI dependencies
-        run: python -m pip install -e ".[dev]" ruff
+        run: python -m pip install -e ".[dev]"
 
       - name: Ruff
         run: python -m ruff check .
 
       - name: Pytest
         run: python -m pytest
+
+  tests-core:
+    name: tests/core
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install CI dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run core tests
+        run: |
+          if [ -d tests/core ]; then
+            python -m pytest tests/core
+          else
+            echo "tests/core not present on this integration branch; skipping focused core job."
+          fi
+
+  tests-adapters:
+    name: tests/adapters
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install CI dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run adapter tests
+        run: |
+          if [ -d tests/adapters ]; then
+            python -m pytest tests/adapters
+          else
+            echo "tests/adapters not present on this integration branch; skipping focused adapter job."
+          fi
+
+  tests-retrieval:
+    name: tests/retrieval
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install CI dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run retrieval tests
+        run: |
+          if [ -d tests/retrieval ]; then
+            python -m pytest tests/retrieval
+          else
+            echo "tests/retrieval not present on this integration branch; skipping focused retrieval job."
+          fi
+
+  tests-repo-contracts:
+    name: tests/test_repo_contracts.py
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install CI dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run repo contract tests
+        run: python -m pytest tests/test_repo_contracts.py
+
+  core-schema-validation:
+    name: schemas/v1/core.schema.json
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install CI dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Validate canonical core schema
+        run: |
+          if [ ! -f schemas/v1/core.schema.json ] || [ ! -f app/models/core.py ]; then
+            echo "Canonical core schema not present on this integration branch; skipping schema parity job."
+            exit 0
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          from app.models.core import core_schema_document
+
+          schema_path = Path("schemas/v1/core.schema.json")
+          schema = json.loads(schema_path.read_text())
+          Draft202012Validator.check_schema(schema)
+          if schema != core_schema_document():
+            raise SystemExit(f"{schema_path} does not match app.models.core")
+          print(f"valid schema: {schema_path}")
+          PY
 
   schema-validation:
     name: Schema validation
@@ -135,7 +277,7 @@ jobs:
           cache: pip
 
       - name: Install schema validator
-        run: python -m pip install -e .
+        run: python -m pip install -e ".[dev]"
 
       - name: Validate schema files
         run: |
@@ -145,6 +287,9 @@ jobs:
           from jsonschema import Draft202012Validator
 
           schema_paths = sorted(Path("copilot/schemas").glob("*.schema.json"))
+          core_schema_path = Path("schemas/v1/core.schema.json")
+          if core_schema_path.exists():
+            schema_paths.append(core_schema_path)
           if not schema_paths:
             raise SystemExit("No schema files found under copilot/schemas")
           for schema_path in schema_paths:
@@ -328,6 +473,11 @@ jobs:
     needs:
       - python-quality
       - schema-validation
+      - tests-core
+      - tests-adapters
+      - tests-retrieval
+      - tests-repo-contracts
+      - core-schema-validation
     permissions:
       contents: read
     steps:
@@ -341,7 +491,7 @@ jobs:
           cache: pip
 
       - name: Install smoke dependencies
-        run: python -m pip install -e .
+        run: python -m pip install -e ".[dev]"
 
       - name: Run deterministic smoke suite
         run: |
