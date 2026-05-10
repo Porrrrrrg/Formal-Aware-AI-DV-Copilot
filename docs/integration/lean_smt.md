@@ -14,20 +14,20 @@ runs the external verifier, writes artifacts, and normalizes the result.
 
 The shared contracts live in:
 
-- `core/schemas.py`
-- `core/tool_adapter.py`
+- `app.models.core`
+- `app.core.protocols`
+- `core/tool_adapter.py`, as a compatibility re-export of `app.core.protocols`
 
 `VerifierOutcome` always includes:
 
 - `ok`
 - `tool`
-- `status`: `passed`, `failed`, `blocked`, or `skipped`
+- `status`: `passed`, `failed`, `blocked`, `unknown`, `timeout`, or `error`
 - `exit_code`
 - `stdout_ref`
 - `stderr_ref`
 - `diagnostics`
 - `artifact_refs`
-- `manifest_ref`
 
 Diagnostics preserve at least:
 
@@ -44,19 +44,18 @@ When a tool is unavailable, adapters return `status="blocked"` with
 By default, adapters write under:
 
 ```text
-artifacts/runs/<run_id>/verifier/<attempt_id>/<tool>/
+artifacts/runs/<YYYYMMDD>/<run_id>/verifier/
 ```
 
 Each verifier run writes:
 
-- `candidate.lean` or `candidate.smt2`
-- `run_command.txt`
-- `stdout.txt`
-- `stderr.txt`
-- `manifest.json`
+- `<attempt_id>_<tool>.candidate.lean` or `<attempt_id>_<tool>.candidate.smt2`
+- `<attempt_id>_<tool>.run_command.txt`
+- `<attempt_id>_<tool>.stdout.txt`
+- `<attempt_id>_<tool>.stderr.txt`
 
-`manifest.json` records detected tool versions in `toolchain`. Unknown or
-missing tools are recorded as `null`.
+Detected tool versions are recorded in the `VerifierOutcome.metadata.toolchain`
+payload. Unknown or missing tools are recorded as `null`.
 
 ## Smoke Fixtures
 
