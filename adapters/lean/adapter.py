@@ -10,16 +10,35 @@ from pathlib import Path
 
 from adapters.common import (
     ROOT,
-    artifact_ref,
+    canonical_input_error,
     command_display,
+    default_artifact_writer,
     detect_version,
     elapsed_ms_since,
+    error_record,
     fallback_diagnostic,
-    verifier_artifact_dir,
-    write_manifest,
-    write_text,
+    make_verifier_outcome,
+    verifier_artifact_key,
+    verifier_local_dir,
+    verifier_stderr_key,
+    verifier_stdout_key,
+    write_local_text,
+    write_text_artifact,
 )
-from core.schemas import Candidate, Diagnostic, ProblemSpec, VerifierOutcome
+from app.core.protocols import ArtifactWriter, ToolProbe
+from app.models.core import (
+    ArtifactKind,
+    Candidate,
+    Diagnostic,
+    DiagnosticLevel,
+    ErrorKind,
+    ErrorRecord,
+    Language,
+    ProblemSpec,
+    ToolName,
+    VerificationStatus,
+    VerifierOutcome,
+)
 
 LEAN_DIAG_RE = re.compile(
     r"^(?P<path>.*?):(?P<line>\d+):(?P<column>\d+):\s*"
@@ -29,7 +48,7 @@ LEAN_DIAG_RE = re.compile(
 
 
 class LeanAdapter:
-    tool = "lean"
+    tool = ToolName.LEAN
 
     def __init__(
         self,
@@ -45,63 +64,117 @@ class LeanAdapter:
         self.timeout_s = timeout_s
         self.use_lake = use_lake
 
+    def probe(self) -> ToolProbe:
+        resolved = shutil.which(self.lean_executable)
+        if resolved is None:
+            return ToolProbe(
+                tool=self.tool,
+                available=False,
+                executable=None,
+                error=f"{self.lean_executable} executable not found on PATH.",
+            )
+        return ToolProbe(
+            tool=self.tool,
+            available=True,
+            version=detect_version(self.lean_executable, ["--version"]),
+            executable=resolved,
+        )
+
+    def supports(self, problem: ProblemSpec) -> bool:
+        return problem.tool == self.tool and problem.language == Language.LEAN
+
     def verify(
         self,
         problem: ProblemSpec,
         candidate: Candidate,
-        work_dir: Path | None = None,
+        artifacts: ArtifactWriter | None = None,
     ) -> VerifierOutcome:
-        if problem.language != "lean":
+        input_error = canonical_input_error(
+            problem,
+            candidate,
+            tool=self.tool,
+            artifact_root=self.artifact_root,
+        )
+        if input_error is not None:
+            return input_error
+        if not self.supports(problem):
             raise ValueError(f"LeanAdapter only accepts Lean problems, got {problem.language}")
+        if problem.problem_id != candidate.problem_id:
+            raise ValueError("candidate.problem_id must match problem.problem_id")
 
         started = time.monotonic()
-        out_dir = work_dir or verifier_artifact_dir(
+        writer = artifacts or default_artifact_writer(self.artifact_root)
+        out_dir = verifier_local_dir(
             self.artifact_root,
             candidate.run_id,
             candidate.attempt_id,
             self.tool,
         )
-        out_dir.mkdir(parents=True, exist_ok=True)
-        input_path = out_dir / "candidate.lean"
-        write_text(input_path, render_lean_input(problem, candidate))
+        input_path = out_dir / f"{candidate.attempt_id}_{self.tool.value}.candidate.lean"
+        input_text = render_lean_input(problem, candidate)
+        write_local_text(input_path, input_text)
+        input_ref = write_text_artifact(
+            writer,
+            verifier_artifact_key(candidate.run_id, candidate.attempt_id, self.tool, "candidate.lean"),
+            input_text,
+            kind=ArtifactKind.PROOF_SCRIPT,
+            producer=self.tool.value,
+        )
 
         cmd, missing = self._build_command(input_path)
-        write_text(out_dir / "run_command.txt", command_display(cmd) + "\n" if cmd else "")
+        command_ref = write_text_artifact(
+            writer,
+            verifier_artifact_key(candidate.run_id, candidate.attempt_id, self.tool, "run_command.txt"),
+            command_display(cmd) + "\n" if cmd else "",
+            kind=ArtifactKind.LOG,
+            producer=self.tool.value,
+            metadata={"argv": cmd},
+        )
+        artifact_refs = [input_ref, command_ref]
         toolchain = {
             "lean": detect_version(self.lean_executable, ["--version"]),
             "lake": detect_version(self.lake_executable, ["--version"]),
         }
 
         if missing:
-            stdout_ref = write_text(out_dir / "stdout.txt", "")
-            stderr_text = missing + "\n"
-            stderr_ref = write_text(out_dir / "stderr.txt", stderr_text)
+            stdout = ""
+            stderr = missing + "\n"
+            stdout_ref = write_text_artifact(
+                writer,
+                verifier_stdout_key(candidate.run_id, candidate.attempt_id, self.tool),
+                stdout,
+                kind=ArtifactKind.STDOUT,
+                producer=self.tool.value,
+            )
+            stderr_ref = write_text_artifact(
+                writer,
+                verifier_stderr_key(candidate.run_id, candidate.attempt_id, self.tool),
+                stderr,
+                kind=ArtifactKind.STDERR,
+                producer=self.tool.value,
+            )
             elapsed_ms = elapsed_ms_since(started)
-            diagnostic = Diagnostic(level="error", message=missing, line=None, column=None)
-            manifest_ref = write_manifest(
-                out_dir / "manifest.json",
-                run_id=candidate.run_id,
-                status="blocked",
-                toolchain=toolchain,
-                artifacts_key=artifact_ref(out_dir),
-                command=cmd,
+            return self._outcome(
+                problem=problem,
+                candidate=candidate,
+                status=VerificationStatus.BLOCKED,
                 exit_code=-1,
                 elapsed_ms=elapsed_ms,
-            )
-            return VerifierOutcome(
-                ok=False,
-                tool=self.tool,
-                status="blocked",
-                exit_code=-1,
+                stdout=stdout,
+                stderr=stderr,
                 stdout_ref=stdout_ref,
                 stderr_ref=stderr_ref,
-                diagnostics=[diagnostic],
-                artifact_refs=[artifact_ref(input_path), artifact_ref(out_dir / "run_command.txt")],
-                manifest_ref=manifest_ref,
-                elapsed_ms=elapsed_ms,
-                metadata={"reason": "tool_unavailable"},
+                diagnostics=[Diagnostic(level=DiagnosticLevel.ERROR, message=missing)],
+                artifact_refs=[*artifact_refs, stdout_ref, stderr_ref],
+                error=error_record(
+                    ErrorKind.TOOL_NOT_FOUND,
+                    missing,
+                    details={"lean_executable": self.lean_executable, "lake_executable": self.lake_executable},
+                ),
+                metadata={"reason": "tool_unavailable", "toolchain": toolchain},
             )
 
+        timed_out = False
         try:
             completed = subprocess.run(
                 cmd,
@@ -120,13 +193,34 @@ class LeanAdapter:
             stderr = exc.stderr if isinstance(exc.stderr, str) else ""
             stderr += f"\nLean timed out after {self.timeout_s} seconds.\n"
             exit_code = 124
+            timed_out = True
 
-        stdout_ref = write_text(out_dir / "stdout.txt", stdout)
-        stderr_ref = write_text(out_dir / "stderr.txt", stderr)
+        stdout_ref = write_text_artifact(
+            writer,
+            verifier_stdout_key(candidate.run_id, candidate.attempt_id, self.tool),
+            stdout,
+            kind=ArtifactKind.STDOUT,
+            producer=self.tool.value,
+        )
+        stderr_ref = write_text_artifact(
+            writer,
+            verifier_stderr_key(candidate.run_id, candidate.attempt_id, self.tool),
+            stderr,
+            kind=ArtifactKind.STDERR,
+            producer=self.tool.value,
+        )
+        artifact_refs.extend([stdout_ref, stderr_ref])
         elapsed_ms = elapsed_ms_since(started)
         output = "\n".join(part for part in [stderr, stdout] if part)
         diagnostics = parse_lean_diagnostics(output)
-        if exit_code != 0 and not diagnostics:
+        if timed_out:
+            diagnostics.append(
+                Diagnostic(
+                    level=DiagnosticLevel.ERROR,
+                    message=f"Lean timed out after {self.timeout_s} seconds.",
+                )
+            )
+        elif exit_code != 0 and not diagnostics:
             diagnostics = [
                 fallback_diagnostic(
                     "error",
@@ -134,29 +228,38 @@ class LeanAdapter:
                     output,
                 )
             ]
-        ok = exit_code == 0 and not any(item.level == "error" for item in diagnostics)
-        status = "passed" if ok else "failed"
-        manifest_ref = write_manifest(
-            out_dir / "manifest.json",
-            run_id=candidate.run_id,
+
+        has_error = any(item.level == DiagnosticLevel.ERROR for item in diagnostics)
+        if timed_out:
+            status = VerificationStatus.TIMEOUT
+            outcome_error = error_record(
+                ErrorKind.TOOL_TIMEOUT,
+                f"Lean timed out after {self.timeout_s} seconds.",
+                retryable=True,
+                details={"timeout_s": self.timeout_s},
+            )
+        elif exit_code == 0 and not has_error:
+            status = VerificationStatus.PASSED
+            outcome_error = None
+        else:
+            status = VerificationStatus.FAILED
+            outcome_error = None
+
+        return self._outcome(
+            problem=problem,
+            candidate=candidate,
             status=status,
-            toolchain=toolchain,
-            artifacts_key=artifact_ref(out_dir),
-            command=cmd,
             exit_code=exit_code,
             elapsed_ms=elapsed_ms,
-        )
-        return VerifierOutcome(
-            ok=ok,
-            tool=self.tool,
-            status=status,
-            exit_code=exit_code,
+            stdout=stdout,
+            stderr=stderr,
             stdout_ref=stdout_ref,
             stderr_ref=stderr_ref,
             diagnostics=diagnostics,
-            artifact_refs=[artifact_ref(input_path), artifact_ref(out_dir / "run_command.txt")],
-            manifest_ref=manifest_ref,
-            elapsed_ms=elapsed_ms,
+            artifact_refs=artifact_refs,
+            error=outcome_error,
+            metadata={"toolchain": toolchain},
+            timed_out=timed_out,
         )
 
     def _build_command(self, input_path: Path) -> tuple[list[str], str | None]:
@@ -178,6 +281,42 @@ class LeanAdapter:
             )
         return [lean_path, str(input_path)], None
 
+    def _outcome(
+        self,
+        *,
+        problem: ProblemSpec,
+        candidate: Candidate,
+        status: VerificationStatus,
+        exit_code: int,
+        elapsed_ms: int,
+        stdout: str,
+        stderr: str,
+        stdout_ref: str,
+        stderr_ref: str,
+        diagnostics: list[Diagnostic],
+        artifact_refs: list[str],
+        error: ErrorRecord | None = None,
+        metadata: dict[str, object] | None = None,
+        timed_out: bool = False,
+    ) -> VerifierOutcome:
+        return make_verifier_outcome(
+            problem=problem,
+            candidate=candidate,
+            tool=self.tool,
+            status=status,
+            exit_code=exit_code,
+            elapsed_ms=elapsed_ms,
+            stdout=stdout,
+            stderr=stderr,
+            stdout_ref=stdout_ref,
+            stderr_ref=stderr_ref,
+            diagnostics=diagnostics,
+            artifact_refs=artifact_refs,
+            error=error,
+            metadata=metadata,
+            timed_out=timed_out,
+        )
+
 
 def render_lean_input(problem: ProblemSpec, candidate: Candidate) -> str:
     content = candidate.content.strip() or problem.statement.strip()
@@ -193,11 +332,11 @@ def parse_lean_diagnostics(output: str) -> list[Diagnostic]:
             continue
         level = match.group("level").lower()
         if level in {"information", "info"}:
-            normalized_level = "info"
+            normalized_level = DiagnosticLevel.INFO
         elif level == "warning":
-            normalized_level = "warning"
+            normalized_level = DiagnosticLevel.WARNING
         else:
-            normalized_level = "error"
+            normalized_level = DiagnosticLevel.ERROR
         message_parts = [match.group("message").strip()]
         cursor = index + 1
         while cursor < len(lines) and lines[cursor].startswith((" ", "\t")):
@@ -211,7 +350,7 @@ def parse_lean_diagnostics(output: str) -> list[Diagnostic]:
                 message="\n".join(part for part in message_parts if part),
                 line=int(match.group("line")),
                 column=int(match.group("column")),
-                source="lean",
+                code="lean",
             )
         )
     return diagnostics

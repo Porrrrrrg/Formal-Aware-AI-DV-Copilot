@@ -11,6 +11,7 @@ from pathlib import Path
 
 from adapters.common import (
     ROOT,
+    canonical_input_error,
     command_display,
     default_artifact_writer,
     detect_version,
@@ -90,6 +91,14 @@ class SmtCliAdapter:
         candidate: Candidate,
         artifacts: ArtifactWriter | None = None,
     ) -> VerifierOutcome:
+        input_error = canonical_input_error(
+            problem,
+            candidate,
+            tool=self.tool,
+            artifact_root=self.artifact_root,
+        )
+        if input_error is not None:
+            return input_error
         if not self.supports(problem):
             raise ValueError(f"{self.tool} adapter only accepts SMT2 problems, got {problem.language}")
         if problem.problem_id != candidate.problem_id:
@@ -218,7 +227,7 @@ class SmtCliAdapter:
             diagnostics = [
                 fallback_diagnostic(
                     "error",
-                    f"{self.tool} exited with code {exit_code}.",
+                    f"{self.tool.value} exited with code {exit_code}.",
                     output,
                 )
             ]

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 import shutil
 import subprocess
 import time
@@ -10,20 +12,32 @@ from typing import Any
 
 from app.core.artifacts import (
     ArtifactStore,
+    make_attempt_id,
+    make_candidate_id,
+    make_outcome_id,
+    make_problem_id,
+    make_run_id,
     run_date_from_id,
+    sha256_text,
     verifier_stream_key,
 )
 from app.core.protocols import ArtifactWriter
 from app.models.core import (
     ArtifactEncoding,
     ArtifactKind,
+    Candidate,
     Diagnostic,
     ErrorKind,
     ErrorRecord,
+    Language,
+    ProblemSpec,
     ToolName,
+    VerificationStatus,
+    VerifierOutcome,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+ZERO_GIT_SHA = "0" * 12
 
 
 def default_artifact_root() -> Path:
@@ -116,6 +130,13 @@ def git_sha() -> str:
     return sha if sha else "0" * 12
 
 
+def canonical_git_sha() -> str:
+    sha = git_sha()
+    if re.fullmatch(r"[a-f0-9]{7,64}", sha):
+        return sha
+    return ZERO_GIT_SHA
+
+
 def detect_version(executable: str, args: list[str]) -> str | None:
     resolved = shutil.which(executable)
     if resolved is None:
@@ -184,3 +205,152 @@ def first_interesting_line(text: str) -> str:
         if line:
             return line
     return ""
+
+
+def language_for_tool(tool: ToolName) -> Language:
+    return {
+        ToolName.LEAN: Language.LEAN,
+        ToolName.ROCQ: Language.ROCQ,
+        ToolName.ISABELLE: Language.ISABELLE,
+        ToolName.Z3: Language.SMT2,
+        ToolName.CVC5: Language.SMT2,
+    }[tool]
+
+
+def canonical_input_error(
+    problem: object,
+    candidate: object,
+    *,
+    tool: ToolName | str,
+    artifact_root: Path | None,
+) -> VerifierOutcome | None:
+    if isinstance(problem, ProblemSpec) and isinstance(candidate, Candidate):
+        return None
+    return schema_drift_outcome(
+        problem,
+        candidate,
+        tool=tool,
+        artifact_root=artifact_root,
+        message=(
+            "Adapter received legacy or non-canonical input. "
+            "Use app.models.core.ProblemSpec and app.models.core.Candidate."
+        ),
+    )
+
+
+def schema_drift_outcome(
+    problem: object,
+    candidate: object,
+    *,
+    tool: ToolName | str,
+    artifact_root: Path | None,
+    message: str,
+) -> VerifierOutcome:
+    tool_name = ToolName(tool)
+    statement = str(getattr(candidate, "content", "") or getattr(problem, "statement", "") or message)
+    attempt_id = make_attempt_id(0)
+    run_id = make_run_id(canonical_git_sha())
+    problem_id = make_problem_id(tool_name, statement)
+    candidate_id = make_candidate_id(attempt_id, "legacy_adapter", statement)
+    canonical_problem = ProblemSpec(
+        problem_id=problem_id,
+        tool=tool_name,
+        language=language_for_tool(tool_name),
+        statement=statement,
+        metadata={"legacy_problem_type": type(problem).__name__},
+    )
+    canonical_candidate = Candidate(
+        candidate_id=candidate_id,
+        run_id=run_id,
+        problem_id=problem_id,
+        attempt_id=attempt_id,
+        producer="legacy_adapter",
+        content=statement,
+        metadata={"legacy_candidate_type": type(candidate).__name__},
+    )
+    writer = default_artifact_writer(artifact_root)
+    stdout_ref = write_text_artifact(
+        writer,
+        verifier_stdout_key(run_id, attempt_id, tool_name),
+        "",
+        kind=ArtifactKind.STDOUT,
+        producer=tool_name.value,
+    )
+    stderr_ref = write_text_artifact(
+        writer,
+        verifier_stderr_key(run_id, attempt_id, tool_name),
+        message + "\n",
+        kind=ArtifactKind.STDERR,
+        producer=tool_name.value,
+    )
+    diagnostic = Diagnostic(level="error", message=message, code=ErrorKind.SCHEMA_DRIFT.value)
+    return make_verifier_outcome(
+        problem=canonical_problem,
+        candidate=canonical_candidate,
+        tool=tool_name,
+        status=VerificationStatus.ERROR,
+        exit_code=-1,
+        stdout="",
+        stderr=message + "\n",
+        stdout_ref=stdout_ref,
+        stderr_ref=stderr_ref,
+        diagnostics=[diagnostic],
+        artifact_refs=[stdout_ref, stderr_ref],
+        error=error_record(ErrorKind.SCHEMA_DRIFT, message),
+        metadata={
+            "reason": "legacy_adapter_contract",
+            "legacy_problem_type": type(problem).__name__,
+            "legacy_candidate_type": type(candidate).__name__,
+        },
+    )
+
+
+def make_verifier_outcome(
+    *,
+    problem: ProblemSpec,
+    candidate: Candidate,
+    tool: ToolName | str,
+    status: VerificationStatus,
+    exit_code: int,
+    stdout: str,
+    stderr: str,
+    stdout_ref: str,
+    stderr_ref: str,
+    diagnostics: list[Diagnostic],
+    artifact_refs: list[str],
+    elapsed_ms: int | None = None,
+    error: ErrorRecord | None = None,
+    metadata: dict[str, object] | None = None,
+    timed_out: bool = False,
+) -> VerifierOutcome:
+    tool_name = ToolName(tool)
+    payload = json.dumps(
+        {
+            "candidate_id": candidate.candidate_id,
+            "exit_code": exit_code,
+            "status": status.value,
+            "stderr_sha256": sha256_text(stderr),
+            "stdout_sha256": sha256_text(stdout),
+            "tool": tool_name.value,
+        },
+        sort_keys=True,
+    )
+    return VerifierOutcome(
+        outcome_id=make_outcome_id(candidate.attempt_id, tool_name, payload),
+        run_id=candidate.run_id,
+        problem_id=problem.problem_id,
+        candidate_id=candidate.candidate_id,
+        attempt_id=candidate.attempt_id,
+        ok=status == VerificationStatus.PASSED,
+        tool=tool_name,
+        status=status,
+        exit_code=exit_code,
+        elapsed_ms=elapsed_ms,
+        timed_out=timed_out,
+        stdout_ref=stdout_ref,
+        stderr_ref=stderr_ref,
+        diagnostics=diagnostics,
+        artifact_refs=artifact_refs,
+        error=error,
+        metadata=metadata or {},
+    )

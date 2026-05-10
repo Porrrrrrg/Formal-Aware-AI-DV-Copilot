@@ -1,22 +1,7 @@
-"""Verifier adapter protocol."""
+"""Compatibility re-export for canonical adapter protocols."""
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Protocol
+from app.core.protocols import ArtifactWriter, ToolAdapter, ToolProbe, VerifierAdapter
 
-from core.schemas import Candidate, ProblemSpec, ToolName, VerifierOutcome
-
-
-class ToolAdapter(Protocol):
-    """Protocol implemented by Lean, Z3, cvc5, and future verifier adapters."""
-
-    tool: ToolName
-
-    def verify(
-        self,
-        problem: ProblemSpec,
-        candidate: Candidate,
-        work_dir: Path | None = None,
-    ) -> VerifierOutcome:
-        """Check a candidate and return normalized verifier feedback."""
+__all__ = ["ArtifactWriter", "ToolAdapter", "ToolProbe", "VerifierAdapter"]
