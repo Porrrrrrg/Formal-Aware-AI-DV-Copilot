@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
@@ -26,6 +27,8 @@ INCA_libs/
 xcelium.d/
 .formal/
 jgproject/
+artifacts/
+dist/
 
 # Local secrets and model configs
 .env

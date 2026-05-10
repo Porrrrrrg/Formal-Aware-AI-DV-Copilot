@@ -1,0 +1,180 @@
+name: Nightly Bench
+
+on:
+  schedule:
+    - cron: "27 8 * * *"
+  workflow_dispatch:
+    inputs:
+      benchmark_scope:
+        description: Benchmark depth to run.
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - smoke
+      include_jasper_dry_run:
+        description: Generate JasperGold dry-run collateral without invoking JasperGold.
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: nightly-bench-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  attestations: write
+  contents: read
+  id-token: write
+  security-events: none
+
+env:
+  BENCHMARK_SCOPE: ${{ inputs.benchmark_scope || 'full' }}
+  INCLUDE_JASPER_DRY_RUN: ${{ inputs.include_jasper_dry_run != false }}
+  JASPERLOOP_ALLOW_NETWORK: "false"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  benchmark:
+    name: Deterministic benchmark
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install benchmark dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run nightly benchmark suite
+        run: |
+          mkdir -p artifacts/nightly
+          make nightly-bench OUT_ROOT=artifacts/nightly/retrieval
+          python scripts/build_all_evidence_packets.py \
+            --out-dir artifacts/nightly/case_packets \
+            > artifacts/nightly/case_packets_summary.json
+          python evaluation/run_agent_eval.py \
+            --all-systems \
+            --packet-source minimal \
+            --out artifacts/nightly/agent_eval.json \
+            > artifacts/nightly/agent_eval_summary.json
+          python evaluation/run_coverage_eval.py \
+            --all-systems \
+            --packet-source minimal \
+            --out artifacts/nightly/coverage_eval.json \
+            > artifacts/nightly/coverage_eval_summary.json
+          python evaluation/run_sva_eval.py \
+            --out artifacts/nightly/sva_eval.json \
+            > artifacts/nightly/sva_eval_summary.json
+
+          if [ "${BENCHMARK_SCOPE}" = "full" ]; then
+            python evaluation/run_sva_repair_eval.py \
+              --out artifacts/nightly/sva_repair_eval.json \
+              > artifacts/nightly/sva_repair_eval_summary.json
+            python evaluation/run_sva_repair_ablation.py \
+              --out artifacts/nightly/sva_repair_ablation.json \
+              > artifacts/nightly/sva_repair_ablation_summary.json
+          fi
+
+          if [ "${INCLUDE_JASPER_DRY_RUN}" = "true" ]; then
+            python evaluation/run_sva_repair_eval.py \
+              --limit 3 \
+              --max-rounds 1 \
+              --jasper-dry-run \
+              --out artifacts/nightly/sva_repair_dry_run.json \
+              > artifacts/nightly/sva_repair_dry_run_summary.json
+          fi
+
+      - name: Write benchmark summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("artifacts/nightly")
+
+          def load(name):
+            path = root / name
+            if not path.exists():
+              return {}
+            return json.loads(path.read_text())
+
+          agent = load("agent_eval_summary.json")
+          coverage = load("coverage_eval_summary.json")
+          sva = load("sva_eval_summary.json")
+          repair = load("sva_repair_eval_summary.json")
+          packets = load("case_packets_summary.json")
+
+          lines = [
+            "# Nightly benchmark summary",
+            "",
+            f"- ref: `{os.environ.get('GITHUB_REF_NAME', '')}`",
+            f"- sha: `{os.environ.get('GITHUB_SHA', '')}`",
+            f"- scope: `{os.environ.get('BENCHMARK_SCOPE', '')}`",
+            f"- generated packets: `{packets.get('num_cases', 'unknown')}`",
+            "",
+            "## Agent triage",
+          ]
+          for system, summary in agent.get("systems", {}).items():
+            lines.append(
+              f"- `{system}`: cases={summary.get('num_cases')}, "
+              f"issue_acc={summary.get('issue_type_accuracy')}, "
+              f"action_acc={summary.get('next_action_accuracy')}, "
+              f"hallucinated_signal_rate={summary.get('hallucinated_signal_rate')}"
+            )
+          lines.append("")
+          lines.append("## Coverage closure")
+          for system, summary in coverage.get("systems", {}).items():
+            lines.append(
+              f"- `{system}`: cases={summary.get('num_cases')}, "
+              f"gap_acc={summary.get('gap_type_accuracy')}, "
+              f"action_acc={summary.get('action_accuracy')}, "
+              f"wrong_test_suggestion_rate={summary.get('wrong_test_suggestion_rate')}"
+            )
+          lines.append("")
+          lines.append("## SVA generation")
+          for system, summary in sva.get("systems", {}).items():
+            lines.append(
+              f"- `{system}`: cases={summary.get('num_cases')}, "
+              f"syntax_scaffold_rate={summary.get('syntax_scaffold_rate')}, "
+              f"hallucinated_signal_rate={summary.get('hallucinated_signal_rate')}"
+            )
+          if repair:
+            lines.append("")
+            lines.append("## SVA repair")
+            lines.append(
+              f"- cases={repair.get('num_cases')}, "
+              f"repair_success_rate={repair.get('repair_success_rate')}, "
+              f"average_rounds_to_success={repair.get('average_rounds_to_success')}"
+            )
+          summary = "\n".join(lines) + "\n"
+          (root / "summary.md").write_text(summary)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as handle:
+            handle.write(summary)
+          PY
+
+      - name: Upload nightly benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-benchmark-results
+          path: artifacts/nightly
+          retention-days: 30
+
+      - name: Attest nightly benchmark artifacts
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: artifacts/nightly/**
