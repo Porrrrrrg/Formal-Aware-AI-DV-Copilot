@@ -10,7 +10,8 @@ tokens.
 - `.github/workflows/ci.yml`
   - Runs on pull requests, pushes to `main`, and manual dispatch.
   - Gates PRs with workflow lint, Ruff, pytest, schema validation, deterministic
-    smoke tests, secret scanning, CodeQL, and a human review check.
+    smoke tests, secret scanning, CodeQL, and a maintainer-controlled review
+    label check for solo-repository operation.
   - Attests CI smoke artifacts on trusted non-PR events only.
 - `.github/workflows/nightly-bench.yml`
   - Runs nightly and on manual dispatch.
@@ -26,8 +27,10 @@ tokens.
 Configure `main` in GitHub branch protection or repository rulesets:
 
 - Require a pull request before merging.
-- Require at least one approving review from a non-bot reviewer.
-- Dismiss stale approvals when new commits are pushed.
+- Require approving reviews only when a real second reviewer is available.
+- For solo-repository operation, rely on the `MERGE_READY` label gate and do not
+  require approving reviews.
+- Dismiss stale approvals when approving reviews are required.
 - Block direct pushes to `main`; only admins may bypass in emergencies.
 - Require these status checks before merge:
   - `Review gate`
@@ -39,8 +42,10 @@ Configure `main` in GitHub branch protection or repository rulesets:
   - `CodeQL`
 - Require branches to be up to date before merging when practical.
 
-The `Review gate` workflow check is a CI-side backstop. Branch protection is
-still the source of truth for preventing direct pushes and merges without review.
+The `Review gate` workflow check is a CI-side backstop. In solo-repository mode
+it requires a non-draft PR, no active `CHANGES_REQUESTED` review, and the
+maintainer-controlled `MERGE_READY` label. Branch protection is still the source
+of truth for preventing direct pushes and merges outside the queue.
 
 ## Token Permissions
 

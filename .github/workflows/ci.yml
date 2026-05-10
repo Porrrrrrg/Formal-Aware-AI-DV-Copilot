@@ -36,7 +36,7 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - name: Require human approval
+      - name: Require merge-ready label
         uses: actions/github-script@v7
         with:
           script: |
@@ -54,9 +54,13 @@ jobs:
             });
 
             const latestByReviewer = new Map();
+            const changeRequests = [];
             for (const review of reviews) {
               if (!review.user || review.user.type === "Bot") {
                 continue;
+              }
+              if (review.state === "CHANGES_REQUESTED") {
+                changeRequests.push(review.user.login);
               }
               latestByReviewer.set(review.user.login, review.state);
             }
@@ -64,19 +68,20 @@ jobs:
             const approvals = [...latestByReviewer.entries()]
               .filter(([, state]) => state === "APPROVED")
               .map(([login]) => login);
-            const changeRequests = [...latestByReviewer.entries()]
-              .filter(([, state]) => state === "CHANGES_REQUESTED")
-              .map(([login]) => login);
+            const labels = pr.labels.map((label) => label.name);
 
             if (changeRequests.length > 0) {
               core.setFailed(`Changes requested by: ${changeRequests.join(", ")}`);
               return;
             }
-            if (approvals.length < 1) {
-              core.setFailed("At least one non-bot approving review is required.");
+            if (!labels.includes("MERGE_READY")) {
+              core.setFailed("Solo-repo review gate requires MERGE_READY label.");
               return;
             }
-            core.info(`Review gate satisfied by: ${approvals.join(", ")}`);
+            if (approvals.length > 0) {
+              core.info(`Non-bot approvals present: ${approvals.join(", ")}`);
+            }
+            core.info("Review gate satisfied by MERGE_READY label.");
 
   workflow-lint:
     name: Workflow lint
