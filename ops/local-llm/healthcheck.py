@@ -471,6 +471,8 @@ def main() -> int:
         "selected_profile": profile.name,
         "profiles": {name: asdict(item) for name, item in profiles.items()},
         **manifest_fields,
+        "healthcheck_prompt": prompt,
+        "response_format_requested": not args.no_response_format,
         "local": {
             "status": local_status,
             "base_url": args.base_url,
