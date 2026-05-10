@@ -1,0 +1,1436 @@
+{
+  "contamination_evidence": {
+    "case_id_overlaps": {
+      "dev:test": [],
+      "dev:train": [],
+      "test:train": []
+    },
+    "design_id_overlaps": {
+      "dev:test": [],
+      "dev:train": [],
+      "test:train": []
+    },
+    "indexed_case_or_answer_files": [],
+    "official_splits_modified": false,
+    "split_policy": "by_design_family",
+    "test_answer_fields_indexed": false,
+    "training_cache_policy": "Benchmark originals and repair/gold answers must not enter a training cache unless records retain source, split, and answer-field metadata."
+  },
+  "description": "Repo-local DV benchmark overlay for retrieval and nightly regression.",
+  "documents": [
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+      "kind": "coverage",
+      "path": "benchmarks/arbiter_rr2/coverage/coverage_plan.yaml",
+      "sha256": "sha256:401f0180a2549c04f8fba0b189af505e4564e047a781d5d11b287ae410637d11"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+      "kind": "formal",
+      "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+      "sha256": "sha256:c7bda61554f2c88d21e044e9fd8b0959bb1cdc181405a639c11bb5d5174b56aa"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+      "kind": "formal",
+      "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+      "sha256": "sha256:db34e926a00c95f9d928ddcf344a8a7eecef69989f55b74791f51453e52b5d5e"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+      "kind": "formal",
+      "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+      "sha256": "sha256:1f42b754745aec7a414f1099cd24b4c235cd6e2a389e242b6b670fe0a7097a15"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+      "kind": "formal",
+      "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+      "sha256": "sha256:9d010b12221ac009404289bd4549fe22d4884e3832d915b8f55d7b113d75e9e8"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+      "sha256": "sha256:3638c237fd4b8c3e89b3d5d7a3e11ee3d7ff7b6d224c70d72dc1be4797f1593b"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/arbiter_rr2/manifests/assumption_manifest.yaml",
+      "sha256": "sha256:d26e6b259b4cec93e91274d53c1b22684c5724ab4aadbe9f998848caff54b6f1"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+      "sha256": "sha256:04a61a8ba56e8ee06ba66324a363ff066a44bd3e2ab846398a32bb60142102ce"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_double_grant.sv",
+      "kind": "rtl",
+      "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_double_grant.sv",
+      "sha256": "sha256:1313847b275b62189883759875e425d9d9a3bc6e91eeda412ea0806fbe31e399"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_spurious_grant.sv",
+      "kind": "rtl",
+      "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_spurious_grant.sv",
+      "sha256": "sha256:dce91cbf1b5649d22c3c1649ae7aa35a20f4da5cc3ffd1523ec96c29e3cc2e15"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+      "kind": "rtl",
+      "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+      "sha256": "sha256:99736cef969d098e097f039f50ba55ef23a81d2a803c67ef5cfd524969ef5805"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+      "kind": "rtl",
+      "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+      "sha256": "sha256:1de2e1e12abab2bc0539072d5bc489e90113716eef664f750226909284ade428"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "arbiter_rr2",
+      "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+      "kind": "spec",
+      "path": "benchmarks/arbiter_rr2/spec.md",
+      "sha256": "sha256:e3f5f8fc578331b3509b1c03692e7402a4b7ba5963aa4c70c312b67ecf538589"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+      "kind": "coverage",
+      "path": "benchmarks/rv_buffer/coverage/coverage_plan.yaml",
+      "sha256": "sha256:406c34e40236eb05e34d9b17d59b33d739ba139ccbe777fa968acebad8dcf476"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+      "kind": "formal",
+      "path": "benchmarks/rv_buffer/formal/run_jg.tcl",
+      "sha256": "sha256:100206a627cbd39e9fc5f561759bf8b04c92be936b299f1c94cbdab49f178670"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+      "kind": "formal",
+      "path": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+      "sha256": "sha256:1bcdb2360bc1ffe5c165a137a7f9d412ae7c0c0eb31c8e5f6a3d9ec66ed349ab"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+      "kind": "formal",
+      "path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+      "sha256": "sha256:bd143ae0fdf5293c10f83d5c29c89f0eccd6e145e9213c73ae2a07148b6539a1"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+      "kind": "formal",
+      "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+      "sha256": "sha256:fe8b912c63ee0cab49b57d0eee3dc9e15fbccfc77305d6910389c55dd6b38178"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/rv_buffer/manifests/assertion_manifest.yaml",
+      "sha256": "sha256:61bcb95e1b46d1c4392cc0337b5c7af834f0302ee2c73c2e4dd68ec973d6c888"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/rv_buffer/manifests/assumption_manifest.yaml",
+      "sha256": "sha256:5259392137c3cd3ebb0f6ea8ecfb517c3532228d2098680f408ccbb3fe95ac93"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/rv_buffer/manifests/signal_role_map.yaml",
+      "sha256": "sha256:55de7a4f0b2b0d0af099d1cc774c2242b966ac360332c065a07574e086bd26b8"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_bad_full_update.sv",
+      "kind": "rtl",
+      "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_bad_full_update.sv",
+      "sha256": "sha256:1e0c40dc66648828408a6f23e4f53342ddc016f1e2f7137d2d4169df4df46a0b"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_inready.sv",
+      "kind": "rtl",
+      "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_inready.sv",
+      "sha256": "sha256:38637cc933404cbcbe51b1dbe6d662b0a853137872e7d9a1bc87c616a732ea29"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+      "kind": "rtl",
+      "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+      "sha256": "sha256:b5b84b7034cd38bc27b47910fb2aef106d306c089de507b938ba2e64b064061b"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+      "kind": "rtl",
+      "path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+      "sha256": "sha256:58804e2a94241c5a3868d638e8a03116c43d7c3949337232f578582e32149f4a"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "rv_buffer",
+      "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+      "kind": "spec",
+      "path": "benchmarks/rv_buffer/spec.md",
+      "sha256": "sha256:10798879154e9b610eca902e64f0040beec4de1d84fa7dac80e635ff052f05e6"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+      "kind": "coverage",
+      "path": "benchmarks/apb_regblock/coverage/coverage_plan.yaml",
+      "sha256": "sha256:e9c82233a810ac7b6cfb93c279dc985e0e16d126a634b943925f7f0ef463f135"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+      "kind": "formal",
+      "path": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+      "sha256": "sha256:2d486402ad4f1bfd0499dccdfdc9dae1455ece6ce7fdfa7b9e0a520234bddf79"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+      "kind": "formal",
+      "path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+      "sha256": "sha256:ce896027f3119409e359bafeb76c2943b81c61ae30d4e583c53afaaeed286ce3"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+      "kind": "formal",
+      "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+      "sha256": "sha256:958b8a9c6982325ed2d3a9949c7ad62ca4caa61ac12b5a64dbf58cb43d4bb697"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+      "kind": "formal",
+      "path": "benchmarks/apb_regblock/formal/run_jg.tcl",
+      "sha256": "sha256:4c00febcc11d08fa7aa14f850a560b9d7fd6f526a318b00b62e1964e05f9e115"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+      "sha256": "sha256:bcf2f5ecc0e7f8238014bd284d5d865b68197d8c42fa4ee00fe207ac18641401"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/apb_regblock/manifests/assumption_manifest.yaml",
+      "sha256": "sha256:18e81c301630ddfdab9ada7d3fe6859940e124ee0da762785620a010ea1f4d01"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+      "sha256": "sha256:21d3e92456997094c384202c2856e9e394a6ed81f7d9dda39c45183a084db995"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_read_latency.sv",
+      "kind": "rtl",
+      "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_read_latency.sv",
+      "sha256": "sha256:476547446cccdab7fd1aefa1ca0c98c852763cde37eb298aa2c3f7fedc9e3d67"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_write_enable.sv",
+      "kind": "rtl",
+      "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_write_enable.sv",
+      "sha256": "sha256:bbb3e902d6939b59643d10d199873e9cb8b47d8871d1434d28a3872fbc6f6554"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_wrong_addr.sv",
+      "kind": "rtl",
+      "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_wrong_addr.sv",
+      "sha256": "sha256:229a66887b8985bc2649b822ada034ec1e1b6309761eed2ed129dd17f1b3a33d"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+      "kind": "rtl",
+      "path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+      "sha256": "sha256:eeb84e718f568564b9cd873706edef047e0ade097ec6e6ffe22cef16d4491932"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "apb_regblock",
+      "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+      "kind": "spec",
+      "path": "benchmarks/apb_regblock/spec.md",
+      "sha256": "sha256:bd0cf3a86a1140997530061889b54d9991dae3e7115af618b513f119a2778a04"
+    }
+  ],
+  "items": [
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A2",
+      "case_path": "benchmarks/arbiter_rr2/cases/assertion_bug_missing_persistence.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A2",
+      "property_id": "p_persistent_fairness0_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A5",
+      "case_path": "benchmarks/arbiter_rr2/cases/assertion_bug_unconditional_turn_flip.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A5",
+      "property_id": "p_turn_flips_on_any_grant_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A6",
+      "case_path": "benchmarks/arbiter_rr2/cases/assumption_bug_no_simultaneous_requests.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A6",
+      "property_id": "p_persistent_fairness0",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A7",
+      "case_path": "benchmarks/arbiter_rr2/cases/assumption_bug_reset_stuck.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A7",
+      "property_id": "p_mutex",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A3",
+      "case_path": "benchmarks/arbiter_rr2/cases/coverage_invalid_double_grant.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A3",
+      "property_id": "cov_illegal_double_grant",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A9",
+      "case_path": "benchmarks/arbiter_rr2/cases/coverage_reachable_alternating_grants.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A9",
+      "property_id": "cov_alternating_grants",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A10",
+      "case_path": "benchmarks/arbiter_rr2/cases/coverage_reachable_turn1_priority.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A10",
+      "property_id": "cov_turn1_contested_grant",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A1",
+      "case_path": "benchmarks/arbiter_rr2/cases/rtl_bug_double_grant.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_double_grant.sv",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A1",
+      "property_id": "p_mutex",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A4",
+      "case_path": "benchmarks/arbiter_rr2/cases/rtl_bug_turn_update.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A4",
+      "property_id": "p_persistent_fairness1",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A8",
+      "case_path": "benchmarks/arbiter_rr2/cases/testbench_bug_no_contention_stimulus.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A8",
+      "property_id": "cov_alternating_grants",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B2",
+      "case_path": "benchmarks/rv_buffer/cases/assertion_bug_capture_without_fire.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B2",
+      "property_id": "p_capture_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B5",
+      "case_path": "benchmarks/rv_buffer/cases/assertion_bug_stable_without_valid.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B5",
+      "property_id": "p_data_stable_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B6",
+      "case_path": "benchmarks/rv_buffer/cases/assumption_bug_no_output_stalls.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B6",
+      "property_id": "p_data_stable_while_stalled",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B7",
+      "case_path": "benchmarks/rv_buffer/cases/assumption_bug_no_simultaneous_transfer.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B7",
+      "property_id": "cov_simultaneous_enqueue_dequeue",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B10",
+      "case_path": "benchmarks/rv_buffer/cases/coverage_invalid_dequeue_when_empty.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B10",
+      "property_id": "cov_dequeue_when_empty",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B3",
+      "case_path": "benchmarks/rv_buffer/cases/coverage_reachable_simultaneous.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B3",
+      "property_id": "cov_simultaneous_enqueue_dequeue",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B9",
+      "case_path": "benchmarks/rv_buffer/cases/coverage_reachable_stall_then_dequeue.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B9",
+      "property_id": "cov_stall_then_dequeue",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B4",
+      "case_path": "benchmarks/rv_buffer/cases/rtl_bug_inready.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_inready.sv",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B4",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B1",
+      "case_path": "benchmarks/rv_buffer/cases/rtl_bug_overwrite.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B1",
+      "property_id": "p_data_stable_while_stalled",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B8",
+      "case_path": "benchmarks/rv_buffer/cases/testbench_bug_never_dequeues.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B8",
+      "property_id": "cov_stall_then_dequeue",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C6",
+      "case_path": "benchmarks/apb_regblock/cases/assertion_bug_read_next_cycle.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C6",
+      "property_id": "p_read_next_cycle_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C5",
+      "case_path": "benchmarks/apb_regblock/cases/assertion_bug_write_in_setup_phase.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C5",
+      "property_id": "p_write_updates_in_setup_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C7",
+      "case_path": "benchmarks/apb_regblock/cases/assumption_bug_no_reads.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C7",
+      "property_id": "p_read_returns_reg0",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C2",
+      "case_path": "benchmarks/apb_regblock/cases/assumption_bug_valid_only.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C2",
+      "property_id": "cov_invalid_address",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C10",
+      "case_path": "benchmarks/apb_regblock/cases/coverage_invalid_wait_state.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C10",
+      "property_id": "cov_wait_state_pready_low",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C9",
+      "case_path": "benchmarks/apb_regblock/cases/coverage_reachable_invalid_address.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C9",
+      "property_id": "cov_invalid_address",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C8",
+      "case_path": "benchmarks/apb_regblock/cases/coverage_reachable_write_reg0_then_read.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C8",
+      "property_id": "cov_write_reg0_then_read",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C4",
+      "case_path": "benchmarks/apb_regblock/cases/rtl_bug_read_latency.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_read_latency.sv",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C4",
+      "property_id": "p_read_returns_reg0",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C1",
+      "case_path": "benchmarks/apb_regblock/cases/rtl_bug_wrong_addr.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_wrong_addr.sv",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C1",
+      "property_id": "p_write_updates_reg0",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C3",
+      "case_path": "benchmarks/apb_regblock/cases/testbench_bug_setup_enable.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C3",
+      "property_id": "p_setup_then_enable",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    }
+  ],
+  "name": "local_dv",
+  "source_priority": "Use checked-in benchmark assets before external public datasets.",
+  "sources": [
+    {
+      "name": "local_rtl_dv",
+      "notes": "Repo-local SVA/RTL DV benchmark assets.",
+      "path": "benchmarks/{arbiter_rr2,rv_buffer,apb_regblock}",
+      "status": "present"
+    },
+    {
+      "name": "miniF2F",
+      "notes": "No checked-in source directory found during registry creation.",
+      "path": null,
+      "status": "absent"
+    },
+    {
+      "name": "ProofNet",
+      "notes": "No checked-in source directory found during registry creation.",
+      "path": null,
+      "status": "absent"
+    },
+    {
+      "name": "SMT-LIB",
+      "notes": "No checked-in source directory found during registry creation.",
+      "path": null,
+      "status": "absent"
+    },
+    {
+      "name": "traced_repos",
+      "notes": "No checked-in source directory found during registry creation.",
+      "path": null,
+      "status": "absent"
+    }
+  ],
+  "splits": {
+    "dev": "benchmarks/local_dv/splits/dev.json",
+    "test": "benchmarks/local_dv/splits/test.json",
+    "train": "benchmarks/local_dv/splits/train.json"
+  },
+  "vector_backend": {
+    "reason": "Qdrant URL/collection and embedding configuration are not present in repo.",
+    "status": "unspecified"
+  },
+  "version": "2026-05-10-local-overlay"
+}

@@ -1,0 +1,19 @@
+{
+  "design_ids": [
+    "rv_buffer"
+  ],
+  "item_ids": [
+    "local_dv:rv_B2",
+    "local_dv:rv_B5",
+    "local_dv:rv_B6",
+    "local_dv:rv_B7",
+    "local_dv:rv_B10",
+    "local_dv:rv_B3",
+    "local_dv:rv_B9",
+    "local_dv:rv_B4",
+    "local_dv:rv_B1",
+    "local_dv:rv_B8"
+  ],
+  "policy": "repo-local overlay; split by design family",
+  "split": "dev"
+}
