@@ -671,6 +671,7 @@
       "enum": [
         "passed",
         "failed",
+        "blocked",
         "unknown",
         "timeout",
         "error"

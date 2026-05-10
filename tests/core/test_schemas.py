@@ -184,6 +184,24 @@ def test_schema_rejects_extra_top_level_fields(samples: dict[str, object]) -> No
         ).validate(payload)
 
 
+@pytest.mark.parametrize("field", ["manifest_ref", "raw_status"])
+def test_schema_rejects_legacy_verifier_outcome_fields(
+    samples: dict[str, object],
+    field: str,
+) -> None:
+    schema = load_core_schema(SCHEMA_PATH)
+    payload = samples["VerifierOutcome"].model_dump(mode="json")
+    payload[field] = "legacy"
+
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(schema).evolve(
+            schema={"$ref": "#/$defs/VerifierOutcome"}
+        ).validate(payload)
+
+    with pytest.raises(ValueError):
+        VerifierOutcome.model_validate(payload)
+
+
 def test_problem_tool_language_compatibility(ids: dict[str, str]) -> None:
     with pytest.raises(ValueError, match="z3 problems must use smt2"):
         ProblemSpec(
