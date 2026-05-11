@@ -1,0 +1,149 @@
+{
+  "utc_timestamp": "2026-05-11T01:20:33Z",
+  "phase": "Stage 2C",
+  "scope": "Codex response schema strictness repair and same 3+3+3 subset rerun",
+  "not_full_benchmark": true,
+  "base_head_provided_by_parent": "96a527cf1123ab6ab5aa00d8aad0ec6db8ce40e2",
+  "protected_paths_changed": false,
+  "schema_changes": [
+    {
+      "path": "copilot/schemas/diagnosis_output.schema.json",
+      "changes": [
+        "Added suspect_rtl_signals to top-level required",
+        "Added suspect_assertions_or_assumptions to top-level required",
+        "Added additionalProperties:false to root_cause_ranked.items"
+      ]
+    },
+    {
+      "path": "copilot/schemas/coverage_closure_output.schema.json",
+      "changes": [
+        "Added declared property case_id to top-level required"
+      ]
+    },
+    {
+      "path": "copilot/schemas/sva_generation_output.schema.json",
+      "changes": [
+        "Changed top-level additionalProperties from true to false"
+      ]
+    },
+    {
+      "path": "copilot/schemas/sva_repair_output.schema.json",
+      "changes": [
+        "Added additionalProperties:false to rounds.items",
+        "Added feedback to rounds.items.required",
+        "Changed rounds.items.feedback to nullable string"
+      ]
+    },
+    {
+      "path": "copilot/schemas/sva_repair_candidate.schema.json",
+      "changes": [
+        "Inspected; already strict"
+      ]
+    }
+  ],
+  "test_files_added": [
+    "tests/test_response_schemas_strict.py"
+  ],
+  "commands": [
+    {
+      "command": "python -m pytest -q tests\\test_response_schemas_strict.py",
+      "result": "pass",
+      "summary": "2 passed"
+    },
+    {
+      "command": "python scripts/export_codex_prompts.py --task all --limit 3 --summary-only",
+      "result": "pass",
+      "summary": "9 prompts"
+    },
+    {
+      "command": "python scripts/run_codex_llm_eval.py --task healthcheck",
+      "result": "pass",
+      "summary": "Codex adapter returned schema-conformant SVA repair candidate JSON"
+    },
+    {
+      "command": "python scripts/run_codex_llm_eval.py --task sva_repair --limit 3 --acknowledge-external-send",
+      "result": "pass",
+      "summary": "3 cases; source_counts llm:5; fallback_rate 0.0; llm_error_rate 0.0"
+    },
+    {
+      "command": "python scripts/run_codex_llm_eval.py --task triage --limit 3 --acknowledge-external-send",
+      "result": "pass",
+      "summary": "3 cases; source_counts llm:3; fallback_rate 0.0; llm_error_rate 0.0"
+    },
+    {
+      "command": "python scripts/run_codex_llm_eval.py --task coverage --limit 3 --acknowledge-external-send",
+      "result": "pass",
+      "summary": "3 cases; source_counts llm:3; fallback_rate 0.0; llm_error_rate 0.0"
+    },
+    {
+      "command": "python -m pytest -q",
+      "result": "pass",
+      "summary": "67 passed"
+    },
+    {
+      "command": "python -m ruff check .",
+      "result": "pass",
+      "summary": "All checks passed"
+    }
+  ],
+  "before": {
+    "valid_json_rate": 0.3333333333333333,
+    "valid_json_count": 3,
+    "total_cases": 9,
+    "fallback_rate": 0.6666666666666666,
+    "fallback_count": 6,
+    "llm_error_rate": 0.6666666666666666,
+    "llm_error_count": 6,
+    "source": "Stage 2B observed blocker baseline"
+  },
+  "after": {
+    "valid_json_rate": 1.0,
+    "valid_json_count": 9,
+    "total_cases": 9,
+    "fallback_rate": 0.0,
+    "fallback_count": 0,
+    "llm_error_rate": 0.0,
+    "llm_error_count": 0
+  },
+  "task_rerun": [
+    {
+      "task": "sva_repair",
+      "cases": 3,
+      "source_counts": {
+        "llm": 5
+      },
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "valid_json": true,
+      "notes": "Valid structured JSON; 2/3 scaffold repair success. Remaining repair miss is behavior, not schema fallback."
+    },
+    {
+      "task": "triage",
+      "cases": 3,
+      "source_counts": {
+        "llm": 3
+      },
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "valid_json": true,
+      "notes": "All 3 triage cases returned valid JSON; Stage 2B nested item strictness blocker resolved."
+    },
+    {
+      "task": "coverage",
+      "cases": 3,
+      "source_counts": {
+        "llm": 3
+      },
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "valid_json": true,
+      "notes": "All 3 coverage cases returned valid JSON; Stage 2B case_id required blocker resolved."
+    }
+  ],
+  "claims_excluded": [
+    "Codex full benchmark performance",
+    "production readiness",
+    "Qwen/cloud comparison",
+    "final research result"
+  ]
+}

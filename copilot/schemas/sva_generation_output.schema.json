@@ -8,5 +8,5 @@
     "sva": { "type": "string" },
     "explanation": { "type": "string" }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }
