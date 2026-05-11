@@ -1,7 +1,12 @@
 {
-  "run_id": "run_20260510T215354Z",
+  "schema_version": "v1",
+  "canonical_schema": "schemas/v1/core.schema.json",
+  "run_id": "run_20260511T000415Z_0b7d76718814_2e9785",
   "benchmark": "local_dv",
   "split": "all",
+  "problem_spec_ref": "problem_spec.json",
+  "candidate_ref": "candidate.json",
+  "verifier_outcome_ref": "verifier_outcome.json",
   "taxonomy": [
     "syntax_error",
     "missing_premise",

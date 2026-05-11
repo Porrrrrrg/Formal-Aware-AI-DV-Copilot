@@ -1,6 +1,6 @@
 # Retrieval Benchmark Summary: local_dv
 
-- Run ID: `run_20260510T215354Z`
+- Run ID: `run_20260511T000415Z_0b7d76718814_2e9785`
 - Split: `all`
 - Top-k: `5`
 - Cases: `30`
@@ -18,9 +18,9 @@
 
 | Metric | Value |
 |---|---:|
-| `avg_ms` | 0.054 |
-| `p50_ms` | 0.048 |
-| `p95_ms` | 0.097 |
+| `avg_ms` | 0.066 |
+| `p50_ms` | 0.059 |
+| `p95_ms` | 0.102 |
 | `timeout_ms` | 1000.0 |
 
 ## Cost
@@ -54,6 +54,6 @@
 ## Notes
 
 - Retrieval path evaluated: sparse symbolic index.
-- Verifier outcome aggregation is marked `unspecified` for this retrieval run; no JasperGold
-  solver invocation is performed by the retrieval evaluator.
+- A canonical `VerifierOutcome` is written for CI gating; no JasperGold solver
+  invocation is performed by the retrieval evaluator.
 - Vector retrieval is available only when Qdrant and query-vector configuration are supplied.
