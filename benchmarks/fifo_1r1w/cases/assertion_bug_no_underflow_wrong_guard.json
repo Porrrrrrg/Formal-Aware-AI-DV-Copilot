@@ -1,0 +1,15 @@
+{
+  "case_id": "fifo_D6",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_no_underflow_bad",
+  "property_intent": "No underflow should mean no completed pop from an empty FIFO.",
+  "assertion_intent": {
+    "broken_sva": "p_no_underflow_bad: assert property (@(posedge clk) disable iff (rst) !(empty && pop_ready));",
+    "reference_sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));"
+  },
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The broken property forbids a consumer from being ready while the FIFO is empty, even though no pop completes without pop_valid."
+}

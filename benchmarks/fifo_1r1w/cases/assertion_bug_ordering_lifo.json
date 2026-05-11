@@ -1,0 +1,15 @@
+{
+  "case_id": "fifo_D7",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_fifo_ordering_lifo_bad",
+  "property_intent": "The FIFO ordering assertion should compare pop_data against the oldest queued item.",
+  "assertion_intent": {
+    "broken_sva": "p_fifo_ordering_lifo_bad: assert property (@(posedge clk) disable iff (rst) pop_fire |-> pop_data == ref_mem[ref_wr_q]);",
+    "reference_sva": "p_fifo_ordering: assert property (@(posedge clk) disable iff (rst) pop_fire |-> ref_count_q != '0 && pop_data == ref_mem[ref_rd_q]);"
+  },
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The broken property checks the write pointer entry, effectively asking for LIFO behavior on a FIFO."
+}

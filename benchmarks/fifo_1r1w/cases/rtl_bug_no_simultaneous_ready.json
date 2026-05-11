@@ -1,0 +1,15 @@
+{
+  "case_id": "fifo_D5",
+  "design_id": "fifo_1r1w",
+  "variant": "bug_no_simultaneous_ready",
+  "task_type": "failure_triage",
+  "property_id": "p_simultaneous_push_pop_full",
+  "property_intent": "A full FIFO should accept a push in the same cycle that it pops.",
+  "design_intent": [
+    "push_ready is allowed while full only when a pop will free an entry.",
+    "Simultaneous transfer keeps throughput at one item per cycle."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The no-simultaneous-ready variant deasserts push_ready whenever full, blocking legal push+pop cycles."
+}

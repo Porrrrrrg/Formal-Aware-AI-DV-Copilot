@@ -1,0 +1,17 @@
+{
+  "case_id": "fifo_D17",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_eventual_pop",
+  "coverage_context": {
+    "coverage_goal": "cov_stall_then_pop",
+    "observed_hits": 0,
+    "expected_reachable": true,
+    "related_signals": ["pop_valid", "pop_ready", "pop_fire"]
+  },
+  "property_intent": "Valid FIFO output should eventually be accepted under the fairness bound.",
+  "expected_issue_type": "testbench_stimulus_bug",
+  "expected_next_action": "fix_testbench_or_stimulus",
+  "root_cause": "The stimulus never asserts pop_ready, so liveness and pop-side coverage cannot complete despite correct FIFO behavior."
+}

@@ -1,0 +1,17 @@
+{
+  "case_id": "fifo_D9",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_no_overflow",
+  "active_assumptions": [
+    {
+      "id": "a_no_push_when_full_without_pop",
+      "intent": "Forbids push attempts when the FIFO is full and no pop is happening."
+    }
+  ],
+  "property_intent": "No-overflow checks must exercise full FIFO push attempts.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The assumption removes the antecedent of the no-overflow assertion, making the proof vacuous."
+}

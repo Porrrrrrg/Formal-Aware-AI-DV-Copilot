@@ -1,0 +1,22 @@
+{
+  "case_id": "fifo_D15",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_fill_to_full",
+  "coverage_context": {
+    "coverage_goal": "cov_fill_to_full",
+    "observed_hits": 0,
+    "expected_reachable": true,
+    "jasper_cover_result": "reachable",
+    "related_signals": ["push_valid", "push_ready", "push_fire", "full", "level"],
+    "suggested_sequence": [
+      "Release reset.",
+      "Drive four consecutive push handshakes without pop_ready.",
+      "Observe level equal DEPTH and full asserted."
+    ]
+  },
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "The coverage goal is reachable but requires four directed enqueue handshakes without intervening pops."
+}

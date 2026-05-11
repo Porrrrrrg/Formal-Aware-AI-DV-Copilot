@@ -1,0 +1,17 @@
+{
+  "case_id": "rv_B11",
+  "design_id": "rv_buffer",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_capture_on_input_fire",
+  "active_assumptions": [
+    {
+      "id": "a_never_enqueue",
+      "intent": "Forces in_valid low in every non-reset cycle."
+    }
+  ],
+  "property_intent": "Input capture should be checked when an enqueue handshake can occur.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "Forcing in_valid low makes input_fire unreachable and turns capture checks into vacuous proofs."
+}

@@ -1,0 +1,15 @@
+{
+  "case_id": "fifo_D4",
+  "design_id": "fifo_1r1w",
+  "variant": "bug_reset_level",
+  "task_type": "failure_triage",
+  "property_id": "p_reset_empty",
+  "property_intent": "Reset must leave the FIFO empty with pop_valid low.",
+  "design_intent": [
+    "Reset clears occupancy and pointer state.",
+    "No stale entry is visible after reset."
+  ],
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The reset-level variant initializes count_q to one, making the FIFO appear nonempty after reset."
+}

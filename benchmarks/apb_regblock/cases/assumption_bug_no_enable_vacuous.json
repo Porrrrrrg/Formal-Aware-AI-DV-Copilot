@@ -1,0 +1,17 @@
+{
+  "case_id": "apb_C11",
+  "design_id": "apb_regblock",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_write_updates_reg0",
+  "active_assumptions": [
+    {
+      "id": "a_no_access_phase",
+      "intent": "Forces penable low whenever psel is high."
+    }
+  ],
+  "property_intent": "APB write properties must observe an access phase.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The no-access-phase assumption removes psel && penable write cycles, making write-update assertions vacuous."
+}

@@ -1,0 +1,21 @@
+{
+  "case_id": "fifo_D8",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_eventual_pop_too_fast_bad",
+  "active_assumptions": [
+    {
+      "id": "a_pop_ready_eventually",
+      "intent": "Consumer accepts valid data within four cycles."
+    }
+  ],
+  "property_intent": "Liveness should use the same four-cycle fairness bound as the environment.",
+  "assertion_intent": {
+    "broken_sva": "p_eventual_pop_too_fast_bad: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:1] pop_fire);",
+    "reference_sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:4] pop_fire);"
+  },
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The assertion is stricter than the valid fairness assumption and reports legal two-to-four-cycle stalls as failures."
+}

@@ -329,6 +329,126 @@
       "kind": "spec",
       "path": "benchmarks/apb_regblock/spec.md",
       "sha256": "sha256:bd0cf3a86a1140997530061889b54d9991dae3e7115af618b513f119a2778a04"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+      "kind": "coverage",
+      "path": "benchmarks/fifo_1r1w/coverage/coverage_plan.yaml",
+      "sha256": "sha256:f01db19d1213509bbd20fcf2027cebe355f9fe718ed0001d68c13366fbdb31a1"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+      "kind": "formal",
+      "path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+      "sha256": "sha256:d213297a929fdb175e17622f4b2419cc9c77aed214ffecb21d3dfb85b3d46b09"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+      "kind": "formal",
+      "path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+      "sha256": "sha256:0e2dabdb70653b0ae4ccbefd4d0a5e42b41ae34e9a4804c78ac216f81d650f16"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+      "kind": "formal",
+      "path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+      "sha256": "sha256:19c8d883d886139af7a751cd59122c9df15156d34a89f17c4aeb896f44665aeb"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+      "kind": "formal",
+      "path": "benchmarks/fifo_1r1w/formal/run_jg.tcl",
+      "sha256": "sha256:c6697653066ca4814d842ecd147726eb20ca479b770064a65505c1a99c90b6b8"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/fifo_1r1w/manifests/assertion_manifest.yaml",
+      "sha256": "sha256:afb5d39eca15ebcbfa8b81c42087e438d94866dbc9463e940dc9671fa6a0a789"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/fifo_1r1w/manifests/assumption_manifest.yaml",
+      "sha256": "sha256:c87f1f6b336ac0c558f6088da8951b1a02f319a68089d079049e8e47f6c61d7f"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+      "kind": "manifest",
+      "path": "benchmarks/fifo_1r1w/manifests/signal_role_map.yaml",
+      "sha256": "sha256:fc7b39a5bae4f1d1e0128fa2ce30328975637fec2d01b52234f0227f524e2d43"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_no_simultaneous_ready.sv",
+      "kind": "rtl",
+      "path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_bug_no_simultaneous_ready.sv",
+      "sha256": "sha256:21fd5ea776adee5e3df869cbafb501bd82a97e9e51ca28ff14099d6e35a1b569"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_ordering.sv",
+      "kind": "rtl",
+      "path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_bug_ordering.sv",
+      "sha256": "sha256:c4d9d542d19399e9e05dcc2cef3403dadeaff9e2ecaab6605965480f7b866d3f"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_overflow.sv",
+      "kind": "rtl",
+      "path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_bug_overflow.sv",
+      "sha256": "sha256:cfc6d7cd55f528039ad2a2b2a8a1c6aa58754f3209211cb72c3f82aa40b505fd"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_reset_level.sv",
+      "kind": "rtl",
+      "path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_bug_reset_level.sv",
+      "sha256": "sha256:48cbf68171e3519d13e6ee17e07906c38dc4bd698d4ece5620dd909dee4da1bf"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_simultaneous_level.sv",
+      "kind": "rtl",
+      "path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_bug_simultaneous_level.sv",
+      "sha256": "sha256:aa46d357f92a90a12ebe8a474217553c30608587ce1e882c550944804d369c4b"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+      "kind": "rtl",
+      "path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+      "sha256": "sha256:763ed2be27b10e03111a181a07841ec4f2b9aa3787f1f901e96561ec2469db07"
+    },
+    {
+      "contains_gold_answer": false,
+      "design_id": "fifo_1r1w",
+      "doc_id": "local_dv:benchmarks:fifo_1r1w:spec.md",
+      "kind": "spec",
+      "path": "benchmarks/fifo_1r1w/spec.md",
+      "sha256": "sha256:bac69b104d95d76e30c085c4263dc37dcf2c9697e70284e083ec911b774faa4f"
     }
   ],
   "items": [
@@ -390,6 +510,76 @@
       ],
       "item_id": "local_dv:arbiter_A5",
       "property_id": "p_turn_flips_on_any_grant_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A12",
+      "case_path": "benchmarks/arbiter_rr2/cases/assertion_bug_valid_assumption_wrong_mutex.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A12",
+      "property_id": "p_no_grants_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "train",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "arbiter_A11",
+      "case_path": "benchmarks/arbiter_rr2/cases/assumption_bug_no_grants_vacuous.json",
+      "design_id": "arbiter_rr2",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "item_id": "local_dv:arbiter_A11",
+      "property_id": "p_no_spurious_gnt0",
       "query_fields": [
         "case_id",
         "design_id",
@@ -725,6 +915,41 @@
         "expected_next_action",
         "root_cause"
       ],
+      "case_id": "rv_B12",
+      "case_path": "benchmarks/rv_buffer/cases/assertion_bug_eventual_dequeue_too_strong.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B12",
+      "property_id": "p_eventual_dequeue_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
       "case_id": "rv_B5",
       "case_path": "benchmarks/rv_buffer/cases/assertion_bug_stable_without_valid.json",
       "design_id": "rv_buffer",
@@ -742,6 +967,41 @@
       ],
       "item_id": "local_dv:rv_B5",
       "property_id": "p_data_stable_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "dev",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "rv_B11",
+      "case_path": "benchmarks/rv_buffer/cases/assumption_bug_never_enqueue_vacuous.json",
+      "design_id": "rv_buffer",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_assumptions.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "item_id": "local_dv:rv_B11",
+      "property_id": "p_capture_on_input_fire",
       "query_fields": [
         "case_id",
         "design_id",
@@ -1112,6 +1372,41 @@
         "expected_next_action",
         "root_cause"
       ],
+      "case_id": "apb_C11",
+      "case_path": "benchmarks/apb_regblock/cases/assumption_bug_no_enable_vacuous.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C11",
+      "property_id": "p_write_updates_reg0",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
       "case_id": "apb_C7",
       "case_path": "benchmarks/apb_regblock/cases/assumption_bug_no_reads.json",
       "design_id": "apb_regblock",
@@ -1199,6 +1494,41 @@
       ],
       "item_id": "local_dv:apb_C10",
       "property_id": "cov_wait_state_pready_low",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "apb_C12",
+      "case_path": "benchmarks/apb_regblock/cases/coverage_invalid_zero_wait_pready_low.json",
+      "design_id": "apb_regblock",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "item_id": "local_dv:apb_C12",
+      "property_id": "cov_zero_wait_pready_low",
       "query_fields": [
         "case_id",
         "design_id",
@@ -1387,6 +1717,606 @@
       ],
       "split": "test",
       "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D8",
+      "case_path": "benchmarks/fifo_1r1w/cases/assertion_bug_eventual_pop_too_fast.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D8",
+      "property_id": "p_eventual_pop_too_fast_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D6",
+      "case_path": "benchmarks/fifo_1r1w/cases/assertion_bug_no_underflow_wrong_guard.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D6",
+      "property_id": "p_no_underflow_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D7",
+      "case_path": "benchmarks/fifo_1r1w/cases/assertion_bug_ordering_lifo.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D7",
+      "property_id": "p_fifo_ordering_lifo_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D12",
+      "case_path": "benchmarks/fifo_1r1w/cases/assertion_bug_valid_assumption_wrong_property.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D12",
+      "property_id": "p_no_full_bad",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D9",
+      "case_path": "benchmarks/fifo_1r1w/cases/assumption_bug_full_push_vacuous.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D9",
+      "property_id": "p_no_overflow",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D10",
+      "case_path": "benchmarks/fifo_1r1w/cases/assumption_bug_missing_input_stability.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D10",
+      "property_id": "p_blocked_push_data_stable",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D11",
+      "case_path": "benchmarks/fifo_1r1w/cases/assumption_bug_reset_stuck_vacuous.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D11",
+      "property_id": "p_fifo_ordering",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D13",
+      "case_path": "benchmarks/fifo_1r1w/cases/coverage_invalid_empty_and_full.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D13",
+      "property_id": "cov_invalid_empty_and_full",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D15",
+      "case_path": "benchmarks/fifo_1r1w/cases/coverage_reachable_fill_to_full_unhit.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D15",
+      "property_id": "cov_fill_to_full",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D16",
+      "case_path": "benchmarks/fifo_1r1w/cases/coverage_reachable_reset_first_push.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D16",
+      "property_id": "cov_reset_release_first_push",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D14",
+      "case_path": "benchmarks/fifo_1r1w/cases/coverage_reachable_simultaneous_unhit.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D14",
+      "property_id": "cov_simultaneous_full_push_pop",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "coverage_closure"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D5",
+      "case_path": "benchmarks/fifo_1r1w/cases/rtl_bug_no_simultaneous_ready.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_no_simultaneous_ready.sv",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D5",
+      "property_id": "p_simultaneous_push_pop_full",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D2",
+      "case_path": "benchmarks/fifo_1r1w/cases/rtl_bug_ordering.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_ordering.sv",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D2",
+      "property_id": "p_fifo_ordering",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D1",
+      "case_path": "benchmarks/fifo_1r1w/cases/rtl_bug_overflow.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_overflow.sv",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D1",
+      "property_id": "p_no_overflow",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D4",
+      "case_path": "benchmarks/fifo_1r1w/cases/rtl_bug_reset_level.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_reset_level.sv",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D4",
+      "property_id": "p_reset_empty",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D3",
+      "case_path": "benchmarks/fifo_1r1w/cases/rtl_bug_simultaneous_level.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_bug_simultaneous_level.sv",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D3",
+      "property_id": "p_simultaneous_push_pop_full",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
+    },
+    {
+      "answer_fields": [
+        "expected_issue_type",
+        "expected_next_action",
+        "root_cause"
+      ],
+      "case_id": "fifo_D17",
+      "case_path": "benchmarks/fifo_1r1w/cases/testbench_bug_never_pops.json",
+      "design_id": "fifo_1r1w",
+      "gold_context_doc_ids": [
+        "local_dv:benchmarks:fifo_1r1w:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_assumptions.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_harness.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:fifo_1r1w_properties.sv",
+        "local_dv:benchmarks:fifo_1r1w:formal:run_jg.tcl",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:fifo_1r1w:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:fifo_1r1w:rtl:fifo_1r1w_correct.sv",
+        "local_dv:benchmarks:fifo_1r1w:spec.md"
+      ],
+      "item_id": "local_dv:fifo_D17",
+      "property_id": "p_eventual_pop",
+      "query_fields": [
+        "case_id",
+        "design_id",
+        "variant",
+        "task_type",
+        "property_id",
+        "property_intent",
+        "design_intent"
+      ],
+      "split": "test",
+      "task_type": "failure_triage"
     }
   ],
   "name": "local_dv",
@@ -1395,7 +2325,7 @@
     {
       "name": "local_rtl_dv",
       "notes": "Repo-local SVA/RTL DV benchmark assets.",
-      "path": "benchmarks/{arbiter_rr2,rv_buffer,apb_regblock}",
+      "path": "benchmarks/{arbiter_rr2,rv_buffer,apb_regblock,fifo_1r1w}",
       "status": "present"
     },
     {

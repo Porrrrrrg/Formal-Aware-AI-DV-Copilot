@@ -1,0 +1,17 @@
+{
+  "case_id": "arbiter_A11",
+  "design_id": "arbiter_rr2",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_no_spurious_gnt0",
+  "active_assumptions": [
+    {
+      "id": "a_no_grants",
+      "intent": "Forces gnt0 and gnt1 low in every non-reset cycle."
+    }
+  ],
+  "property_intent": "No-spurious-grant properties must observe real grant behavior.",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "The no-grants assumption removes all grant activity, making spurious-grant checks vacuous."
+}
