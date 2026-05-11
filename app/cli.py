@@ -11,6 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.alignment.intent_alignment import (
+    IntentAlignmentResult,
+    evaluate_intent_alignment_cases,
+    load_cases,
+)
 from app.core.artifacts import (
     artifact_manifest_key,
     canonical_json_bytes,
@@ -40,6 +45,12 @@ MOORE_CLAIM_BOUNDARY = (
     "Stage 5B Moore handoff automation records sanitized local handoff metadata only. "
     "It does not run Moore, JasperGold, Codex, Qwen, or new experiments, and it does "
     "not change benchmark labels or Stage 2/3/4 result semantics."
+)
+
+ALIGNMENT_CLAIM_BOUNDARY = (
+    "Stage 5C intent alignment evidence is static/offline heuristic review only. "
+    "It does not call Codex, Qwen, JasperGold, or Moore; it does not establish "
+    "formal equivalence or production readiness."
 )
 
 MOORE_TASK_TYPES = (
@@ -181,6 +192,31 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Directory for imported lightweight summaries.",
             )
             import_result.add_argument("--dry-run", action="store_true")
+    align = subparsers.add_parser(
+        "align-intent",
+        description="Evaluate SVA candidates against intent/reference metadata using static heuristics.",
+        help="Evaluate SVA candidates against intent/reference metadata using static heuristics.",
+    )
+    align.add_argument("--dry-run", action="store_true")
+    align.add_argument(
+        "--out-dir",
+        type=Path,
+        default=Path("reports") / "alignment",
+        help="Directory for intent-alignment reports.",
+    )
+    align.add_argument(
+        "--cases",
+        type=Path,
+        default=Path("benchmarks") / "sva_repair_cases.json",
+        help="JSON or JSONL cases with intent, reference SVA, and signal metadata.",
+    )
+    align.add_argument(
+        "--candidates",
+        type=Path,
+        default=Path("reports") / "repair" / "artifacts" / "codex_repair_outputs_20260511T035613Z.jsonl",
+        help="Optional JSON or JSONL repaired/generated candidate records.",
+    )
+    align.add_argument("--limit", type=int, default=None, help="Limit cases for smoke runs.")
     return parser
 
 
@@ -194,6 +230,8 @@ def run_command(args: argparse.Namespace, argv: list[str]) -> int:
     subcommand = str(args.subcommand)
     if subcommand == "moore-handoff" and getattr(args, "moore_action", None):
         return run_moore_handoff(args)
+    if subcommand == "align-intent":
+        return run_align_intent(args, argv)
 
     spec = COMMANDS[subcommand]
     out_dir = resolve_path(args.out_dir)
@@ -257,6 +295,110 @@ def run_command(args: argparse.Namespace, argv: list[str]) -> int:
 
     print(json.dumps({"manifest": str(stage5_path), "dry_run": dry_run}, indent=2))
     return 0 if dry_run else 2
+
+
+def run_align_intent(args: argparse.Namespace, argv: list[str]) -> int:
+    out_dir = resolve_path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    created_at = datetime.now(timezone.utc)
+    git_sha = git_head_sha()
+    timestamp = created_at.strftime("%Y%m%dT%H%M%SZ")
+    cases_path = resolve_path(args.cases)
+    candidates_path = resolve_path(args.candidates) if args.candidates else None
+    cases = load_cases(cases_path, candidates_path, limit=args.limit)
+    results = evaluate_intent_alignment_cases(cases)
+    report_path = out_dir / f"intent_alignment_smoke_summary_{timestamp}.md"
+    manifest_path = out_dir / f"intent_alignment_smoke_manifest_{timestamp}.json"
+    results_path = out_dir / f"intent_alignment_results_{timestamp}.jsonl"
+    write_text(report_path, build_alignment_report(results, created_at))
+    write_text(
+        results_path,
+        "\n".join(json.dumps(result.model_dump(mode="json"), sort_keys=True) for result in results) + "\n",
+    )
+    manifest = {
+        "manifest_type": "IntentAlignmentSmokeManifest",
+        "schema_version": "stage5c.intent_alignment.v1",
+        "created_at_utc": format_utc(created_at),
+        "git_sha": git_sha,
+        "command": "jasperloop align-intent",
+        "argv": ["jasperloop", *argv],
+        "dry_run": bool(args.dry_run),
+        "external_calls_allowed": False,
+        "runner_invoked": True,
+        "evidence_type": "static_offline_heuristic_evaluator",
+        "claim_boundary": ALIGNMENT_CLAIM_BOUNDARY,
+        "cases": str(cases_path),
+        "candidates": str(candidates_path) if candidates_path else None,
+        "case_count": len(cases),
+        "result_count": len(results),
+        "label_counts": label_counts(results),
+        "manual_review_required_count": sum(1 for result in results if result.manual_review_required),
+        "artifacts": [
+            {"path": str(report_path), "sha256": sha256_bytes(report_path.read_bytes())},
+            {"path": str(results_path), "sha256": sha256_bytes(results_path.read_bytes())},
+        ],
+        "notes": [
+            "No external model, JasperGold, or Moore calls are made.",
+            "Proof pass context is preserved as context only and never treated as semantic equivalence.",
+            "Labels are conservative static heuristics and ambiguous cases require manual review.",
+        ],
+    }
+    write_json(manifest_path, manifest)
+    print(
+        json.dumps(
+            {
+                "manifest": str(manifest_path),
+                "report": str(report_path),
+                "results": str(results_path),
+                "dry_run": bool(args.dry_run),
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+def build_alignment_report(results: list[IntentAlignmentResult], created_at: datetime) -> str:
+    counts = label_counts(results)
+    lines = [
+        "# Intent Alignment Smoke Summary",
+        "",
+        f"Created UTC: {format_utc(created_at)}",
+        "",
+        "Evidence type: static/offline heuristic evaluator.",
+        "",
+        (
+            "This smoke report does not claim new benchmark results, formal equivalence, "
+            "or production readiness. Jasper proof status, when present, remains separate "
+            "from intent alignment."
+        ),
+        "",
+        "## Summary",
+        "",
+        f"- Results: {len(results)}",
+        f"- Manual review required: {sum(1 for result in results if result.manual_review_required)}",
+        f"- Label counts: {json.dumps(counts, sort_keys=True)}",
+        "",
+        "## Cases",
+        "",
+    ]
+    for result in results:
+        lines.extend(
+            [
+                f"- `{result.case_id}` / `{result.property_id or result.candidate_id}`: "
+                f"{result.alignment_label.value} ({result.alignment_score:.3f}); "
+                f"manual_review_required={str(result.manual_review_required).lower()}",
+            ]
+        )
+    return "\n".join(lines) + "\n"
+
+
+def label_counts(results: list[IntentAlignmentResult]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for result in results:
+        label = result.alignment_label.value
+        counts[label] = counts.get(label, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 def run_moore_handoff(args: argparse.Namespace) -> int:
@@ -755,6 +897,11 @@ def artifact_record(
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(canonical_json_bytes(payload) + b"\n")
+
+
+def write_text(path: Path, payload: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(payload, encoding="utf-8")
 
 
 def resolve_path(path: Path) -> Path:
