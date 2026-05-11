@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Data must remain stable while a valid output is stalled.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The no-output-stalls assumption makes the stalled-output antecedent unreachable, producing vacuous stability evidence."

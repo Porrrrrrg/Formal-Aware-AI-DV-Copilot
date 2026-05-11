@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "No-overflow checks must exercise full FIFO push attempts.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The assumption removes the antecedent of the no-overflow assertion, making the proof vacuous."

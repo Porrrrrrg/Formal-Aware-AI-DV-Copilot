@@ -64,7 +64,7 @@ def infer_issue_type(packet: dict[str, object]) -> str:
     if isinstance(coverage, dict) and coverage:
         if coverage.get("expected_reachable") is False:
             return "unreachable_or_invalid_coverage_goal"
-        if str(coverage.get("jasper_cover_result", "")).lower() == "unreachable":
+        if str(coverage.get("expected_cover_status", "")).lower() == "unreachable":
             return "unreachable_or_invalid_coverage_goal"
         if task_type == "coverage_closure":
             return "reachable_coverage_gap"

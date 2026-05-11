@@ -9,6 +9,7 @@
     "push_ready must deassert when the FIFO is full and pop_ready is low.",
     "The occupancy count must never exceed DEPTH."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The overflow variant ties push_ready high, allowing a push into a full FIFO without a simultaneous pop."

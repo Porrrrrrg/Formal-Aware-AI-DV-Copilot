@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Under persistent contention, client 0 should receive service within a bounded window.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The no-simultaneous-requests assumption makes contention unreachable and turns fairness checks into vacuous proofs."

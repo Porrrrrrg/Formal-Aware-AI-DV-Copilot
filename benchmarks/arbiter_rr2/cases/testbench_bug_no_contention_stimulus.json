@@ -6,12 +6,13 @@
   "property_id": "cov_alternating_grants",
   "coverage_context": {
     "coverage_goal": "cov_alternating_grants",
-    "observed_hits": 0,
+    "expected_test_hits": 0,
     "expected_reachable": true,
-    "jasper_cover_result": "reachable",
+    "expected_cover_status": "reachable",
     "related_signals": ["req0", "req1", "gnt0", "gnt1", "turn"]
   },
   "property_intent": "Simulation should exercise persistent two-client contention and alternating grants.",
+  "label_source": "author_expected",
   "expected_issue_type": "testbench_stimulus_bug",
   "expected_next_action": "fix_testbench_or_stimulus",
   "root_cause": "The simulation stimulus never drives req0 and req1 high together long enough to exercise round-robin alternation."

@@ -9,6 +9,7 @@
     "The tiny APB block is zero-wait-state.",
     "Read data is combinationally available in the access phase."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The read-latency bug registers prdata and returns the previous-cycle value instead of current selected register data."

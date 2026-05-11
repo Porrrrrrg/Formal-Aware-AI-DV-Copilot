@@ -15,6 +15,7 @@
     "broken_sva": "p_no_grants_bad: assert property (@(posedge clk) disable iff (rst) !gnt0 && !gnt1);",
     "reference_sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));"
   },
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The reset assumption is valid; the property is wrong because it forbids legal grants rather than only double grants."

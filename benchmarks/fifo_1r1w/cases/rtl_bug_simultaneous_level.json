@@ -9,6 +9,7 @@
     "A full FIFO may accept a push when a pop also completes.",
     "The level must remain unchanged on simultaneous push and pop."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The simultaneous-level variant increments occupancy on push+pop instead of leaving it unchanged."

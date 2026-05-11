@@ -9,6 +9,7 @@
     "At most one client can be granted per cycle.",
     "Under contention, grant follows the round-robin turn bit."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The bug variant asserts both gnt0 and gnt1 when req0 and req1 are both high."

@@ -6,9 +6,9 @@
   "property_id": "cov_alternating_grants",
   "coverage_context": {
     "coverage_goal": "cov_alternating_grants",
-    "observed_hits": 0,
+    "expected_test_hits": 0,
     "expected_reachable": true,
-    "jasper_cover_result": "reachable",
+    "expected_cover_status": "reachable",
     "related_signals": ["req0", "req1", "gnt0", "gnt1", "turn"],
     "suggested_sequence": [
       "Deassert reset.",
@@ -16,6 +16,7 @@
       "Observe a grant to one client followed by a grant to the other client."
     ]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "reachable_coverage_gap",
   "expected_next_action": "add_directed_test_or_sequence",
   "root_cause": "The cover goal is reachable under formal analysis and needs a directed persistent-contention stimulus."

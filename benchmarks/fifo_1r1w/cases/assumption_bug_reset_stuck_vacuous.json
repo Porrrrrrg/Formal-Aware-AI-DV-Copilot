@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Ordering must be checked after reset releases and traffic can occur.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "A stuck-reset assumption disables the ordering property forever and prevents all FIFO traffic."

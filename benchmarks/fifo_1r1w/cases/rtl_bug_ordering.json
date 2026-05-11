@@ -9,6 +9,7 @@
     "The read pointer selects the oldest entry.",
     "The write pointer must not drive pop_data."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The ordering variant drives pop_data from wr_ptr_q instead of rd_ptr_q, returning the wrong entry."

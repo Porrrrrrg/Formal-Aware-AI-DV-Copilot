@@ -9,6 +9,7 @@
     "Reset clears occupancy and pointer state.",
     "No stale entry is visible after reset."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The reset-level variant initializes count_q to one, making the FIFO appear nonempty after reset."

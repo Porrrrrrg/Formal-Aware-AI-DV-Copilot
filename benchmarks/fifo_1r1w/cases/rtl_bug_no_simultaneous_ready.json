@@ -9,6 +9,7 @@
     "push_ready is allowed while full only when a pop will free an entry.",
     "Simultaneous transfer keeps throughput at one item per cycle."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The no-simultaneous-ready variant deasserts push_ready whenever full, blocking legal push+pop cycles."

@@ -6,12 +6,13 @@
   "property_id": "cov_stall_then_dequeue",
   "coverage_context": {
     "coverage_goal": "cov_stall_then_dequeue",
-    "observed_hits": 0,
+    "expected_test_hits": 0,
     "expected_reachable": true,
-    "jasper_cover_result": "reachable",
+    "expected_cover_status": "reachable",
     "related_signals": ["out_valid", "out_ready", "full"]
   },
   "property_intent": "Simulation should exercise a stalled valid output followed by a dequeue.",
+  "label_source": "author_expected",
   "expected_issue_type": "testbench_stimulus_bug",
   "expected_next_action": "fix_testbench_or_stimulus",
   "root_cause": "The simulation stimulus never releases out_ready after creating an output stall, so the stall-then-dequeue scenario is not hit."

@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "APB write properties must observe an access phase.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The no-access-phase assumption removes psel && penable write cycles, making write-update assertions vacuous."

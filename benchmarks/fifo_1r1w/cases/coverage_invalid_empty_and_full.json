@@ -7,9 +7,10 @@
   "coverage_context": {
     "coverage_goal": "cov_invalid_empty_and_full",
     "expected_reachable": false,
-    "jasper_cover_result": "unreachable",
+    "expected_cover_status": "unreachable",
     "related_signals": ["empty", "full"]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "unreachable_or_invalid_coverage_goal",
   "expected_next_action": "prove_unreachable_or_waive_coverage_goal",
   "root_cause": "The goal asks for mutually exclusive empty and full status flags to be true at the same time."

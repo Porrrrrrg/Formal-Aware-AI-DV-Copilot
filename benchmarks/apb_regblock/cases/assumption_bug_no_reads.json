@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Reads should return selected register data.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The writes-only assumption makes read accesses unreachable, so read-response properties and coverage cannot be meaningfully checked."

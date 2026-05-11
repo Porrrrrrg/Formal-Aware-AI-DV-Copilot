@@ -9,6 +9,7 @@
     "broken_sva": "p_eventual_dequeue_bad: assert property (@(posedge clk) disable iff (rst) out_valid |-> ##[0:1] out_ready);",
     "reference_sva": "Use a bounded fairness assumption or coverage target consistent with the consumer contract."
   },
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The property requires the consumer to accept data faster than the valid environment contract guarantees."

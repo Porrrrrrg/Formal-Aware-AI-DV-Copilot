@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "The arbiter must never grant both clients after reset.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "Keeping reset asserted disables reset-qualified assertions and prevents meaningful post-reset behavior from being checked."

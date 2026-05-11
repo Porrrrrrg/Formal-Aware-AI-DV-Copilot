@@ -76,6 +76,9 @@ Updated the local DV registry generator to include `fifo_1r1w` in the `test` spl
 
 Added tests to ensure:
 
+- Expected benchmark label metadata is marked with `label_source: author_expected`.
+- Expected reachability/cover fields may exist in case metadata, while observed or
+  Jasper-result evidence fields require a `run_manifest` or `evidence_packet` reference.
 - Evidence packets do not include `gold_label` by default.
 - Every case has `expected_issue_type` and `expected_next_action`.
 - Case coverage signals exist in the relevant signal role map.
@@ -86,9 +89,21 @@ Added tests to ensure:
 
 - JSON validation for all benchmark case files and top-level SVA case files: pass.
 - YAML load validation for manifests and coverage plans: pass.
-- Evidence packet build for all 53 cases: pass.
-- `python -m pytest -q`: 202 passed.
+- Evidence packet build for all 53 cases: pass, with `num_with_reports=0` and
+  `num_with_trace_dirs=0`.
+- `python -m pytest -q`: 258 passed.
+- `python -m ruff check .`: pass.
+
+## Evidence Boundary
+
+- Evidence type: benchmark metadata only, no live Jasper evidence.
+- No Moore or JasperGold run was executed for this benchmark expansion.
+- Evidence packets were locally built from checked-in benchmark metadata; all packet-build
+  rows reported `report_found=false` / `report_found=0` and `trace_dir_found=false`.
+- Live Jasper/Moore validation is future work and is not claimed by this report.
 
 ## Limitations
 
-No Codex, Qwen, full benchmark, or JasperGold/Moore runs were executed. Evidence packet construction succeeded locally, but all 53 packet-build rows reported `report_found=false` and `trace_dir_found=false` because no matching Jasper reports or traces are checked into this workspace for the new expansion.
+No Codex, Qwen, full benchmark, JasperGold, or Moore runs were executed. The expected
+coverage and reachability fields are author-provided benchmark labels, not observed
+tool results.

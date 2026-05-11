@@ -7,9 +7,10 @@
   "coverage_context": {
     "coverage_goal": "cov_zero_wait_pready_low",
     "expected_reachable": false,
-    "jasper_cover_result": "unreachable",
+    "expected_cover_status": "unreachable",
     "related_signals": ["psel", "penable", "pready"]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "unreachable_or_invalid_coverage_goal",
   "expected_next_action": "prove_unreachable_or_waive_coverage_goal",
   "root_cause": "The APB block is specified as zero-wait-state, so pready low during an access phase is an invalid coverage target."

@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "No-spurious-grant properties must observe real grant behavior.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The no-grants assumption removes all grant activity, making spurious-grant checks vacuous."

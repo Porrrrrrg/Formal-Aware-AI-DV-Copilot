@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Input capture should be checked when an enqueue handshake can occur.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "Forcing in_valid low makes input_fire unreachable and turns capture checks into vacuous proofs."

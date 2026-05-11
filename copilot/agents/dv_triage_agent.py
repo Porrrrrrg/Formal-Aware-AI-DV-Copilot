@@ -99,7 +99,7 @@ def infer_issue_type(packet: dict[str, object]) -> str:
 
     if isinstance(coverage, dict) and coverage:
         expected_reachable = coverage.get("expected_reachable")
-        cover_status = str(coverage.get("jasper_cover_result", "")).lower()
+        cover_status = str(coverage.get("expected_cover_status", "")).lower()
         if expected_reachable is False or cover_status == "unreachable":
             return "unreachable_or_invalid_coverage_goal"
         if task_type == "coverage_closure":
@@ -135,7 +135,7 @@ def infer_root_cause(packet: dict[str, object], issue_type: str) -> str:
     if issue_type == "testbench_stimulus_bug":
         return "The design behavior is reachable, but the stimulus does not exercise the required scenario."
     if issue_type == "reachable_coverage_gap":
-        return "Formal cover evidence says the goal is reachable, so closure needs directed stimulus."
+        return "Benchmark metadata labels the goal as reachable, so closure needs directed stimulus."
     return "The goal contradicts the design intent or is unreachable under valid constraints."
 
 
@@ -158,8 +158,8 @@ def collect_evidence(packet: dict[str, object], issue_type: str) -> list[str]:
 
     coverage = packet.get("coverage_context", {})
     if isinstance(coverage, dict) and coverage:
-        if coverage.get("jasper_cover_result"):
-            evidence.append(f"Jasper cover result: {coverage.get('jasper_cover_result')}")
+        if coverage.get("expected_cover_status"):
+            evidence.append(f"Expected cover status: {coverage.get('expected_cover_status')}")
         if coverage.get("expected_reachable") is not None:
             evidence.append(f"Expected reachable: {coverage.get('expected_reachable')}")
 

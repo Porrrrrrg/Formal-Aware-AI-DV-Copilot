@@ -9,6 +9,7 @@
     "A full single-entry buffer can perform simultaneous enqueue and dequeue.",
     "in_ready should be true when full and out_ready is true."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The in_ready bug only asserts in_ready when the buffer is empty, blocking legal simultaneous enqueue/dequeue."

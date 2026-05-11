@@ -9,6 +9,7 @@
     "Fairness only applies while a request remains asserted.",
     "The arbiter is not required to grant a client that withdraws its request."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The fairness property lacks a persistence condition for req0 during the response window."
