@@ -1,0 +1,25 @@
+{
+  "bug_type": "syntax_error",
+  "case_id": "demo_repair_arbiter_mutex_syntax",
+  "clock": "clk",
+  "design_id": "arbiter_rr2",
+  "evidence_context": {
+    "counterexample_summary": "No counterexample is needed for this sanitized syntax repair demo.",
+    "evidence_kind": "structured_replay_context",
+    "source": "sanitized benchmark-derived fixture",
+    "symptom": "The assertion body matches the intended mutex check but is missing the terminating semicolon."
+  },
+  "intent": "The arbiter must never grant both clients in the same cycle.",
+  "property_id": "p_mutex",
+  "reference_sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+  "replay_candidate_path": "replay_candidate.json",
+  "reset": "rst",
+  "signals": [
+    "clk",
+    "rst",
+    "gnt0",
+    "gnt1"
+  ],
+  "broken_sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1))",
+  "verifier_outcome_path": "verifier_outcome_sample.json"
+}

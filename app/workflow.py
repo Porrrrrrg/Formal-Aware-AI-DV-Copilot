@@ -45,7 +45,7 @@ from tools.build_evidence_packet import build_packet
 ROOT = Path(__file__).resolve().parents[1]
 
 WORKFLOW_CLAIM_BOUNDARY = (
-    "Stage 5E workflow evidence is a manifest-driven orchestration record. "
+    "Stage 5F workflow evidence is a manifest-driven orchestration record. "
     "Dry-runs chain existing local CLI capabilities and static heuristics only. "
     "The local backend path is LOCAL_ONLY, never calls cloud fallback, and does not "
     "call JasperGold, Moore, run full benchmarks, compare Qwen with Codex, change Stage 4 "
@@ -288,7 +288,7 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
             )
         candidate_payload = local_result.output if local_result.output is not None else repair_candidate_for_backend(case, args.backend)
     else:
-        candidate_payload = repair_candidate_for_backend(case, args.backend)
+        candidate_payload = repair_candidate_for_backend(case, args.backend, case_path)
     candidate_path = out_dir / "repair_candidate.json"
     write_json(candidate_path, strip_extra(candidate_payload, "copilot/schemas/sva_repair_candidate.schema.json"))
     artifact_refs.append(artifact_ref("repair_candidate", candidate_path))
@@ -304,8 +304,9 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
         artifact_refs.append(artifact_ref("moore_handoff_manifest", handoff_path))
         steps_executed.append("prepare_moore_handoff_manifest_if_requested")
 
-    verifier_payload = load_optional_json(args.verifier_result)
-    if verifier_payload is not None and args.verifier_result is not None:
+    verifier_result_path = args.verifier_result or verifier_result_path_from_case(case, case_path)
+    verifier_payload = load_optional_json(verifier_result_path)
+    if verifier_payload is not None and verifier_result_path is not None:
         verifier_path = out_dir / "imported_verifier_outcome.json"
         write_json(verifier_path, verifier_payload)
         artifact_refs.append(artifact_ref("imported_verifier_outcome", verifier_path))
@@ -324,7 +325,10 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
                 allowed_signals=[str(item) for item in case.get("signals", [])],
                 required_signals=[str(item) for item in case.get("signals", [])],
                 proof_status_context=verifier_payload if isinstance(verifier_payload, dict) else None,
-                evidence_refs=[str(candidate_path), *(str(args.verifier_result) for _ in [0] if args.verifier_result)],
+                evidence_refs=[
+                    str(candidate_path),
+                    *(str(verifier_result_path) for _ in [0] if verifier_result_path),
+                ],
             )
         )
         alignment_path = out_dir / "intent_alignment_result.json"
@@ -849,7 +853,11 @@ def find_benchmark_case_path(case_id: str) -> Path:
     raise ValueError(f"benchmark case id not found: {case_id}")
 
 
-def repair_candidate_for_backend(case: dict[str, Any], backend: str) -> dict[str, Any]:
+def repair_candidate_for_backend(
+    case: dict[str, Any],
+    backend: str,
+    case_path: Path | None = None,
+) -> dict[str, Any]:
     if backend == "local":
         return repair_fallback(case)
     if backend == "codex":
@@ -859,12 +867,36 @@ def repair_candidate_for_backend(case: dict[str, Any], backend: str) -> dict[str
             "sva": str(case.get("broken_sva") or case.get("reference_sva")),
             "explanation": "Codex route was planned only. Dry-run forbids external prompt send.",
         }
+    inline_candidate = case.get("replay_candidate")
+    if isinstance(inline_candidate, dict):
+        return dict(inline_candidate)
+    replay_path = case_relative_path(case.get("replay_candidate_path"), case_path)
+    if replay_path is not None and replay_path.exists():
+        payload = json.loads(replay_path.read_text(encoding="utf-8-sig"))
+        if not isinstance(payload, dict):
+            raise ValueError("replay_candidate_path must point to a JSON object")
+        return payload
     return {
         "source": "replay",
         "property_id": str(case.get("property_id", "generated_property")),
         "sva": str(case.get("reference_sva") or case.get("broken_sva")),
         "explanation": "Replay candidate selected from existing benchmark reference metadata.",
     }
+
+
+def verifier_result_path_from_case(case: dict[str, Any], case_path: Path | None) -> Path | None:
+    return case_relative_path(case.get("verifier_outcome_path"), case_path)
+
+
+def case_relative_path(value: Any, case_path: Path | None) -> Path | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    if case_path is not None:
+        return case_path.parent / path
+    return resolve_path(path)
 
 
 def problem_spec_stub(workflow_id: str, case: dict[str, Any], case_path: Path | None) -> ProblemSpec:
@@ -881,6 +913,7 @@ def problem_spec_stub(workflow_id: str, case: dict[str, Any], case_path: Path | 
             "case_id": case.get("case_id"),
             "property_id": case.get("property_id"),
             "case_path": str(case_path) if case_path else None,
+            "evidence_context": case.get("evidence_context"),
             "stage5d_stub_only": True,
         },
     )

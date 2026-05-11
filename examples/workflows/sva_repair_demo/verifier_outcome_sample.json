@@ -1,0 +1,13 @@
+{
+  "claim_boundary": "Mocked verifier import for workflow demonstration only; this is not a new JasperGold or Moore run.",
+  "external_calls_allowed": false,
+  "jaspergold_invoked": false,
+  "manifest_type": "VerifierOutcomeSample",
+  "moore_invoked": false,
+  "property_id": "p_mutex",
+  "raw_logs_included": false,
+  "schema_version": "stage5f.verifier_outcome_sample.v1",
+  "status": "proved_sample_imported",
+  "tool_route": "replay_fixture",
+  "vacuity_status": "not_evaluated_in_demo"
+}
