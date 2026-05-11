@@ -1,0 +1,208 @@
+{
+    "generated_utc":  "20260511T212758Z",
+    "source_folder":  "skill_list/",
+    "destination_folder":  ".claude/skills",
+    "scripts_executed_from_source":  false,
+    "imported":  [
+                     {
+                         "source":  "01_RTL_ANALYSIS_SKILL.md",
+                         "normalized_name":  "rtl-analysis",
+                         "path":  ".claude/skills/rtl-analysis/SKILL.md",
+                         "description":  "Analyze RTL connectivity, signal integrity, and CDC issues from design sources.",
+                         "frontmatter":  {
+                                             "name":  "rtl-analysis",
+                                             "description":  "Analyze RTL connectivity, signal integrity, and CDC issues from design sources."
+                                         }
+                     },
+                     {
+                         "source":  "02_RTL_LINT_SKILL.md",
+                         "normalized_name":  "rtl-lint",
+                         "path":  ".claude/skills/rtl-lint/SKILL.md",
+                         "description":  "Review RTL for synthesizability, style, portability, and common lint issues.",
+                         "frontmatter":  {
+                                             "name":  "rtl-lint",
+                                             "description":  "Review RTL for synthesizability, style, portability, and common lint issues."
+                                         }
+                     },
+                     {
+                         "source":  "03_RESET_SEQUENCE_VERIFIER_SKILL.md",
+                         "normalized_name":  "reset-sequence-verifier",
+                         "path":  ".claude/skills/reset-sequence-verifier/SKILL.md",
+                         "description":  "Check reset sequencing, polarity, connectivity, and asynchronous deassertion safety.",
+                         "frontmatter":  {
+                                             "name":  "reset-sequence-verifier",
+                                             "description":  "Check reset sequencing, polarity, connectivity, and asynchronous deassertion safety."
+                                         }
+                     },
+                     {
+                         "source":  "04_PARAMETERIZATION_AUDITOR_SKILL.md",
+                         "normalized_name":  "parameterization-auditor",
+                         "path":  ".claude/skills/parameterization-auditor/SKILL.md",
+                         "description":  "Audit RTL parameter propagation, overrides, ranges, defaults, and hard-coded values.",
+                         "frontmatter":  {
+                                             "name":  "parameterization-auditor",
+                                             "description":  "Audit RTL parameter propagation, overrides, ranges, defaults, and hard-coded values."
+                                         }
+                     },
+                     {
+                         "source":  "05_CONSTRAINT_WRITING_SKILL.md",
+                         "normalized_name":  "constraint-writing",
+                         "path":  ".claude/skills/constraint-writing/SKILL.md",
+                         "description":  "Generate and review SystemVerilog randomization constraints for DV testbenches.",
+                         "frontmatter":  {
+                                             "name":  "constraint-writing",
+                                             "description":  "Generate and review SystemVerilog randomization constraints for DV testbenches."
+                                         }
+                     },
+                     {
+                         "source":  "06_UVM_COMPONENT_BUILDER_SKILL.md",
+                         "normalized_name":  "uvm-component-builder",
+                         "path":  ".claude/skills/uvm-component-builder/SKILL.md",
+                         "description":  "Build and review UVM component scaffolding, TLM wiring, phases, and configuration.",
+                         "frontmatter":  {
+                                             "name":  "uvm-component-builder",
+                                             "description":  "Build and review UVM component scaffolding, TLM wiring, phases, and configuration."
+                                         }
+                     },
+                     {
+                         "source":  "07_SEQUENCE_SCENARIO_GENERATOR_SKILL.md",
+                         "normalized_name":  "sequence-scenario-generator",
+                         "path":  ".claude/skills/sequence-scenario-generator/SKILL.md",
+                         "description":  "Create directed and constrained-random UVM sequences for coverage-driven scenarios.",
+                         "frontmatter":  {
+                                             "name":  "sequence-scenario-generator",
+                                             "description":  "Create directed and constrained-random UVM sequences for coverage-driven scenarios."
+                                         }
+                     },
+                     {
+                         "source":  "08_PROTOCOL_VIP_CHECKER_SKILL.md",
+                         "normalized_name":  "protocol-vip-checker",
+                         "path":  ".claude/skills/protocol-vip-checker/SKILL.md",
+                         "description":  "Review bus protocol compliance checks and assertions for standard DUT interfaces.",
+                         "frontmatter":  {
+                                             "name":  "protocol-vip-checker",
+                                             "description":  "Review bus protocol compliance checks and assertions for standard DUT interfaces."
+                                         }
+                     },
+                     {
+                         "source":  "09_COVERAGE_PLAN_WRITER_SKILL.md",
+                         "normalized_name":  "coverage-plan-writer",
+                         "path":  ".claude/skills/coverage-plan-writer/SKILL.md",
+                         "description":  "Draft functional coverage plans, covergroups, coverpoints, crosses, and traceability.",
+                         "frontmatter":  {
+                                             "name":  "coverage-plan-writer",
+                                             "description":  "Draft functional coverage plans, covergroups, coverpoints, crosses, and traceability."
+                                         }
+                     },
+                     {
+                         "source":  "10_COVERAGE_HOLE_ANALYZER_SKILL.md",
+                         "normalized_name":  "coverage-hole-analyzer",
+                         "path":  ".claude/skills/coverage-hole-analyzer/SKILL.md",
+                         "description":  "Analyze coverage gaps and recommend targeted tests, constraints, and sequence changes.",
+                         "frontmatter":  {
+                                             "name":  "coverage-hole-analyzer",
+                                             "description":  "Analyze coverage gaps and recommend targeted tests, constraints, and sequence changes."
+                                         }
+                     },
+                     {
+                         "source":  "11_COVERAGE_MAPPER_SKILL.md",
+                         "normalized_name":  "coverage-mapper",
+                         "path":  ".claude/skills/coverage-mapper/SKILL.md",
+                         "description":  "Map code coverage to functional coverage to identify redundant tests and missing goals.",
+                         "frontmatter":  {
+                                             "name":  "coverage-mapper",
+                                             "description":  "Map code coverage to functional coverage to identify redundant tests and missing goals."
+                                         }
+                     },
+                     {
+                         "source":  "12_SVA_ASSERTION_WRITER_SKILL.md",
+                         "normalized_name":  "sva-assertion-writer",
+                         "path":  ".claude/skills/sva-assertion-writer/SKILL.md",
+                         "description":  "Write and review SystemVerilog Assertions for requirements, protocols, and coverage.",
+                         "frontmatter":  {
+                                             "name":  "sva-assertion-writer",
+                                             "description":  "Write and review SystemVerilog Assertions for requirements, protocols, and coverage."
+                                         }
+                     },
+                     {
+                         "source":  "13_FORMAL_PROPERTY_CHECKER_SKILL.md",
+                         "normalized_name":  "formal-property-checker",
+                         "path":  ".claude/skills/formal-property-checker/SKILL.md",
+                         "description":  "Set up and debug formal property checks, assumptions, vacuity, and convergence.",
+                         "frontmatter":  {
+                                             "name":  "formal-property-checker",
+                                             "description":  "Set up and debug formal property checks, assumptions, vacuity, and convergence."
+                                         }
+                     },
+                     {
+                         "source":  "14_ASSERTION_COVERAGE_REVIEWER_SKILL.md",
+                         "normalized_name":  "assertion-coverage-reviewer",
+                         "path":  ".claude/skills/assertion-coverage-reviewer/SKILL.md",
+                         "description":  "Review assertion sets for completeness, redundancy, vacuity, and requirement coverage.",
+                         "frontmatter":  {
+                                             "name":  "assertion-coverage-reviewer",
+                                             "description":  "Review assertion sets for completeness, redundancy, vacuity, and requirement coverage."
+                                         }
+                     },
+                     {
+                         "source":  "15_SIMULATION_FAILURE_TRIAGE_SKILL.md",
+                         "normalized_name":  "simulation-failure-triage",
+                         "path":  ".claude/skills/simulation-failure-triage/SKILL.md",
+                         "description":  "Triage simulation failures, assertion violations, mismatches, timeouts, and debug probes.",
+                         "frontmatter":  {
+                                             "name":  "simulation-failure-triage",
+                                             "description":  "Triage simulation failures, assertion violations, mismatches, timeouts, and debug probes."
+                                         }
+                     },
+                     {
+                         "source":  "16_REGRESSION_RESULT_ANALYZER_SKILL.md",
+                         "normalized_name":  "regression-result-analyzer",
+                         "path":  ".claude/skills/regression-result-analyzer/SKILL.md",
+                         "description":  "Analyze regression pass/fail trends, flaky tests, coverage progress, and health.",
+                         "frontmatter":  {
+                                             "name":  "regression-result-analyzer",
+                                             "description":  "Analyze regression pass/fail trends, flaky tests, coverage progress, and health."
+                                         }
+                     },
+                     {
+                         "source":  "17_RAL_REVIEWER_SKILL.md",
+                         "normalized_name":  "ral-reviewer",
+                         "path":  ".claude/skills/ral-reviewer/SKILL.md",
+                         "description":  "Review UVM RAL models against register specs, reset values, access types, and tests.",
+                         "frontmatter":  {
+                                             "name":  "ral-reviewer",
+                                             "description":  "Review UVM RAL models against register specs, reset values, access types, and tests."
+                                         }
+                     },
+                     {
+                         "source":  "18_SIGNOFF_READINESS_SKILL.md",
+                         "normalized_name":  "signoff-readiness",
+                         "path":  ".claude/skills/signoff-readiness/SKILL.md",
+                         "description":  "Assess DV signoff readiness from coverage, regressions, bugs, waivers, and risk.",
+                         "frontmatter":  {
+                                             "name":  "signoff-readiness",
+                                             "description":  "Assess DV signoff readiness from coverage, regressions, bugs, waivers, and risk."
+                                         }
+                     },
+                     {
+                         "source":  "19_TESTPLAN_TRACEABILITY_SKILL.md",
+                         "normalized_name":  "testplan-traceability",
+                         "path":  ".claude/skills/testplan-traceability/SKILL.md",
+                         "description":  "Map requirements, testplans, and functional coverage into traceability matrices.",
+                         "frontmatter":  {
+                                             "name":  "testplan-traceability",
+                                             "description":  "Map requirements, testplans, and functional coverage into traceability matrices."
+                                         }
+                     }
+                 ],
+    "omitted":  [
+                    {
+                        "source":  "20_JIRA_BUG_TRIAGE_SKILL.md",
+                        "reason":  "Contains direct external Jira/API submission workflow and executable JavaScript network-call example."
+                    },
+                    {
+                        "source":  "Feed _ LinkedIn.webloc",
+                        "reason":  "Non-Markdown web shortcut explicitly excluded."
+                    }
+                ]
+}
