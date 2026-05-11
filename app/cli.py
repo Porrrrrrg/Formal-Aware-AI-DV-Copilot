@@ -32,6 +32,7 @@ from app.models.core import (
     RunStatus,
     ToolchainVersions,
 )
+from app.workflow import add_workflow_parser, run_workflow_command
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -192,6 +193,7 @@ def build_parser() -> argparse.ArgumentParser:
                 help="Directory for imported lightweight summaries.",
             )
             import_result.add_argument("--dry-run", action="store_true")
+    add_workflow_parser(subparsers)
     align = subparsers.add_parser(
         "align-intent",
         description="Evaluate SVA candidates against intent/reference metadata using static heuristics.",
@@ -228,6 +230,8 @@ def main(argv: list[str] | None = None) -> int:
 
 def run_command(args: argparse.Namespace, argv: list[str]) -> int:
     subcommand = str(args.subcommand)
+    if subcommand == "workflow":
+        return run_workflow_command(args, argv)
     if subcommand == "moore-handoff" and getattr(args, "moore_action", None):
         return run_moore_handoff(args)
     if subcommand == "align-intent":

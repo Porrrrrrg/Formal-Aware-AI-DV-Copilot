@@ -1,0 +1,30 @@
+{
+  "manifest_type": "WorkflowSmokeManifest",
+  "schema_version": "stage5d.workflow_smoke.v1",
+  "created_at_utc": "2026-05-11T18:21:58Z",
+  "git_sha": "7291e618570e555d5fe86a4be5fef279cb65d2d8",
+  "command": [
+    "python",
+    "-m",
+    "app.cli",
+    "workflow",
+    "repair",
+    "--dry-run",
+    "--out-dir",
+    "artifacts/workflow-smoke"
+  ],
+  "exit_code": 0,
+  "workflow_manifest": "artifacts/workflow-smoke/workflow_manifest.json",
+  "workflow_manifest_sha256": "b09fa7b5d45de9b7f883a439f53bbb806f002ec9e15e148bbba70d3c588d877b",
+  "workflow_report": "artifacts/workflow-smoke/workflow_report.md",
+  "workflow_report_sha256": "233f120bae96b4b0b41b99e3b46785e27303188596cfc53516290cce9e5cf606",
+  "dry_run": true,
+  "external_send_allowed": false,
+  "local_only": true,
+  "model_calls": 0,
+  "jaspergold_calls": 0,
+  "qwen_calls": 0,
+  "network_calls": 0,
+  "moore_calls": 0,
+  "claim_boundary": "Stage 5D workflow smoke evidence only. The smoke command emitted manifests and local stub artifacts; it did not run external model or verifier calls."
+}
