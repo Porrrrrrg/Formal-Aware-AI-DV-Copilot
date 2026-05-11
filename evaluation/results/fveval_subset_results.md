@@ -19,6 +19,14 @@ Source: [https://github.com/NVlabs/FVEval](https://github.com/NVlabs/FVEval) at 
 | Hallucinated signal rate | 0.000 |
 | Invalid prediction JSON rows | 0 |
 
+## Metrics By Subset
+
+| Subset | Cases | Syntax | Exact/reference | Exact eligible | Valid JSON | Fallback | Hallucinated signals | Jasper |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Design2SVA | 10 | 1.000 | 0.000 | 0 | 1.000 | 1.000 | 0.000 | not_run |
+| NL2SVA-Human | 10 | 1.000 | 0.000 | 10 | 1.000 | 1.000 | 0.000 | not_run |
+| NL2SVA-Machine | 10 | 1.000 | 0.000 | 10 | 1.000 | 1.000 | 0.000 | not_run |
+
 ## Evidence Fields
 
 - Source benchmark: FVEval-compatible subset.
