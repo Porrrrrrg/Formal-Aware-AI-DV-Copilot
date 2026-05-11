@@ -549,6 +549,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
+      actions: read
       contents: read
       security-events: write
     steps:
@@ -563,6 +564,8 @@ jobs:
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          upload: never
 
   attest-ci-artifacts:
     name: Attest CI artifacts
