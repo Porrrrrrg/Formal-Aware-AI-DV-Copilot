@@ -133,6 +133,7 @@ def evaluate_intent_alignment(case: IntentAlignmentCase) -> IntentAlignmentResul
         }
         or bool(forbidden)
         or bool(vacuity_flags)
+        or structural_review_required(trigger_match, consequent_match, delay_match)
     )
     rationale = build_rationale(
         label=label,
@@ -314,6 +315,16 @@ def match_score(status: MatchStatus) -> float:
         MatchStatus.MISSING: 0.0,
         MatchStatus.MISMATCH: 0.0,
     }[status]
+
+
+def structural_review_required(*statuses: MatchStatus) -> bool:
+    review_statuses = {
+        MatchStatus.PARTIAL,
+        MatchStatus.MISMATCH,
+        MatchStatus.MISSING,
+        MatchStatus.UNKNOWN,
+    }
+    return any(status in review_statuses for status in statuses)
 
 
 def label_for_score(
