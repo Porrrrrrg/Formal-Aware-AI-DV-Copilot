@@ -48,7 +48,7 @@ jasperloop moore-handoff validate --manifest artifacts/moore_handoff/codex_final
 Import a Moore-produced lightweight summary manifest:
 
 ```bash
-jasperloop moore-handoff import-result reports/jasper/codex_repair_final_proof_manifest_moore.json --dry-run --out-dir reports/jasper
+jasperloop moore-handoff import-result --manifest reports/jasper/codex_repair_final_proof_manifest_moore.json --dry-run --out-dir reports/jasper
 ```
 
 `import-result` parses the JSON, rejects forbidden raw artifact references, and

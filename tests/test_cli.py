@@ -153,12 +153,18 @@ def test_moore_handoff_import_result_rejects_forbidden_raw_log_paths(tmp_path: P
         encoding="utf-8",
     )
 
-    exit_code = main(["moore-handoff", "import-result", str(source), "--dry-run", "--out-dir", str(tmp_path)])
+    exit_code = main(
+        ["moore-handoff", "import-result", "--manifest", str(source), "--dry-run", "--out-dir", str(tmp_path)]
+    )
 
     assert exit_code == 2
 
 
-def test_moore_handoff_import_result_emits_artifact_manifest(tmp_path: Path) -> None:
+@pytest.mark.parametrize("use_manifest_option", [True, False])
+def test_moore_handoff_import_result_emits_artifact_manifest(
+    tmp_path: Path,
+    use_manifest_option: bool,
+) -> None:
     source = tmp_path / "moore_manifest.json"
     source.write_text(
         json.dumps(
@@ -171,7 +177,8 @@ def test_moore_handoff_import_result_emits_artifact_manifest(tmp_path: Path) -> 
         encoding="utf-8",
     )
 
-    exit_code = main(["moore-handoff", "import-result", str(source), "--dry-run", "--out-dir", str(tmp_path)])
+    manifest_arg = ["--manifest", str(source)] if use_manifest_option else [str(source)]
+    exit_code = main(["moore-handoff", "import-result", *manifest_arg, "--dry-run", "--out-dir", str(tmp_path)])
 
     artifact_manifest = json.loads(
         (tmp_path / "moore_import_artifact_manifest.json").read_text(encoding="utf-8")
@@ -179,6 +186,27 @@ def test_moore_handoff_import_result_emits_artifact_manifest(tmp_path: Path) -> 
     assert exit_code == 0
     assert artifact_manifest["artifacts"]
     assert artifact_manifest["metadata"]["external_calls_allowed"] is False
+
+
+def test_moore_handoff_import_result_accepts_utf8_bom_manifest(tmp_path: Path) -> None:
+    source = tmp_path / "moore_manifest.json"
+    source.write_text(
+        json.dumps(
+            {
+                "run_id": "moore_test",
+                "summary": {"candidate_count": 1},
+                "artifacts": [{"path": "reports/jasper/lightweight_summary.md"}],
+            }
+        ),
+        encoding="utf-8-sig",
+    )
+
+    exit_code = main(
+        ["moore-handoff", "import-result", "--manifest", str(source), "--dry-run", "--out-dir", str(tmp_path)]
+    )
+
+    assert exit_code == 0
+    assert (tmp_path / "moore_import_artifact_manifest.json").exists()
 
 
 def test_moore_handoff_prepare_dry_run_does_not_invoke_planned_runner(

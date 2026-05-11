@@ -172,7 +172,8 @@ def build_parser() -> argparse.ArgumentParser:
                 description="Import a sanitized Moore-produced summary manifest.",
                 help="Import a sanitized Moore-produced summary manifest.",
             )
-            import_result.add_argument("summary_manifest", type=Path)
+            import_result.add_argument("summary_manifest", type=Path, nargs="?")
+            import_result.add_argument("--manifest", type=Path, dest="summary_manifest_option")
             import_result.add_argument(
                 "--out-dir",
                 type=Path,
@@ -303,7 +304,7 @@ def moore_validate(args: argparse.Namespace) -> int:
     failures: list[str] = []
     manifest: dict[str, Any] | None = None
     try:
-        loaded = json.loads(manifest_path.read_text(encoding="utf-8"))
+        loaded = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
         if not isinstance(loaded, dict):
             failures.append("manifest root is not a JSON object")
         else:
@@ -334,9 +335,13 @@ def moore_validate(args: argparse.Namespace) -> int:
 
 
 def moore_import_result(args: argparse.Namespace) -> int:
-    source = resolve_path(args.summary_manifest)
+    summary_manifest = args.summary_manifest_option or args.summary_manifest
+    if summary_manifest is None:
+        print(json.dumps({"valid": False, "error": "missing summary manifest"}, indent=2))
+        return 2
+    source = resolve_path(summary_manifest)
     try:
-        payload = json.loads(source.read_text(encoding="utf-8"))
+        payload = json.loads(source.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as exc:
         print(json.dumps({"valid": False, "error": f"invalid JSON: {exc}"}, indent=2))
         return 2
@@ -526,7 +531,7 @@ def validate_input_artifacts(manifest: dict[str, Any]) -> list[str]:
             continue
         if path.suffix == ".json":
             try:
-                json.loads(path.read_text(encoding="utf-8"))
+                json.loads(path.read_text(encoding="utf-8-sig"))
             except json.JSONDecodeError as exc:
                 failures.append(f"input JSON is not parseable: {path_value}: {exc}")
         expected_sha = ref.get("sha256")
