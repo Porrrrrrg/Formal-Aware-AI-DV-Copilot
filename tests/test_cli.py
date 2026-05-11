@@ -22,6 +22,7 @@ def test_cli_help_lists_stage5a_commands() -> None:
     assert "jasperloop" in result.stdout
     for subcommand in COMMANDS:
         assert subcommand in result.stdout
+    assert "align-intent" in result.stdout
 
 
 @pytest.mark.parametrize("subcommand", sorted(COMMANDS))
@@ -79,6 +80,7 @@ def test_eval_and_moore_handoff_dry_run_manifest_boundaries(tmp_path: Path) -> N
         ["moore-handoff", "prepare", "--help"],
         ["moore-handoff", "validate", "--help"],
         ["moore-handoff", "import-result", "--help"],
+        ["align-intent", "--help"],
     ],
 )
 def test_moore_handoff_nested_help(argv: list[str]) -> None:
@@ -89,7 +91,7 @@ def test_moore_handoff_nested_help(argv: list[str]) -> None:
         capture_output=True,
     )
 
-    assert "moore-handoff" in result.stdout or "Moore" in result.stdout
+    assert argv[0] in result.stdout or "Moore" in result.stdout
 
 
 @pytest.mark.parametrize("task_type", MOORE_TASK_TYPES)
