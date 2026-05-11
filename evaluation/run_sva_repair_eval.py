@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from copilot.agents.sva_repair_agent import repair_once  # noqa: E402
+from copilot.agents.sva_repair_agent import PROMPT_VERSIONS, cex_fields_present, repair_once  # noqa: E402
 from copilot.sva_library import hallucinated_identifiers, normalize_sva, syntax_scaffold_ok  # noqa: E402
 from evaluation.output_quality import source_summary  # noqa: E402
 from tools.check_generated_sva import check_generated_sva  # noqa: E402
@@ -36,12 +36,14 @@ def run_repair_case(
     jasper_dry_run: bool = False,
     jasper_out_root: Path | None = None,
     feedback_mode: str = "jasper",
+    prompt_version: str = "baseline",
 ) -> dict[str, object]:
     rounds = []
     current_sva = str(case.get("broken_sva", ""))
     current_property_id = str(case.get("property_id", "generated_property"))
     feedback = "Initial broken SVA."
     final_round = None
+    initial_cex_fields: dict[str, bool] | None = None
 
     for round_index in range(max_rounds + 1):
         prediction = {"property_id": current_property_id, "sva": current_sva, "explanation": feedback}
@@ -61,6 +63,8 @@ def run_repair_case(
             "metrics": check,
         }
         rounds.append(round_record)
+        if initial_cex_fields is None:
+            initial_cex_fields = cex_fields_present(case, current_sva, feedback_context=check)
         if is_success(case, check):
             final_round = round_index
             break
@@ -74,23 +78,44 @@ def run_repair_case(
             round_index=round_index + 1,
             use_llm=use_llm,
             llm_command=llm_command,
+            prompt_version=prompt_version,
+            feedback_context=check,
         )
         round_record["repair_action"] = repair
         current_property_id = str(repair.get("property_id", current_property_id))
         current_sva = str(repair.get("sva", current_sva))
         feedback = str(repair.get("explanation", ""))
 
+    final_metrics = rounds[-1]["metrics"] if rounds else {}
+    repair_rounds = max(0, len(rounds) - 1)
     return {
         "case_id": case.get("case_id"),
         "design_id": case.get("design_id"),
         "property_id": case.get("property_id"),
         "bug_type": case.get("bug_type"),
         "feedback_mode": feedback_mode,
+        "prompt_version": prompt_version,
+        "cex_fields_present": initial_cex_fields or {},
+        "repair_rounds": repair_rounds,
+        "hallucinated_signals": final_metrics.get("hallucinated_identifiers", [])
+        if isinstance(final_metrics, dict)
+        else [],
+        "scaffold_success": scaffold_success(final_metrics) if isinstance(final_metrics, dict) else False,
+        "final_exact_match": final_metrics.get("exact_match") if isinstance(final_metrics, dict) else None,
+        "jasper_checked": bool(jasper_check and not jasper_dry_run),
         "rounds": rounds,
         "final_status": rounds[-1]["jasper_status"] if rounds else "not_run",
         "success": final_round is not None,
         "rounds_to_success": final_round,
     }
+
+
+def scaffold_success(check: dict[str, object]) -> bool:
+    return (
+        check.get("syntax_scaffold_ok") is True
+        and check.get("exact_match") is True
+        and check.get("has_hallucinated_signal") is False
+    )
 
 
 def evaluate_candidate(
@@ -197,6 +222,12 @@ def summarize(results: list[dict[str, object]]) -> dict[str, object]:
                 "design_id": result.get("design_id"),
                 "bug_type": result.get("bug_type"),
                 "feedback_mode": result.get("feedback_mode"),
+                "prompt_version": result.get("prompt_version"),
+                "cex_fields_present": result.get("cex_fields_present"),
+                "repair_rounds": result.get("repair_rounds"),
+                "hallucinated_signals": result.get("hallucinated_signals"),
+                "scaffold_success": result.get("scaffold_success"),
+                "jasper_checked": result.get("jasper_checked"),
                 "round0_status": first.get("jasper_status"),
                 "final_status": result.get("final_status"),
                 "success": result.get("success"),
@@ -228,6 +259,9 @@ def summarize(results: list[dict[str, object]]) -> dict[str, object]:
         "cases_by_design": dict(sorted(collections.Counter(row["design_id"] for row in rows).items())),
         "cases_by_bug_type": dict(sorted(collections.Counter(row["bug_type"] for row in rows).items())),
         "cases_by_feedback_mode": dict(sorted(collections.Counter(row["feedback_mode"] for row in rows).items())),
+        "cases_by_prompt_version": dict(
+            sorted(collections.Counter(row["prompt_version"] for row in rows).items())
+        ),
         "syntax_pass_round0": rate(rows, lambda row: row["round0_status"] not in {"syntax_fail"}),
         "repair_success_rate": len(successes) / len(rows) if rows else 0.0,
         "exact_match_round0": rate(rows, lambda row: row["round0_exact_match"] is True),
@@ -282,6 +316,7 @@ def main() -> int:
     parser.add_argument("--jasper-dry-run", action="store_true")
     parser.add_argument("--jasper-out-root", type=Path, default=Path("jasper/reports/sva_repair"))
     parser.add_argument("--feedback-mode", choices=FEEDBACK_MODES, default="jasper")
+    parser.add_argument("--prompt-version", choices=PROMPT_VERSIONS, default="baseline")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
 
@@ -298,6 +333,7 @@ def main() -> int:
             jasper_dry_run=args.jasper_dry_run,
             jasper_out_root=resolve_repo_path(args.jasper_out_root),
             feedback_mode=args.feedback_mode,
+            prompt_version=args.prompt_version,
         )
         for case in cases
     ]

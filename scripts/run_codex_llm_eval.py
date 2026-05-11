@@ -78,6 +78,8 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--llm",
             "--limit",
             str(args.limit),
+            "--prompt-version",
+            args.prompt_version,
         ]
         default_out = ROOT / "evaluation" / "results" / "sva_repair_codex_subset.json"
     elif args.task == "triage":
@@ -136,6 +138,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--model")
     parser.add_argument("--out")
+    parser.add_argument("--prompt-version", choices=["baseline", "cex_aware"], default="baseline")
     parser.add_argument("--packet-source", choices=["minimal", "actual"], default="minimal")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--acknowledge-external-send", action="store_true")
