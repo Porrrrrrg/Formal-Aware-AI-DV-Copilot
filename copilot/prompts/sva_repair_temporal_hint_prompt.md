@@ -12,4 +12,4 @@ Rules:
 4. Check whether the repair needs same-cycle implication (`|->`), next-cycle implication (`|=>`), `$past`, or a missing antecedent guard.
 5. Do not strengthen the property in a way that hides a design or assumption bug.
 
-Return valid JSON matching `sva_repair_output.schema.json` with `property_id`, `sva`, and `explanation`.
+Return valid JSON matching `sva_repair_candidate.schema.json` with `property_id`, `sva`, and `explanation`.

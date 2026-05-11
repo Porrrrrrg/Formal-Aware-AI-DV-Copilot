@@ -12,4 +12,4 @@ Rules:
 4. Do not invent helper signals, helper properties, parameters, or functions.
 5. If the supplied context is insufficient, return the most conservative syntactically valid repair and explain the uncertainty.
 
-Return valid JSON matching `sva_repair_output.schema.json` with `property_id`, `sva`, and `explanation`.
+Return valid JSON matching `sva_repair_candidate.schema.json` with `property_id`, `sva`, and `explanation`.

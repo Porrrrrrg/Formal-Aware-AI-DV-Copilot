@@ -10,4 +10,4 @@ Before finalizing, verify:
 4. The repaired SVA addresses the property intent rather than merely weakening the assertion.
 5. The explanation names the repair class without claiming JasperGold proof.
 
-Return only the final JSON object matching `sva_repair_output.schema.json` with `property_id`, `sva`, and `explanation`. Do not include the self-check transcript.
+Return only the final JSON object matching `sva_repair_candidate.schema.json` with `property_id`, `sva`, and `explanation`. Do not include the self-check transcript.
