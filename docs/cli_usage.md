@@ -15,11 +15,15 @@ jasperloop triage --dry-run --out-dir artifacts/jasperloop_cli/triage
 jasperloop coverage --dry-run --out-dir artifacts/jasperloop_cli/coverage
 jasperloop eval --dry-run --out-dir artifacts/jasperloop_cli/eval
 jasperloop moore-handoff --dry-run --out-dir artifacts/jasperloop_cli/moore-handoff
+jasperloop workflow demo --dry-run --include-playbook-guidance --out-dir artifacts/jasperloop_cli/workflow-demo
 ```
 
 Each command supports `--dry-run` and `--out-dir`. The Stage 5A implementation
 keeps external execution disabled by default and does not provide a flag to
 enable model, JasperGold, or Moore execution.
+Workflow commands also support `--include-playbook-guidance` to show expected
+`copilot/playbooks/**` path and section references in the dry-run report without
+reading those files or making external calls.
 
 ## Dry-Run Safety
 

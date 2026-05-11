@@ -40,6 +40,7 @@ from copilot.agents.dv_triage_agent import structured_fallback as triage_fallbac
 from copilot.agents.dv_triage_agent import build_prompt as build_triage_prompt
 from copilot.agents.sva_repair_agent import structured_fallback as repair_fallback
 from copilot.agents.sva_repair_agent import build_prompt as build_repair_prompt
+from copilot.playbook_guidance import guidance_for_workflow
 from tools.build_evidence_packet import build_packet
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -197,6 +198,11 @@ def add_common_workflow_options(parser: argparse.ArgumentParser, name: str) -> N
         type=Path,
         help="Optional existing verifier outcome/summary JSON to import as workflow context.",
     )
+    parser.add_argument(
+        "--include-playbook-guidance",
+        action="store_true",
+        help="Include expected playbook path/section references in dry-run reports without reading them.",
+    )
 
 
 def run_workflow_command(args: argparse.Namespace, argv: list[str]) -> int:
@@ -237,7 +243,17 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
     if blocked_reason:
         steps_executed.append("block_external_backend_without_acknowledgement")
         report_path = out_dir / "workflow_report.md"
-        write_text(report_path, final_report("repair", case_id, args.backend, blocked_reason, []))
+        write_text(
+            report_path,
+            final_report(
+                "repair",
+                case_id,
+                args.backend,
+                blocked_reason,
+                [],
+                include_playbook_guidance=args.include_playbook_guidance,
+            ),
+        )
         artifact_refs.append(artifact_ref("final_report", report_path))
         manifest = build_manifest(
             args=args,
@@ -348,6 +364,7 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
             steps_executed,
             verifier_ref=verifier_ref,
             alignment_ref=alignment_ref,
+            include_playbook_guidance=args.include_playbook_guidance,
         ),
     )
     artifact_refs.append(artifact_ref("final_report", report_path))
@@ -396,7 +413,17 @@ def run_packet_workflow(args: argparse.Namespace, argv: list[str], *, workflow_t
     if blocked_reason:
         steps_executed.append("block_external_backend_without_acknowledgement")
         report_path = out_dir / "workflow_report.md"
-        write_text(report_path, final_report(workflow_type, case_id, args.backend, blocked_reason, []))
+        write_text(
+            report_path,
+            final_report(
+                workflow_type,
+                case_id,
+                args.backend,
+                blocked_reason,
+                [],
+                include_playbook_guidance=args.include_playbook_guidance,
+            ),
+        )
         artifact_refs.append(artifact_ref("final_report", report_path))
         manifest = build_manifest(
             args=args,
@@ -512,6 +539,7 @@ def run_packet_workflow(args: argparse.Namespace, argv: list[str], *, workflow_t
             None,
             steps_executed,
             verifier_ref=verifier_ref,
+            include_playbook_guidance=args.include_playbook_guidance,
         ),
     )
     artifact_refs.append(artifact_ref("final_report", report_path))
@@ -576,7 +604,17 @@ def run_demo_workflow(args: argparse.Namespace, argv: list[str]) -> int:
             )
         steps_executed = [*subset["steps_executed"], "emit_final_workflow_report"]
     report_path = out_dir / "workflow_report.md"
-    write_text(report_path, final_report("demo", str(case_id), args.backend, blocked_reason, steps_executed))
+    write_text(
+        report_path,
+        final_report(
+            "demo",
+            str(case_id),
+            args.backend,
+            blocked_reason,
+            steps_executed,
+            include_playbook_guidance=args.include_playbook_guidance,
+        ),
+    )
     artifact_refs = [*subset_artifact_refs, artifact_ref("final_report", report_path)]
     manifest = build_manifest(
         args=args,
@@ -614,7 +652,17 @@ def write_blocked_local_workflow(
     case_count: int,
 ) -> int:
     report_path = out_dir / "workflow_report.md"
-    write_text(report_path, final_report(workflow_type, case_id, "local", "local_unavailable", steps_executed))
+    write_text(
+        report_path,
+        final_report(
+            workflow_type,
+            case_id,
+            "local",
+            "local_unavailable",
+            steps_executed,
+            include_playbook_guidance=args.include_playbook_guidance,
+        ),
+    )
     artifact_refs = [*artifact_refs, artifact_ref("final_report", report_path)]
     manifest = build_manifest(
         args=args,
@@ -1096,6 +1144,7 @@ def final_report(
     *,
     verifier_ref: str | None = None,
     alignment_ref: str | None = None,
+    include_playbook_guidance: bool = False,
 ) -> str:
     status = "blocked" if blocked_reason else "dry-run complete"
     lines = [
@@ -1119,6 +1168,18 @@ def final_report(
         lines.extend(["## Imported Verifier Context", "", f"- `{verifier_ref}`", ""])
     if alignment_ref:
         lines.extend(["## Intent Alignment", "", f"- `{alignment_ref}`", ""])
+    if include_playbook_guidance:
+        lines.extend(
+            [
+                "## Playbook Guidance",
+                "",
+                "Dry-run guidance only. Expected playbook files are referenced by path and section; "
+                "the workflow does not read playbook files or make external calls.",
+                "",
+            ]
+        )
+        lines.extend(f"- {ref.markdown_ref()}" for ref in guidance_for_workflow(workflow_type))
+        lines.append("")
     lines.extend(["## Steps Executed", ""])
     if steps_executed:
         lines.extend(f"- {step}" for step in steps_executed)

@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from copilot.llm_client import call_llm_json, llm_configured
+from copilot.playbook_guidance import prompt_guidance_refs
 from copilot.sva_library import SVA_TEMPLATES
 
 PROMPT_DIR = ROOT / "copilot" / "prompts"
@@ -102,6 +103,13 @@ def build_prompt(
         "You are JasperLoop-DV in SVA repair mode. "
         "Repair exactly one SystemVerilog assertion using only the property intent, allowed signals, "
         "and JasperGold feedback. Do not invent signals. Return JSON with property_id, sva, and explanation.\n\n"
+        "PLAYBOOK_GUIDANCE:\n"
+        + prompt_guidance_refs(
+            "CEX debug checklist",
+            "assumption/vacuity review checklist",
+            "intent alignment review note",
+        )
+        + "\n\n"
         f"ROUND: {round_index}\n\n"
         "CASE:\n"
         + json.dumps(payload, indent=2)

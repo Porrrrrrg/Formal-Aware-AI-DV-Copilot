@@ -24,14 +24,32 @@ def test_workflow_help_lists_subcommands() -> None:
 
 
 def test_workflow_repair_dry_run_returns_zero(tmp_path: Path) -> None:
-    exit_code = main(["workflow", "repair", "--dry-run", "--out-dir", str(tmp_path)])
+    exit_code = main(
+        [
+            "workflow",
+            "repair",
+            "--dry-run",
+            "--include-playbook-guidance",
+            "--out-dir",
+            str(tmp_path),
+        ]
+    )
 
     assert exit_code == 0
     assert (tmp_path / "workflow_report.md").exists()
 
 
 def test_workflow_repair_dry_run_emits_workflow_manifest(tmp_path: Path) -> None:
-    exit_code = main(["workflow", "repair", "--dry-run", "--out-dir", str(tmp_path)])
+    exit_code = main(
+        [
+            "workflow",
+            "repair",
+            "--dry-run",
+            "--include-playbook-guidance",
+            "--out-dir",
+            str(tmp_path),
+        ]
+    )
     manifest = json.loads((tmp_path / "workflow_manifest.json").read_text(encoding="utf-8"))
 
     assert exit_code == 0
@@ -164,6 +182,32 @@ def test_workflow_final_report_includes_claim_boundary(tmp_path: Path) -> None:
     assert exit_code == 0
     assert "## Claim Boundary" in report
     assert "A proof pass does not imply semantic intent alignment." in report
+    assert "Stage 5F workflow evidence is a manifest-driven orchestration record." in report
+
+
+def test_workflow_dry_run_includes_playbook_guidance_when_requested(tmp_path: Path) -> None:
+    exit_code = main(
+        [
+            "workflow",
+            "demo",
+            "--dry-run",
+            "--include-playbook-guidance",
+            "--out-dir",
+            str(tmp_path),
+        ]
+    )
+    report = (tmp_path / "workflow_report.md").read_text(encoding="utf-8")
+    manifest = json.loads((tmp_path / "workflow_manifest.json").read_text(encoding="utf-8"))
+
+    assert exit_code == 0
+    assert manifest["external_send_allowed"] is False
+    assert manifest["cloud_fallback_called"] is False
+    assert "## Playbook Guidance" in report
+    assert "copilot/playbooks/cex_debug_playbook.md#cex-review-checklist" in report
+    assert "copilot/playbooks/assumption_vacuity_playbook.md#review-flow" in report
+    assert "copilot/playbooks/coverage_closure_playbook.md#closure-flow" in report
+    assert "copilot/playbooks/formal_review_checklist.md#checklist" in report
+    assert "the workflow does not read playbook files or make external calls" in report
 
 
 def test_local_workflow_dry_run_does_not_call_endpoint(
