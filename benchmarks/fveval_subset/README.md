@@ -35,8 +35,12 @@ model prompts. The local runner emits sanitized prompt payloads that omit
 ## Limitations
 
 This import is FVEval-compatible data plumbing, not an apples-to-apples FVEval
-result. The local runner reports syntax scaffold checks, exact/reference match
-where a reference exists, valid JSON, fallback use, and hallucinated signal
-rate. It does not reproduce FVEval's commercial Jasper/property-equivalence
+official result. The local runner reports syntax scaffold checks,
+exact/reference match where a reference exists, valid JSON, fallback use, and
+hallucinated signal rate. External references are retained as evaluation
+metadata only, and reference answers are omitted from prompt payloads. The
+runner does not reproduce FVEval's commercial Jasper/property-equivalence
 functional-equivalence flow. Design2SVA admits multiple valid assertions, so
-exact matching is not a functional correctness metric for that subset.
+exact matching is not a functional equivalence or correctness metric for that
+subset. No JasperGold, Codex, or Qwen execution is performed by the local
+runner.
