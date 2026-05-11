@@ -1,0 +1,118 @@
+{
+  "num_prompts": 9,
+  "max_chars": 3542,
+  "total_approx_tokens": 4712,
+  "num_with_gold_label": 0,
+  "num_with_rtl_context": 0,
+  "num_with_jasper_evidence": 9,
+  "prompts": [
+    {
+      "prompt_id": "sva_repair_001_repair_arbiter_mutex_syntax",
+      "task": "sva_repair",
+      "case_id": "repair_arbiter_mutex_syntax",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "chars": 812,
+      "approx_tokens": 203,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "sva_repair_002_repair_arbiter_spurious_unknown_signal",
+      "task": "sva_repair",
+      "case_id": "repair_arbiter_spurious_unknown_signal",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_no_spurious_gnt0",
+      "chars": 856,
+      "approx_tokens": 214,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "sva_repair_003_repair_arbiter_single_req1_wrong_grant",
+      "task": "sva_repair",
+      "case_id": "repair_arbiter_single_req1_wrong_grant",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_single_req1_grant",
+      "chars": 951,
+      "approx_tokens": 237,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "triage_001_apb_C6",
+      "task": "triage",
+      "case_id": "apb_C6",
+      "design_id": "apb_regblock",
+      "property_id": "p_read_next_cycle_bad",
+      "chars": 2192,
+      "approx_tokens": 548,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "triage_002_apb_C5",
+      "task": "triage",
+      "case_id": "apb_C5",
+      "design_id": "apb_regblock",
+      "property_id": "p_write_updates_in_setup_bad",
+      "chars": 2234,
+      "approx_tokens": 558,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "triage_003_apb_C7",
+      "task": "triage",
+      "case_id": "apb_C7",
+      "design_id": "apb_regblock",
+      "property_id": "p_read_returns_reg0",
+      "chars": 2197,
+      "approx_tokens": 549,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "coverage_001_apb_C10",
+      "task": "coverage",
+      "case_id": "apb_C10",
+      "design_id": "apb_regblock",
+      "property_id": "cov_wait_state_pready_low",
+      "chars": 2732,
+      "approx_tokens": 683,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "coverage_002_apb_C9",
+      "task": "coverage",
+      "case_id": "apb_C9",
+      "design_id": "apb_regblock",
+      "property_id": "cov_invalid_address",
+      "chars": 3343,
+      "approx_tokens": 835,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    },
+    {
+      "prompt_id": "coverage_003_apb_C8",
+      "task": "coverage",
+      "case_id": "apb_C8",
+      "design_id": "apb_regblock",
+      "property_id": "cov_write_reg0_then_read",
+      "chars": 3542,
+      "approx_tokens": 885,
+      "contains_gold_label": false,
+      "contains_rtl_context": false,
+      "contains_jasper_evidence": true
+    }
+  ]
+}
