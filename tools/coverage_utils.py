@@ -79,7 +79,7 @@ def enrich_coverage_context(case_path: Path, case: dict[str, object]) -> dict[st
         coverage["coverage_plan"] = str(plan_path) if plan_path else None
 
     if case.get("task_type") == "coverage_closure":
-        coverage.setdefault("observed_hits", 0)
+        coverage.setdefault("expected_test_hits", 0)
     return coverage
 
 
@@ -105,7 +105,7 @@ def build_coverage_evidence(
             witness_events = [str(event) for event in events[:8]]
             break
 
-    cover_status = str(coverage_context.get("jasper_cover_result", "") or "").lower()
+    cover_status = str(coverage_context.get("expected_cover_status", "") or "").lower()
     expected = coverage_context.get("expected_reachable")
     if cover_status in {"reachable", "covered"} and expected is not False:
         closure_class = "reachable_coverage_gap"
@@ -118,9 +118,9 @@ def build_coverage_evidence(
         "coverage_goal": coverage_context.get("coverage_goal"),
         "intent": coverage_context.get("intent"),
         "expression": coverage_context.get("expression"),
-        "observed_hits": coverage_context.get("observed_hits"),
+        "expected_test_hits": coverage_context.get("expected_test_hits"),
         "expected_reachable": expected,
-        "formal_cover_status": coverage_context.get("jasper_cover_result"),
+        "expected_cover_status": coverage_context.get("expected_cover_status"),
         "closure_class": closure_class,
         "witness_depth": witness_depth,
         "witness_events": witness_events,

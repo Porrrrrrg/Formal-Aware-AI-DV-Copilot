@@ -6,9 +6,9 @@
   "property_id": "cov_write_reg0_then_read",
   "coverage_context": {
     "coverage_goal": "cov_write_reg0_then_read",
-    "observed_hits": 0,
+    "expected_test_hits": 0,
     "expected_reachable": true,
-    "jasper_cover_result": "reachable",
+    "expected_cover_status": "reachable",
     "related_signals": ["psel", "penable", "pwrite", "paddr", "pwdata", "prdata", "reg0"],
     "suggested_sequence": [
       "Drive a valid APB write access to address 0x00.",
@@ -16,6 +16,7 @@
       "Check that prdata matches reg0."
     ]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "reachable_coverage_gap",
   "expected_next_action": "add_directed_test_or_sequence",
   "root_cause": "Formal cover shows write-then-read is reachable, so the simulation suite needs a directed APB register access sequence."

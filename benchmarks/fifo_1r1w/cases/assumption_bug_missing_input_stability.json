@@ -1,0 +1,13 @@
+{
+  "case_id": "fifo_D10",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_blocked_push_data_stable",
+  "active_assumptions": [],
+  "property_intent": "The producer-side contract should constrain push_data while push_valid waits for push_ready.",
+  "label_source": "author_expected",
+  "expected_issue_type": "assumption_constraint_bug",
+  "expected_next_action": "fix_assumption_constraint",
+  "root_cause": "Without the input-stability assumption, the environment may change push_data while blocked and create false failures in data sampling checks."
+}

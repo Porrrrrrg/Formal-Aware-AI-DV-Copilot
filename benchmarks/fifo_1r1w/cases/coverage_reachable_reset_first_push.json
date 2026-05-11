@@ -1,0 +1,23 @@
+{
+  "case_id": "fifo_D16",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_reset_release_first_push",
+  "coverage_context": {
+    "coverage_goal": "cov_reset_release_first_push",
+    "expected_test_hits": 0,
+    "expected_reachable": true,
+    "expected_cover_status": "reachable",
+    "related_signals": ["rst", "push_valid", "push_ready", "push_fire"],
+    "suggested_sequence": [
+      "Assert reset for one cycle.",
+      "Deassert reset.",
+      "Issue the first push within three cycles."
+    ]
+  },
+  "label_source": "author_expected",
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "The reset-release goal is reachable but unhit when stimulus waits too long before the first enqueue."
+}

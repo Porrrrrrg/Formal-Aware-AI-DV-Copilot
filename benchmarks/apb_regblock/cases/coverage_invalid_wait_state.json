@@ -6,11 +6,12 @@
   "property_id": "cov_wait_state_pready_low",
   "coverage_context": {
     "coverage_goal": "cov_wait_state_pready_low",
-    "observed_hits": 0,
+    "expected_test_hits": 0,
     "expected_reachable": false,
-    "jasper_cover_result": "unreachable",
+    "expected_cover_status": "unreachable",
     "related_signals": ["psel", "penable", "pready"]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "unreachable_or_invalid_coverage_goal",
   "expected_next_action": "prove_unreachable_or_waive_coverage_goal",
   "root_cause": "The block is specified as zero-wait-state with pready tied high, so a pready-low wait-state coverage goal is invalid for this design."

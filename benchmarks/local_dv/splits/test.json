@@ -1,18 +1,38 @@
 {
   "design_ids": [
-    "apb_regblock"
+    "apb_regblock",
+    "fifo_1r1w"
   ],
   "item_ids": [
     "local_dv:apb_C6",
     "local_dv:apb_C5",
+    "local_dv:apb_C11",
     "local_dv:apb_C7",
     "local_dv:apb_C2",
     "local_dv:apb_C10",
+    "local_dv:apb_C12",
     "local_dv:apb_C9",
     "local_dv:apb_C8",
     "local_dv:apb_C4",
     "local_dv:apb_C1",
-    "local_dv:apb_C3"
+    "local_dv:apb_C3",
+    "local_dv:fifo_D8",
+    "local_dv:fifo_D6",
+    "local_dv:fifo_D7",
+    "local_dv:fifo_D12",
+    "local_dv:fifo_D9",
+    "local_dv:fifo_D10",
+    "local_dv:fifo_D11",
+    "local_dv:fifo_D13",
+    "local_dv:fifo_D15",
+    "local_dv:fifo_D16",
+    "local_dv:fifo_D14",
+    "local_dv:fifo_D5",
+    "local_dv:fifo_D2",
+    "local_dv:fifo_D1",
+    "local_dv:fifo_D4",
+    "local_dv:fifo_D3",
+    "local_dv:fifo_D17"
   ],
   "policy": "repo-local overlay; split by design family",
   "split": "test"

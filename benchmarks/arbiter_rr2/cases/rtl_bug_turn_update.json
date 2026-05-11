@@ -9,6 +9,7 @@
     "The turn bit must update after contested grants.",
     "Persistent two-client contention should alternate service."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The turn-update bug never advances the round-robin priority state during contention, so one requester can be starved."

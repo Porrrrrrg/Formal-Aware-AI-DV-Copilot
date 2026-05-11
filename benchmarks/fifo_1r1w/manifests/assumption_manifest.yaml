@@ -1,0 +1,19 @@
+assumptions:
+  - id: a_reset_deasserts
+    intent: Reset is a startup condition and deasserts after one cycle.
+    risk: If reset is held forever, most disabled properties and coverage goals become vacuous.
+  - id: a_push_data_stable_when_blocked
+    intent: The producer keeps push_data stable while waiting for push_ready.
+    risk: Missing this assumption can create false failures for properties that sample blocked input data.
+  - id: a_pop_ready_eventually
+    intent: A consumer eventually accepts valid FIFO output within four cycles.
+    risk: This is a bounded liveness fairness constraint and can hide dead consumer stimulus.
+  - id: a_no_push_when_full_without_pop
+    intent: Forbids push attempts when the FIFO is full and no pop is happening.
+    risk: Overconstrains the no-overflow scenario and can make push_ready overflow checks vacuous.
+  - id: a_never_push
+    intent: Forbids all enqueue attempts.
+    risk: Makes ordering, full, and most nonempty FIFO properties unreachable.
+  - id: a_never_pop
+    intent: Forbids all dequeue attempts.
+    risk: Makes liveness and pop-side coverage goals unhit or vacuous.

@@ -39,7 +39,7 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     if not isinstance(evidence_packet, dict):
         evidence_packet = {}
     cover_status = str(
-        evidence_packet.get("formal_cover_status") or coverage.get("jasper_cover_result") or ""
+        evidence_packet.get("expected_cover_status") or coverage.get("expected_cover_status") or ""
     ).lower()
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable", True))
     reachable = cover_status in {"reachable", "covered"}
@@ -72,9 +72,9 @@ def collect_structured_evidence(
     goal = evidence_packet.get("coverage_goal") or coverage.get("coverage_goal")
     if goal:
         evidence.append(f"Coverage goal: {goal}")
-    status = evidence_packet.get("formal_cover_status") or coverage.get("jasper_cover_result")
+    status = evidence_packet.get("expected_cover_status") or coverage.get("expected_cover_status")
     if status:
-        evidence.append(f"JasperGold cover result: {status}")
+        evidence.append(f"Expected cover status: {status}")
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable"))
     if expected is not None:
         evidence.append(f"Expected reachable: {expected}")
@@ -86,7 +86,7 @@ def collect_structured_evidence(
         evidence.append("Witness trace starts with: " + str(witness_events[0]))
     if not evidence:
         evidence.append(
-            "JasperGold cover evidence indicates the goal is reachable."
+            "Benchmark metadata labels the goal as reachable."
             if reachable
             else "Coverage goal is unreachable, invalid, or contradicts expected behavior."
         )

@@ -1,0 +1,16 @@
+{
+  "case_id": "fifo_D3",
+  "design_id": "fifo_1r1w",
+  "variant": "bug_simultaneous_level",
+  "task_type": "failure_triage",
+  "property_id": "p_simultaneous_push_pop_full",
+  "property_intent": "A simultaneous push and pop while full must preserve FIFO occupancy.",
+  "design_intent": [
+    "A full FIFO may accept a push when a pop also completes.",
+    "The level must remain unchanged on simultaneous push and pop."
+  ],
+  "label_source": "author_expected",
+  "expected_issue_type": "rtl_design_bug",
+  "expected_next_action": "fix_rtl",
+  "root_cause": "The simultaneous-level variant increments occupancy on push+pop instead of leaving it unchanged."
+}

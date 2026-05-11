@@ -9,6 +9,7 @@
     "This register block is zero-wait-state.",
     "prdata is expected during the same access phase."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The property assumes a one-cycle read latency that is not part of this APB-lite block's specification."

@@ -1,0 +1,22 @@
+{
+  "case_id": "fifo_D12",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "failure_triage",
+  "property_id": "p_no_full_bad",
+  "active_assumptions": [
+    {
+      "id": "a_push_data_stable_when_blocked",
+      "intent": "Producer data remains stable while blocked."
+    }
+  ],
+  "property_intent": "The FIFO may legally become full after four pushes.",
+  "assertion_intent": {
+    "broken_sva": "p_no_full_bad: assert property (@(posedge clk) disable iff (rst) !full);",
+    "reference_sva": "p_level_bounds: assert property (@(posedge clk) disable iff (rst) level <= DEPTH[COUNT_W-1:0]);"
+  },
+  "label_source": "author_expected",
+  "expected_issue_type": "assertion_property_bug",
+  "expected_next_action": "fix_assertion_property",
+  "root_cause": "The active assumption is valid; the property is wrong because it forbids a legal full FIFO state."
+}

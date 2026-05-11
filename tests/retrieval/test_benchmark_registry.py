@@ -11,11 +11,11 @@ def test_local_dv_registry_splits_by_design_without_overlap() -> None:
         split_to_designs.setdefault(item["split"], set()).add(item["design_id"])
         split_to_cases.setdefault(item["split"], set()).add(item["case_id"])
 
-    assert len(registry["items"]) == 30
+    assert len(registry["items"]) == 53
     assert split_to_designs == {
         "train": {"arbiter_rr2"},
         "dev": {"rv_buffer"},
-        "test": {"apb_regblock"},
+        "test": {"apb_regblock", "fifo_1r1w"},
     }
     assert not (split_to_cases["train"] & split_to_cases["dev"])
     assert not (split_to_cases["train"] & split_to_cases["test"])
@@ -36,7 +36,7 @@ def test_split_payloads_reference_registry_items() -> None:
     registry = build_local_dv_registry()
     payloads = split_payloads(registry["items"])
     assert set(payloads) == {"train", "dev", "test"}
-    assert len(payloads["train"]["item_ids"]) == 10
-    assert len(payloads["dev"]["item_ids"]) == 10
-    assert len(payloads["test"]["item_ids"]) == 10
+    assert len(payloads["train"]["item_ids"]) == 12
+    assert len(payloads["dev"]["item_ids"]) == 12
+    assert len(payloads["test"]["item_ids"]) == 29
 

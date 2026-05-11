@@ -9,6 +9,7 @@
     "The buffer only captures input when in_valid and in_ready are both high.",
     "Valid without ready is not a transfer."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The property uses in_valid instead of the ready/valid input handshake condition."

@@ -268,5 +268,65 @@
     "signals": ["pclk", "presetn", "psel", "penable", "paddr", "pslverr"],
     "intent": "Invalid APB addresses assert pslverr during the access phase.",
     "reference_sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);"
+  },
+  {
+    "case_id": "sva_fifo_reset_empty",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_reset_empty",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "empty", "full", "level", "pop_valid"],
+    "intent": "Reset should leave the FIFO empty with no valid output.",
+    "reference_sva": "p_reset_empty: assert property (@(posedge clk) rst |=> empty && !full && level == '0 && !pop_valid);"
+  },
+  {
+    "case_id": "sva_fifo_no_underflow",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_no_underflow",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "empty", "pop_fire"],
+    "intent": "The FIFO must not complete a pop when empty.",
+    "reference_sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));"
+  },
+  {
+    "case_id": "sva_fifo_no_overflow",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_no_overflow",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "push_valid", "pop_ready", "push_ready"],
+    "intent": "The FIFO must not accept a push while full unless a pop also happens.",
+    "reference_sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid && !pop_ready |-> !push_ready);"
+  },
+  {
+    "case_id": "sva_fifo_simultaneous_full",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_simultaneous_push_pop_full",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "push_valid", "push_ready", "pop_ready", "push_fire", "pop_fire", "level"],
+    "intent": "A full FIFO should accept simultaneous push and pop and preserve occupancy.",
+    "reference_sva": "p_simultaneous_push_pop_full: assert property (@(posedge clk) disable iff (rst) full && push_valid && pop_ready |-> (push_ready && push_fire && pop_fire) ##1 (full && level == $past(level)));"
+  },
+  {
+    "case_id": "sva_fifo_pop_data_stable",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_pop_data_stable_when_stalled",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "pop_valid", "pop_ready", "pop_data"],
+    "intent": "Pop data must remain stable while valid output is stalled.",
+    "reference_sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(pop_data));"
+  },
+  {
+    "case_id": "sva_fifo_eventual_pop",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_eventual_pop",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "pop_valid", "pop_fire"],
+    "intent": "Under the fairness bound, valid output should be accepted within four cycles.",
+    "reference_sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:4] pop_fire);"
   }
 ]

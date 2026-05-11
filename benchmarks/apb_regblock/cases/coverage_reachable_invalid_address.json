@@ -6,9 +6,9 @@
   "property_id": "cov_invalid_address",
   "coverage_context": {
     "coverage_goal": "cov_invalid_address",
-    "observed_hits": 0,
+    "expected_test_hits": 0,
     "expected_reachable": true,
-    "jasper_cover_result": "reachable",
+    "expected_cover_status": "reachable",
     "related_signals": ["psel", "penable", "paddr", "pslverr"],
     "suggested_sequence": [
       "Drive a valid APB access phase.",
@@ -16,6 +16,7 @@
       "Observe pslverr asserted."
     ]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "reachable_coverage_gap",
   "expected_next_action": "add_directed_test_or_sequence",
   "root_cause": "Invalid-address behavior is reachable and should be covered by an error-response directed test."
