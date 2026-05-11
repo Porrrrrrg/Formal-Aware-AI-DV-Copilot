@@ -6,6 +6,8 @@
     "case_id",
     "predicted_issue_type",
     "root_cause_ranked",
+    "suspect_rtl_signals",
+    "suspect_assertions_or_assumptions",
     "recommended_next_action",
     "debug_checklist"
   ],
@@ -34,7 +36,8 @@
             "type": "array",
             "items": { "type": "string" }
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "suspect_rtl_signals": {

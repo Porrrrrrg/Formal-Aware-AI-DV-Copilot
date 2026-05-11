@@ -3,6 +3,7 @@
   "title": "Coverage Closure Output",
   "type": "object",
   "required": [
+    "case_id",
     "coverage_gap_type",
     "recommended_next_action",
     "directed_sequence",
