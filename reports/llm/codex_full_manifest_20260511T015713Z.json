@@ -1,0 +1,231 @@
+{
+  "run_id": "codex_full_20260511T015713Z",
+  "created_utc": "2026-05-11T01:57:13Z",
+  "workspace": "D:\\AI-DV\\jl-codex-full-eval",
+  "branch": "stage/codex-full-eval",
+  "benchmark_input_sha": "dec371bd7d4eb9aacf80a28ffc300914a7b45540",
+  "base": "origin/main at dec371bd7d4eb9aacf80a28ffc300914a7b45540",
+  "scope": {
+    "stage": "Stage 2D",
+    "evaluation_type": "full Codex-backed benchmark measurement",
+    "qwen_run": false,
+    "qwen_comparison": false,
+    "production_readiness_claim": false,
+    "tasks": [
+      "sva_repair",
+      "triage",
+      "coverage"
+    ],
+    "full_pass_limit_argument": 999,
+    "full_pass_case_counts": {
+      "sva_repair": 18,
+      "triage": 30,
+      "coverage": 9
+    },
+    "note": "The exact requested task commands were run first, but the wrapper default still limits underlying evaluators to 3 cases. Full-pass metrics use explicit --limit 999 outputs."
+  },
+  "external_send": {
+    "acknowledged": true,
+    "healthcheck_passed": true,
+    "healthcheck_valid_json": true
+  },
+  "commands": [
+    {
+      "step": "preflight",
+      "command": ".venv\\Scripts\\python.exe -m pytest -q",
+      "exit_code": 0,
+      "summary": "67 passed in 3.50s"
+    },
+    {
+      "step": "preflight",
+      "command": ".venv\\Scripts\\python.exe -m ruff check .",
+      "exit_code": 0,
+      "summary": "All checks passed"
+    },
+    {
+      "step": "prompt_audit",
+      "command": ".venv\\Scripts\\python.exe scripts/export_codex_prompts.py --task all --limit 3 --summary-only",
+      "exit_code": 0,
+      "summary": "9 prompts exported; no gold labels or RTL context; Jasper evidence present in all prompts"
+    },
+    {
+      "step": "healthcheck",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task healthcheck",
+      "exit_code": 0,
+      "summary": "Valid Codex-backed JSON response"
+    },
+    {
+      "step": "requested_task",
+      "task": "sva_repair",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task sva_repair --acknowledge-external-send",
+      "exit_code": 0,
+      "cases_attempted": 3,
+      "note": "Runner default limit applied"
+    },
+    {
+      "step": "requested_task",
+      "task": "triage",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task triage --acknowledge-external-send",
+      "exit_code": 0,
+      "cases_attempted": 3,
+      "note": "Runner default limit applied"
+    },
+    {
+      "step": "requested_task",
+      "task": "coverage",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task coverage --acknowledge-external-send",
+      "exit_code": 0,
+      "cases_attempted": 3,
+      "note": "Runner default limit applied"
+    },
+    {
+      "step": "full_task",
+      "task": "sva_repair",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task sva_repair --limit 999 --out evaluation/results/sva_repair_codex_full.json --acknowledge-external-send",
+      "exit_code": 0,
+      "cases_attempted": 18,
+      "result_artifact": "evaluation/results/sva_repair_codex_full.json"
+    },
+    {
+      "step": "full_task",
+      "task": "triage",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task triage --limit 999 --out evaluation/results/agent_eval_codex_full.json --acknowledge-external-send",
+      "exit_code": 0,
+      "cases_attempted": 30,
+      "result_artifact": "evaluation/results/agent_eval_codex_full.json"
+    },
+    {
+      "step": "full_task",
+      "task": "coverage",
+      "command": ".venv\\Scripts\\python.exe scripts/run_codex_llm_eval.py --task coverage --limit 999 --out evaluation/results/coverage_eval_codex_full.json --acknowledge-external-send",
+      "exit_code": 0,
+      "cases_attempted": 9,
+      "result_artifact": "evaluation/results/coverage_eval_codex_full.json"
+    },
+    {
+      "step": "prompt_audit",
+      "command": ".venv\\Scripts\\python.exe scripts/export_codex_prompts.py --task all --summary-only",
+      "exit_code": 0,
+      "summary": "9 prompts exported"
+    },
+    {
+      "step": "post_report_validation",
+      "command": ".venv\\Scripts\\python.exe -m json.tool reports\\llm\\codex_full_manifest_20260511T015713Z.json",
+      "exit_code": 0,
+      "summary": "Manifest JSON parsed successfully"
+    },
+    {
+      "step": "post_report_validation",
+      "command": ".venv\\Scripts\\python.exe -m pytest -q",
+      "exit_code": 0,
+      "summary": "67 passed in 4.04s"
+    },
+    {
+      "step": "post_report_validation",
+      "command": ".venv\\Scripts\\python.exe -m ruff check .",
+      "exit_code": 0,
+      "summary": "All checks passed"
+    }
+  ],
+  "prompt_audit": {
+    "num_prompts": 9,
+    "max_chars": 3534,
+    "total_approx_tokens": 4708,
+    "num_with_gold_label": 0,
+    "num_with_rtl_context": 0,
+    "num_with_jasper_evidence": 9,
+    "by_task": {
+      "sva_repair": 3,
+      "triage": 3,
+      "coverage": 3
+    }
+  },
+  "aggregate_metrics": {
+    "cases_attempted": 57,
+    "llm_output_count": 71,
+    "llm_valid_json_count": 71,
+    "llm_valid_json_rate": 1.0,
+    "fallback_count": 0,
+    "fallback_rate": 0.0,
+    "llm_error_count": 0,
+    "llm_error_rate": 0.0,
+    "hallucinated_signal_count_defined_tasks": 0,
+    "hallucinated_signal_denominator_defined_tasks": 48,
+    "hallucinated_signal_rate_defined_tasks": 0.0,
+    "schema_drift_count": 0,
+    "source_counts": {
+      "llm": 71
+    }
+  },
+  "task_results": [
+    {
+      "task": "sva_repair",
+      "cases_attempted": 18,
+      "result_artifact": "evaluation/results/sva_repair_codex_full.json",
+      "artifact_sha256": "D8B66A5E8C7BE4CCEA2D2EB1A0FD78EA9A4FD83745DA0BC98015AC2F0706E867",
+      "artifact_bytes": 60648,
+      "source_counts": {
+        "llm": 32
+      },
+      "llm_valid_json_rate": 1.0,
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "hallucinated_signal_rate": 0.0,
+      "repair_success_rate": 0.6111111111111112,
+      "repair_success_count": 11,
+      "proven_final": 0.0,
+      "proven_final_count": 0,
+      "exact_match_final": 0.6111111111111112,
+      "exact_match_final_count": 11,
+      "average_rounds_to_success": 1.0,
+      "jasper_final_proof_run": false
+    },
+    {
+      "task": "triage",
+      "cases_attempted": 30,
+      "result_artifact": "evaluation/results/agent_eval_codex_full.json",
+      "artifact_sha256": "CD9FEA5BC03B96BB75242308B7518B57DED73E7D23CF3B5CDEDF01D676A8679D",
+      "artifact_bytes": 106667,
+      "source_counts": {
+        "llm": 30
+      },
+      "llm_valid_json_rate": 1.0,
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "hallucinated_signal_rate": 0.0,
+      "issue_type_accuracy": 0.9333333333333333,
+      "issue_type_correct_count": 28,
+      "next_action_accuracy": 0.9333333333333333,
+      "next_action_correct_count": 28
+    },
+    {
+      "task": "coverage",
+      "cases_attempted": 9,
+      "result_artifact": "evaluation/results/coverage_eval_codex_full.json",
+      "artifact_sha256": "63F858DCF4E5ADB07434811503DD81546744F5E8DC397D79DD6DF38E27708EF0",
+      "artifact_bytes": 25692,
+      "source_counts": {
+        "llm": 9
+      },
+      "llm_valid_json_rate": 1.0,
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "hallucinated_signal_rate": null,
+      "gap_type_accuracy": 1.0,
+      "gap_type_correct_count": 9,
+      "action_accuracy": 1.0,
+      "action_correct_count": 9,
+      "wrong_test_suggestion_rate": 0.0,
+      "reachable_sequence_presence_rate": 1.0
+    }
+  ],
+  "report_files": [
+    "reports/llm/codex_full_summary_20260511T015713Z.md",
+    "reports/llm/codex_full_manifest_20260511T015713Z.json",
+    "reports/llm/codex_full_error_cases_20260511T015713Z.md"
+  ],
+  "raw_result_artifacts_committed": false
+}
