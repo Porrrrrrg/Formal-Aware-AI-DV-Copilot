@@ -9,7 +9,7 @@ venv/
 env/
 
 # JasperGold and EDA outputs
-jasper/reports/*
+jasper/reports/**
 !jasper/reports/.gitkeep
 evaluation/results/agent_eval*.json
 evaluation/results/sva_eval*.json
@@ -17,6 +17,11 @@ evaluation/results/sva_repair*.json
 evaluation/results/coverage_eval*.json
 evaluation/prompt_previews/
 copilot/baselines/*([0-9]).py
+artifacts/**
+**/traces/**
+**/trace/**
+**/trace_*/
+**/*_trace/
 *.jou
 *.log
 *.rpt
@@ -27,13 +32,23 @@ INCA_libs/
 xcelium.d/
 .formal/
 jgproject/
-artifacts/
 dist/
 
 # Local secrets and model configs
 .env
 *.local.json
 *.local.yaml
+*.local.log
+*.llm.log
+llm_logs/
+raw_llm_logs/
+reports/local_llm/raw/**
+reports/llm/raw/**
+models/
+.cache/
+hf_cache/
+transformers_cache/
+torch_cache/
 
 # OS/editor
 .DS_Store
