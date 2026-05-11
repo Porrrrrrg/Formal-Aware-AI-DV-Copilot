@@ -1,97 +1,102 @@
-# Stage 5 Runtime Cleanup Gate - 2026-05-11T19:55:57Z
+# Stage 5 Runtime Cleanup Gate - 2026-05-11T20:31:04Z
 
 ## Scope
 
-Report-only kickoff/status gate for the Stage 5 runtime cleanup follow-up.
+Report-only Stage 5 runtime cleanup gate update after implementation branch
+heads became available.
 
 - Gate branch: `stage5/runtime-cleanup-gate`
 - Worktree: `D:\AI-DV\jl-stage5-runtime-cleanup-gate`
 - Base: `origin/main` at `d31e5015b557711344cd1f6acc2dfc600afcd69e`
-- Stage 4 checkpoint tag: `stage4-checkpoint-581102f` at `8be55fc8aa3a0c5f917fc27d215d9befa4bb93d4`
-- Benchmarks run: none
-- Feature implementation: none
-- Report status: kickoff/status only; final approval requires a later update
-  against actual implementation branch heads.
+- Stage 4 checkpoint tag: `stage4-checkpoint-581102f` at
+  `8be55fc8aa3a0c5f917fc27d215d9befa4bb93d4`
+- Benchmarks run by this gate: none
+- Feature implementation in this gate: none
 
 ## Tracked Branch Heads
 
-| Branch | Local head | Remote branch | Delta from `origin/main` | Current gate state |
-| --- | --- | --- | --- | --- |
-| `stage5/qwen-runtime-fix` | `d31e5015b557711344cd1f6acc2dfc600afcd69e` | not present as `origin/stage5/qwen-runtime-fix` | `0 ahead / 0 behind` | not ready for final review |
-| `stage5/repo-hygiene-cleanup` | `d31e5015b557711344cd1f6acc2dfc600afcd69e` | not present as `origin/stage5/repo-hygiene-cleanup` | `0 ahead / 0 behind` | not ready for final review |
+| Branch | Observed head | Delta from `origin/main` | Gate state |
+| --- | --- | --- | --- |
+| `stage5/qwen-runtime-fix` | `3a3270233d1afbb59e9b2b3860c561492bec97dc` | 1 commit ahead | pass with local-only subset claim boundary |
+| `stage5/repo-hygiene-cleanup` | `67967da953acdefe601d72bcde7e2dcfe5c50feb` | 1 commit ahead | pass as additive hygiene infrastructure |
 
-Both tracked implementation branches currently point at the same commit as
-`origin/main`. No implementation-branch delta is available for final gate
-approval in this kickoff report.
+## Qwen Runtime Fix Review
 
-## Expected Acceptance Criteria
+Reviewed files added by `stage5/qwen-runtime-fix`:
 
-### Qwen Runtime Fix
+- `reports/local_llm/qwen_runtime_fix_manifest_20260511T202643Z.json`
+- `reports/local_llm/qwen_runtime_fix_summary_20260511T202643Z.md`
+- `reports/local_llm/qwen_workflow_subset_manifest_20260511T202620Z.json`
+- `reports/local_llm/qwen_workflow_subset_summary_20260511T202620Z.md`
 
-The Qwen runtime fix branch is acceptable only if it satisfies one of these
-outcomes:
+Gate findings:
 
-- Real local-only 3+3+3 subset evidence with local endpoint details, manifests,
-  prompt/result boundaries, and no cloud fallback.
-- A precise blocker report that states why the local-only 3+3+3 subset could
-  not run, including the failing local readiness condition and the evidence
-  collected.
+- The branch reports local-only Qwen runtime evidence using
+  `Qwen/Qwen3-14B-AWQ` served by vLLM at `http://127.0.0.1:8000/v1`.
+- `/v1/models` was reachable during evidence capture and returned
+  `Qwen/Qwen3-14B-AWQ`.
+- The local 3+3+3 workflow subset completed with 9 cases:
+  3 repair, 3 triage, and 3 coverage.
+- The subset manifest reports `status=ok`, `valid_json=true`,
+  `fallback_count=0`, and `llm_error_count=0`.
+- Cloud fallback was disabled and not called:
+  `cloud_fallback_allowed=false`, `cloud_fallback_called=false`, and
+  `external_send_allowed=false`.
+- The Qwen summary explicitly limits the claim to local runtime/workflow
+  readiness and states there was no full benchmark, no JasperGold/Moore run,
+  and no Qwen-vs-Codex comparison.
+- A gate-time endpoint check after evidence capture could not connect to
+  `http://127.0.0.1:8000/v1/models`; no Windows `python` or `vllm` serving
+  process was observed. This is consistent with the temporary local vLLM being
+  stopped after evidence capture.
 
-Required claim boundaries:
+Gate result: pass for local-only runtime cleanup evidence. This does not
+approve or imply a full Qwen benchmark, Qwen-vs-Codex comparison, model quality
+claim, cost claim, latency comparison, or production-readiness claim.
 
-- Must not claim Qwen-vs-Codex comparison.
-- Must not claim model quality, latency, cost, or production readiness without
-  matching local-only evidence.
-- Must not call cloud fallback.
-- Must record whether cloud fallback was allowed and whether it was called.
-- Must keep the replay demo described as offline replay evidence, not real
-  model performance.
+## Repo Hygiene Cleanup Review
 
-### Repo Hygiene Cleanup
+Reviewed files changed by `stage5/repo-hygiene-cleanup`:
 
-The repo hygiene cleanup branch is acceptable only if it preserves evidence and
-does not alter experiment results.
+- `.gitattributes`
+- `.gitignore`
+- `docs/artifact_policy.md`
+- `docs/repo_map.md`
+- `reports/index.md`
+- `reports/status/repo_cleanup_implementation_20260511T195542Z.md`
+- `scripts/clean_local_artifacts.py`
+- `tests/test_repo_hygiene.py`
 
-Required boundaries:
+Gate findings:
 
-- Must not delete curated evidence, manifests, summaries, release ledgers, or
-  gate reports unless a report index or explicit owner-approved retention plan
-  identifies the replacement location.
-- Must not rewrite experiment results, benchmark outputs, Qwen reports, Stage 4
-  checkpoint evidence, or replay-demo claims.
-- Must not commit raw logs, trace directories, model caches, local endpoint
-  captures, simulator byproducts, or large generated artifacts.
-- Must keep cleanup changes scoped to repository hygiene and documentation
-  unless separately reviewed.
+- The branch is additive hygiene infrastructure plus `.gitignore` updates.
+- The cleanup report states that it does not delete, move, relabel, or modify
+  research evidence, benchmark assets, release ledgers, Stage 2/3/4/5 reports,
+  Qwen/local-LLM reports, model/evaluation results, or local backend code.
+- `reports/index.md`, `docs/repo_map.md`, and `docs/artifact_policy.md`
+  document retention and artifact boundaries without changing experiment
+  results.
+- `tests/test_repo_hygiene.py` adds tracked-file denylist, ignore-pattern,
+  file-size, and report-index coverage checks.
+- `scripts/clean_local_artifacts.py` is dry-run by default and only deletes
+  local ignored artifacts when explicitly invoked with `--apply`.
+- The diff summary shows no deleted files and no experiment-result rewrites.
 
-### Frozen Evidence Boundaries
+Gate result: pass as docs/index/ignore/hygiene-tests/dry-run cleanup helper
+only. No evidence deletion or experiment result change was observed.
+
+## Frozen Evidence Boundaries
 
 - Stage 4 checkpoint remains frozen at
   `8be55fc8aa3a0c5f917fc27d215d9befa4bb93d4`.
-- Stage 5 replay demo remains offline replay evidence only.
-- Later approval must review the actual changed file list and diffs for both
-  tracked branches.
+- Stage 5 replay demo remains offline replay evidence only and is not converted
+  into real model performance evidence.
+- No raw logs, trace directories, model caches, or large generated artifacts
+  were added by either reviewed implementation branch.
 
-## Current Blockers
+## Validation
 
-- `stage5/qwen-runtime-fix` has no observed delta from `origin/main`; final gate
-  approval is blocked until the branch contains either local-only 3+3+3 subset
-  evidence or a precise blocker report.
-- `stage5/repo-hygiene-cleanup` has no observed delta from `origin/main`; final
-  gate approval is blocked until the branch contains the proposed cleanup diff.
-- No remote implementation branches were available at the time of this report.
-- This report does not approve either implementation branch.
-
-## Initial Hygiene Observation
-
-The gate worktree was created cleanly from `origin/main`. A tracked-file scan in
-this worktree found no committed raw `logs/` or `traces/` directory and no
-tracked `.log`, `.trace`, `.rpt`, `.jou`, `.vcd`, `.fsdb`, or `.wlf` artifact
-path.
-
-## Gate Branch Validation
-
-Local validation for this report-only branch:
+Local validation for this report-only gate branch:
 
 - `python -m pytest -q` - passed, 324 tests.
 - `python -m ruff check .` - passed.
@@ -99,20 +104,12 @@ Local validation for this report-only branch:
 
 No benchmark command was run.
 
-## Final Approval Requirements
+## Final Gate Conclusion
 
-A later gate update must include:
+The reviewed heads satisfy the Stage 5 runtime cleanup gate boundaries:
 
-- Actual implementation branch heads for `stage5/qwen-runtime-fix` and
-  `stage5/repo-hygiene-cleanup`.
-- Changed file lists for both implementation branches.
-- Claim-boundary review results for Qwen, repo hygiene, Stage 4 checkpoint, and
-  replay-demo wording.
-- Confirmation that no raw logs, trace directories, model caches, or large
-  generated artifacts are committed.
-- Local validation results:
-  - `python -m pytest -q`
-  - `python -m ruff check .`
-  - `git diff --check`
-
-No benchmark command should be run for this gate branch.
+- `stage5/qwen-runtime-fix` provides local-only Qwen/Qwen3-14B-AWQ vLLM 3+3+3
+  subset evidence with no cloud fallback and no comparison claims.
+- `stage5/repo-hygiene-cleanup` provides additive repo hygiene infrastructure
+  without deleting evidence or changing experiment results.
+- Stage 4 checkpoint and replay-demo claim boundaries remain intact.
