@@ -17,6 +17,16 @@ from app.alignment.intent_alignment import (
     evaluate_intent_alignment,
 )
 from app.core.artifacts import make_run_id, sha256_bytes, short_hash
+from app.local_llm_backend import (
+    LOCAL_WORKFLOW_CLAIM_BOUNDARY,
+    LocalBackendResult,
+    call_local_task,
+    gpu_snapshot,
+    local_backend_config,
+    local_execution_blocker,
+    local_execution_requested,
+    local_only_effective,
+)
 from app.models.core import (
     Candidate,
     CoreModel,
@@ -25,17 +35,21 @@ from app.models.core import (
     ToolName,
 )
 from copilot.agents.coverage_closure_agent import structured_fallback as coverage_fallback
+from copilot.agents.coverage_closure_agent import build_prompt as build_coverage_prompt
 from copilot.agents.dv_triage_agent import structured_fallback as triage_fallback
+from copilot.agents.dv_triage_agent import build_prompt as build_triage_prompt
 from copilot.agents.sva_repair_agent import structured_fallback as repair_fallback
+from copilot.agents.sva_repair_agent import build_prompt as build_repair_prompt
 from tools.build_evidence_packet import build_packet
 
 ROOT = Path(__file__).resolve().parents[1]
 
 WORKFLOW_CLAIM_BOUNDARY = (
-    "Stage 5D workflow evidence is a manifest-driven dry-run orchestration record. "
-    "It chains existing local CLI capabilities and static heuristics only; it does not "
-    "call Codex, Qwen, JasperGold, Moore, network services, or cloud fallback by default, "
-    "and it does not change Stage 4 reports, benchmark labels, schemas, or prior claims."
+    "Stage 5E workflow evidence is a manifest-driven orchestration record. "
+    "Dry-runs chain existing local CLI capabilities and static heuristics only. "
+    "The local backend path is LOCAL_ONLY, never calls cloud fallback, and does not "
+    "call JasperGold, Moore, run full benchmarks, compare Qwen with Codex, change Stage 4 "
+    "reports, benchmark labels, schemas, or prior claims."
 )
 
 REPAIR_DEFAULT_CASE_ID = "repair_arbiter_mutex_syntax"
@@ -57,8 +71,24 @@ class WorkflowManifest(CoreModel):
     timestamp: str = Field(min_length=1)
     case_id: str = Field(min_length=1)
     backend: Literal["replay", "codex", "local"]
+    status: Literal["dry_run", "ok", "blocked", "local_unavailable", "local_error", "invalid_json", "schema_invalid"]
     external_send_allowed: bool
     local_only: bool
+    model_id: str | None = None
+    endpoint_url: str | None = None
+    backend_type: Literal["vllm", "sglang", "ollama", "unknown"] | None = None
+    LOCAL_ONLY: bool
+    cloud_fallback_allowed: bool = False
+    cloud_fallback_called: bool = False
+    max_model_len: int | None = None
+    gpu_name: str | None = None
+    gpu_vram_gb: float | None = None
+    task_type: Literal["repair", "triage", "coverage", "demo"]
+    case_count: int = 1
+    valid_json: bool | None = None
+    fallback_count: int = 0
+    llm_error_count: int = 0
+    latency_ms: float | None = None
     steps_planned: list[str]
     steps_executed: list[str]
     artifact_refs: list[dict[str, Any]]
@@ -112,6 +142,44 @@ def add_common_workflow_options(parser: argparse.ArgumentParser, name: str) -> N
         "--require-explicit-external-send",
         action="store_true",
         help="Acknowledge that an external backend route may be planned. Dry-run still sends nothing.",
+    )
+    parser.add_argument(
+        "--local-only",
+        action="store_true",
+        help="Require LOCAL_ONLY behavior for backend=local executable runs.",
+    )
+    parser.add_argument(
+        "--acknowledge-local-model-run",
+        action="store_true",
+        help="Explicitly acknowledge a bounded local model call. Cloud fallback remains disabled.",
+    )
+    parser.add_argument(
+        "--run-local-model",
+        action="store_true",
+        help="For backend=local, run exactly the selected single case after LOCAL_ONLY acknowledgement.",
+    )
+    parser.add_argument(
+        "--run-local-subset",
+        action="store_true",
+        help="For workflow demo with backend=local, run only the 3 repair + 3 triage + 3 coverage subset.",
+    )
+    parser.add_argument("--local-base-url", default=None, help="OpenAI-compatible local base URL.")
+    parser.add_argument("--local-api-key", default=None, help="Local endpoint API key, if required.")
+    parser.add_argument("--local-model", default=None, help="Served local model id.")
+    parser.add_argument(
+        "--local-backend-type",
+        choices=("vllm", "sglang", "ollama", "unknown"),
+        default=None,
+        help="Local serving backend profile.",
+    )
+    parser.add_argument("--local-timeout-s", type=int, default=None, help="Local endpoint timeout.")
+    parser.add_argument("--local-max-tokens", type=int, default=None, help="Local response token budget.")
+    parser.add_argument("--local-temperature", type=float, default=None, help="Local sampling temperature.")
+    parser.add_argument("--local-max-model-len", type=int, default=None, help="Served max model length.")
+    parser.add_argument(
+        "--local-no-response-format",
+        action="store_true",
+        help="Do not request OpenAI JSON response_format from the local endpoint.",
     )
     parser.add_argument(
         "--prepare-moore-handoff",
@@ -184,7 +252,7 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
             blocked_reason=blocked_reason,
         )
         manifest_path = write_manifest(args, out_dir, manifest)
-        print_workflow_result(manifest_path, report_path, blocked=True)
+        print_workflow_result(manifest_path, report_path, blocked=True, dry_run=True)
         return 2
 
     steps_executed.append("load_repair_case_metadata")
@@ -195,7 +263,32 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
     steps_executed.append("prepare_problem_spec_stub")
     steps_executed.append("choose_backend_route")
 
-    candidate_payload = repair_candidate_for_backend(case, args.backend)
+    local_result = None
+    if args.backend == "local" and local_execution_requested(args):
+        local_result = call_local_task(
+            config=local_backend_config(args),
+            task_type="repair",
+            prompt=build_repair_prompt(case, str(case.get("broken_sva", ""))),
+            context=case,
+            schema_path=resolve_path(Path("copilot/schemas/sva_repair_candidate.schema.json")),
+        )
+        if local_result.status != "ok":
+            return write_blocked_local_workflow(
+                args=args,
+                out_dir=out_dir,
+                workflow_id=workflow_id,
+                workflow_type="repair",
+                created_at=created_at,
+                case_id=case_id,
+                steps_planned=steps_planned,
+                steps_executed=[*steps_executed, local_failure_step(local_result)],
+                artifact_refs=artifact_refs,
+                local_result=local_result,
+                case_count=1,
+            )
+        candidate_payload = local_result.output if local_result.output is not None else repair_candidate_for_backend(case, args.backend)
+    else:
+        candidate_payload = repair_candidate_for_backend(case, args.backend)
     candidate_path = out_dir / "repair_candidate.json"
     write_json(candidate_path, strip_extra(candidate_payload, "copilot/schemas/sva_repair_candidate.schema.json"))
     artifact_refs.append(artifact_ref("repair_candidate", candidate_path))
@@ -267,9 +360,10 @@ def run_repair_workflow(args: argparse.Namespace, argv: list[str]) -> int:
         verifier_outcome_ref=verifier_ref,
         intent_alignment_ref=alignment_ref,
         final_report_ref=str(report_path),
+        local_result=local_result,
     )
     manifest_path = write_manifest(args, out_dir, manifest)
-    print_workflow_result(manifest_path, report_path, blocked=False)
+    print_workflow_result(manifest_path, report_path, blocked=False, dry_run=manifest.dry_run)
     return 0
 
 
@@ -313,7 +407,7 @@ def run_packet_workflow(args: argparse.Namespace, argv: list[str], *, workflow_t
             blocked_reason=blocked_reason,
         )
         manifest_path = write_manifest(args, out_dir, manifest)
-        print_workflow_result(manifest_path, report_path, blocked=True)
+        print_workflow_result(manifest_path, report_path, blocked=True, dry_run=True)
         return 2
 
     packet_path = out_dir / "evidence_packet.json"
@@ -322,16 +416,65 @@ def run_packet_workflow(args: argparse.Namespace, argv: list[str], *, workflow_t
     steps_executed.append("load_evidence_packet_or_minimal_packet" if workflow_type == "triage" else "load_coverage_context")
     steps_executed.append("choose_backend_route")
 
+    local_result = None
     if workflow_type == "triage":
-        raw_candidate = triage_fallback(packet)
         schema_path = "copilot/schemas/diagnosis_output.schema.json"
         candidate_name = "diagnosis_candidate"
         candidate_step = "emit_diagnosis_candidate"
+        if args.backend == "local" and local_execution_requested(args):
+            local_result = call_local_task(
+                config=local_backend_config(args),
+                task_type="triage",
+                prompt=build_triage_prompt(packet),
+                context=packet,
+                schema_path=resolve_path(Path(schema_path)),
+            )
+            if local_result.status != "ok":
+                return write_blocked_local_workflow(
+                    args=args,
+                    out_dir=out_dir,
+                    workflow_id=workflow_id,
+                    workflow_type=workflow_type,
+                    created_at=created_at,
+                    case_id=case_id,
+                    steps_planned=steps_planned,
+                    steps_executed=[*steps_executed, local_failure_step(local_result)],
+                    artifact_refs=artifact_refs,
+                    local_result=local_result,
+                    case_count=1,
+                )
+            raw_candidate = local_result.output if local_result.output is not None else triage_fallback(packet)
+        else:
+            raw_candidate = triage_fallback(packet)
     else:
-        raw_candidate = coverage_fallback(packet)
         schema_path = "copilot/schemas/coverage_closure_output.schema.json"
         candidate_name = "coverage_recommendation"
         candidate_step = "emit_closure_recommendation"
+        if args.backend == "local" and local_execution_requested(args):
+            local_result = call_local_task(
+                config=local_backend_config(args),
+                task_type="coverage",
+                prompt=build_coverage_prompt(packet),
+                context=packet,
+                schema_path=resolve_path(Path(schema_path)),
+            )
+            if local_result.status != "ok":
+                return write_blocked_local_workflow(
+                    args=args,
+                    out_dir=out_dir,
+                    workflow_id=workflow_id,
+                    workflow_type=workflow_type,
+                    created_at=created_at,
+                    case_id=case_id,
+                    steps_planned=steps_planned,
+                    steps_executed=[*steps_executed, local_failure_step(local_result)],
+                    artifact_refs=artifact_refs,
+                    local_result=local_result,
+                    case_count=1,
+                )
+            raw_candidate = local_result.output if local_result.output is not None else coverage_fallback(packet)
+        else:
+            raw_candidate = coverage_fallback(packet)
 
     candidate = strip_extra(raw_candidate, schema_path)
     candidate_path = out_dir / f"{candidate_name}.json"
@@ -380,9 +523,10 @@ def run_packet_workflow(args: argparse.Namespace, argv: list[str], *, workflow_t
         artifact_refs=artifact_refs,
         verifier_outcome_ref=verifier_ref,
         final_report_ref=str(report_path),
+        local_result=local_result,
     )
     manifest_path = write_manifest(args, out_dir, manifest)
-    print_workflow_result(manifest_path, report_path, blocked=False)
+    print_workflow_result(manifest_path, report_path, blocked=False, dry_run=manifest.dry_run)
     return 0
 
 
@@ -401,14 +545,35 @@ def run_demo_workflow(args: argparse.Namespace, argv: list[str]) -> int:
         "emit_workflow_manifest",
     ]
     blocked_reason = external_backend_blocker(args)
+    local_result = None
+    subset_artifact_refs: list[dict[str, Any]] = []
     steps_executed = (
         ["block_external_backend_without_acknowledgement"]
         if blocked_reason
         else ["plan_repair_workflow", "plan_triage_workflow", "plan_coverage_workflow", "emit_final_workflow_report"]
     )
+    if not blocked_reason and args.backend == "local" and args.run_local_subset:
+        subset = run_local_demo_subset(args, out_dir)
+        local_result = subset["aggregate_result"]
+        subset_artifact_refs = subset["artifact_refs"]
+        if local_result.status != "ok":
+            return write_blocked_local_workflow(
+                args=args,
+                out_dir=out_dir,
+                workflow_id=workflow_id,
+                workflow_type="demo",
+                created_at=created_at,
+                case_id=str(case_id),
+                steps_planned=steps_planned,
+                steps_executed=[*subset["steps_executed"], local_failure_step(local_result)],
+                artifact_refs=subset_artifact_refs,
+                local_result=local_result,
+                case_count=9,
+            )
+        steps_executed = [*subset["steps_executed"], "emit_final_workflow_report"]
     report_path = out_dir / "workflow_report.md"
     write_text(report_path, final_report("demo", str(case_id), args.backend, blocked_reason, steps_executed))
-    artifact_refs = [artifact_ref("final_report", report_path)]
+    artifact_refs = [*subset_artifact_refs, artifact_ref("final_report", report_path)]
     manifest = build_manifest(
         args=args,
         workflow_id=workflow_id,
@@ -420,10 +585,214 @@ def run_demo_workflow(args: argparse.Namespace, argv: list[str]) -> int:
         artifact_refs=artifact_refs,
         final_report_ref=str(report_path),
         blocked_reason=blocked_reason,
+        case_count=9 if args.backend == "local" and args.run_local_subset else 1,
+        local_result=local_result,
     )
     manifest_path = write_manifest(args, out_dir, manifest)
-    print_workflow_result(manifest_path, report_path, blocked=bool(blocked_reason))
+    if args.backend == "local" and args.run_local_subset and not blocked_reason:
+        write_qwen_workflow_readiness_report(manifest.model_dump(mode="json"), blocked=False)
+    print_workflow_result(manifest_path, report_path, blocked=bool(blocked_reason), dry_run=manifest.dry_run)
     return 2 if blocked_reason else 0
+
+
+def write_blocked_local_workflow(
+    *,
+    args: argparse.Namespace,
+    out_dir: Path,
+    workflow_id: str,
+    workflow_type: Literal["repair", "triage", "coverage", "demo"],
+    created_at: datetime,
+    case_id: str,
+    steps_planned: list[str],
+    steps_executed: list[str],
+    artifact_refs: list[dict[str, Any]],
+    local_result: LocalBackendResult,
+    case_count: int,
+) -> int:
+    report_path = out_dir / "workflow_report.md"
+    write_text(report_path, final_report(workflow_type, case_id, "local", "local_unavailable", steps_executed))
+    artifact_refs = [*artifact_refs, artifact_ref("final_report", report_path)]
+    manifest = build_manifest(
+        args=args,
+        workflow_id=workflow_id,
+        workflow_type=workflow_type,
+        created_at=created_at,
+        case_id=case_id,
+        steps_planned=steps_planned,
+        steps_executed=steps_executed,
+        artifact_refs=artifact_refs,
+        final_report_ref=str(report_path),
+        blocked_reason=local_result.status,
+        case_count=case_count,
+        local_result=local_result,
+    )
+    manifest_path = write_manifest(args, out_dir, manifest)
+    write_qwen_workflow_readiness_report(manifest.model_dump(mode="json"), blocked=True)
+    print_workflow_result(manifest_path, report_path, blocked=True, dry_run=manifest.dry_run)
+    return 2
+
+
+def local_failure_step(local_result: LocalBackendResult) -> str:
+    return {
+        "local_unavailable": "local_endpoint_unavailable",
+        "invalid_json": "local_response_invalid_json",
+        "schema_invalid": "local_response_schema_invalid",
+        "local_error": "local_endpoint_error",
+        "ok": "local_response_ok",
+    }[local_result.status]
+
+
+def run_local_demo_subset(args: argparse.Namespace, out_dir: Path) -> dict[str, Any]:
+    config = local_backend_config(args)
+    subset_dir = out_dir / "local_subset"
+    subset_dir.mkdir(parents=True, exist_ok=True)
+    artifact_refs: list[dict[str, Any]] = []
+    steps_executed: list[str] = []
+    results: list[LocalBackendResult] = []
+
+    for index, case in enumerate(load_repair_subset(3), start=1):
+        case_id = str(case.get("case_id", f"repair_{index}"))
+        result = call_local_task(
+            config=config,
+            task_type="repair",
+            prompt=build_repair_prompt(case, str(case.get("broken_sva", ""))),
+            context=case,
+            schema_path=resolve_path(Path("copilot/schemas/sva_repair_candidate.schema.json")),
+        )
+        results.append(result)
+        if result.status != "ok":
+            break
+        payload = result.output if result.output is not None else repair_candidate_for_backend(case, "local")
+        path = subset_dir / f"repair_{index}_{safe_filename(case_id)}.json"
+        write_json(path, strip_extra(payload, "copilot/schemas/sva_repair_candidate.schema.json"))
+        artifact_refs.append(artifact_ref("local_subset_repair", path))
+        steps_executed.append("run_local_subset_repair_case")
+
+    if results and results[-1].status != "ok":
+        return local_subset_summary(artifact_refs, steps_executed, results)
+
+    for index, packet in enumerate(load_packet_subset("triage", 3), start=1):
+        case_id = str(packet.get("case_id", f"triage_{index}"))
+        result = call_local_task(
+            config=config,
+            task_type="triage",
+            prompt=build_triage_prompt(packet),
+            context=packet,
+            schema_path=resolve_path(Path("copilot/schemas/diagnosis_output.schema.json")),
+        )
+        results.append(result)
+        if result.status != "ok":
+            break
+        payload = result.output if result.output is not None else triage_fallback(packet)
+        path = subset_dir / f"triage_{index}_{safe_filename(case_id)}.json"
+        write_json(path, strip_extra(payload, "copilot/schemas/diagnosis_output.schema.json"))
+        artifact_refs.append(artifact_ref("local_subset_triage", path))
+        steps_executed.append("run_local_subset_triage_case")
+
+    if results and results[-1].status != "ok":
+        return local_subset_summary(artifact_refs, steps_executed, results)
+
+    for index, packet in enumerate(load_packet_subset("coverage", 3), start=1):
+        case_id = str(packet.get("case_id", f"coverage_{index}"))
+        result = call_local_task(
+            config=config,
+            task_type="coverage",
+            prompt=build_coverage_prompt(packet),
+            context=packet,
+            schema_path=resolve_path(Path("copilot/schemas/coverage_closure_output.schema.json")),
+        )
+        results.append(result)
+        if result.status != "ok":
+            break
+        payload = result.output if result.output is not None else coverage_fallback(packet)
+        path = subset_dir / f"coverage_{index}_{safe_filename(case_id)}.json"
+        write_json(path, strip_extra(payload, "copilot/schemas/coverage_closure_output.schema.json"))
+        artifact_refs.append(artifact_ref("local_subset_coverage", path))
+        steps_executed.append("run_local_subset_coverage_case")
+
+    summary_path = subset_dir / "subset_summary.json"
+    write_json(
+        summary_path,
+        {
+            "case_count": len(results),
+            "status": aggregate_local_results(results).status,
+            "valid_json_count": sum(1 for item in results if item.valid_json),
+            "fallback_count": sum(item.fallback_count for item in results),
+            "llm_error_count": sum(item.llm_error_count for item in results),
+            "claim_boundary": LOCAL_WORKFLOW_CLAIM_BOUNDARY,
+        },
+    )
+    artifact_refs.append(artifact_ref("local_subset_summary", summary_path))
+    steps_executed.append("emit_local_subset_summary")
+    return local_subset_summary(artifact_refs, steps_executed, results)
+
+
+def local_subset_summary(
+    artifact_refs: list[dict[str, Any]],
+    steps_executed: list[str],
+    results: list[LocalBackendResult],
+) -> dict[str, Any]:
+    return {
+        "artifact_refs": artifact_refs,
+        "steps_executed": steps_executed,
+        "aggregate_result": aggregate_local_results(results),
+    }
+
+
+def aggregate_local_results(results: list[LocalBackendResult]) -> LocalBackendResult:
+    if not results:
+        return LocalBackendResult(
+            status="local_error",
+            output=None,
+            valid_json=False,
+            fallback_count=0,
+            llm_error_count=1,
+            latency_ms=None,
+            http_status=None,
+            error="no local subset cases executed",
+        )
+    status = "ok"
+    for item in results:
+        if item.status != "ok":
+            status = item.status
+            break
+    latencies = [item.latency_ms for item in results if item.latency_ms is not None]
+    return LocalBackendResult(
+        status=status,
+        output=None,
+        valid_json=all(item.valid_json for item in results),
+        fallback_count=sum(item.fallback_count for item in results),
+        llm_error_count=sum(item.llm_error_count for item in results),
+        latency_ms=round(sum(latencies), 2) if latencies else None,
+        http_status=results[-1].http_status,
+        error=next((item.error for item in results if item.error), None),
+    )
+
+
+def load_repair_subset(limit: int) -> list[dict[str, Any]]:
+    cases_path = ROOT / "benchmarks" / "sva_repair_cases.json"
+    payload = json.loads(cases_path.read_text(encoding="utf-8-sig"))
+    if not isinstance(payload, list):
+        raise ValueError("sva_repair_cases.json must be a JSON array")
+    return [item for item in payload if isinstance(item, dict)][:limit]
+
+
+def load_packet_subset(workflow_type: Literal["triage", "coverage"], limit: int) -> list[dict[str, Any]]:
+    paths = []
+    for path in sorted((ROOT / "benchmarks").glob("*/cases/*.json")):
+        is_coverage = path.name.startswith("coverage_")
+        if workflow_type == "coverage" and not is_coverage:
+            continue
+        if workflow_type == "triage" and is_coverage:
+            continue
+        paths.append(path)
+        if len(paths) == limit:
+            break
+    return [build_packet(case_path=path) for path in paths]
+
+
+def safe_filename(value: str) -> str:
+    return "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in value)[:80] or "case"
 
 
 def load_repair_case(case_id_arg: str | None, case_arg: str | None) -> tuple[dict[str, Any], Path | None]:
@@ -612,8 +981,20 @@ def build_manifest(
     intent_alignment_ref: str | None = None,
     final_report_ref: str | None = None,
     blocked_reason: str | None = None,
+    case_count: int = 1,
+    local_result: LocalBackendResult | None = None,
 ) -> WorkflowManifest:
     external_send_allowed = external_send_allowed_for(args)
+    config = local_backend_config(args) if args.backend == "local" else None
+    gpu = gpu_snapshot() if args.backend == "local" else {}
+    if local_result is not None:
+        status = local_result.status
+    elif blocked_reason:
+        status = "blocked"
+    elif args.dry_run:
+        status = "dry_run"
+    else:
+        status = "ok"
     return WorkflowManifest(
         workflow_id=workflow_id,
         workflow_type=workflow_type,
@@ -621,8 +1002,24 @@ def build_manifest(
         timestamp=format_utc(created_at),
         case_id=case_id,
         backend=str(args.backend),
+        status=status,
         external_send_allowed=external_send_allowed,
-        local_only=not external_send_allowed,
+        local_only=local_only_effective(args) if args.backend == "local" else not external_send_allowed,
+        model_id=config.model_id if config else None,
+        endpoint_url=config.endpoint_url if config else None,
+        backend_type=config.backend_type if config else None,
+        LOCAL_ONLY=local_only_effective(args) if args.backend == "local" else not external_send_allowed,
+        cloud_fallback_allowed=False if args.backend == "local" else external_send_allowed,
+        cloud_fallback_called=False,
+        max_model_len=config.max_model_len if config else None,
+        gpu_name=str(gpu.get("name")) if gpu.get("name") else None,
+        gpu_vram_gb=float(gpu["memory_total_gb"]) if gpu.get("memory_total_gb") is not None else None,
+        task_type=workflow_type,
+        case_count=case_count,
+        valid_json=local_result.valid_json if local_result else None,
+        fallback_count=local_result.fallback_count if local_result else 0,
+        llm_error_count=local_result.llm_error_count if local_result else 0,
+        latency_ms=local_result.latency_ms if local_result else None,
         steps_planned=steps_planned,
         steps_executed=steps_executed,
         artifact_refs=artifact_refs,
@@ -630,8 +1027,8 @@ def build_manifest(
         verifier_outcome_ref=verifier_outcome_ref,
         intent_alignment_ref=intent_alignment_ref,
         final_report_ref=final_report_ref,
-        claim_boundary=WORKFLOW_CLAIM_BOUNDARY,
-        dry_run=bool(args.dry_run),
+        claim_boundary=LOCAL_WORKFLOW_CLAIM_BOUNDARY if args.backend == "local" else WORKFLOW_CLAIM_BOUNDARY,
+        dry_run=not local_execution_requested(args),
         blocked_reason=blocked_reason,
     )
 
@@ -646,7 +1043,7 @@ def write_manifest(args: argparse.Namespace, out_dir: Path, manifest: WorkflowMa
 def external_backend_blocker(args: argparse.Namespace) -> str | None:
     if args.backend == "codex" and not args.require_explicit_external_send:
         return "backend=codex is external and requires --require-explicit-external-send"
-    return None
+    return local_execution_blocker(args)
 
 
 def external_send_allowed_for(args: argparse.Namespace) -> bool:
@@ -677,7 +1074,7 @@ def final_report(
         "",
         "## Claim Boundary",
         "",
-        WORKFLOW_CLAIM_BOUNDARY,
+        LOCAL_WORKFLOW_CLAIM_BOUNDARY if backend == "local" else WORKFLOW_CLAIM_BOUNDARY,
         "",
         "Proof status and intent alignment are separate evidence dimensions. A proof pass does not imply semantic intent alignment.",
         "Best-of-k, when referenced by upstream repair reports, is an upper-bound search metric and not single-output success.",
@@ -704,6 +1101,45 @@ def artifact_ref(name: str, path: Path) -> dict[str, Any]:
         "sha256": sha256_bytes(path.read_bytes()) if path.exists() else None,
         "size_bytes": path.stat().st_size if path.exists() else None,
     }
+
+
+def write_qwen_workflow_readiness_report(manifest_payload: dict[str, Any], *, blocked: bool) -> None:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    reports_dir = ROOT / "reports" / "local_llm"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    if blocked:
+        manifest_path = reports_dir / f"qwen_workflow_readiness_manifest_{timestamp}.json"
+        report_path = reports_dir / f"qwen_workflow_readiness_blocker_{timestamp}.md"
+        title = "Qwen Workflow Readiness Blocker"
+    else:
+        manifest_path = reports_dir / f"qwen_workflow_subset_manifest_{timestamp}.json"
+        report_path = reports_dir / f"qwen_workflow_subset_summary_{timestamp}.md"
+        title = "Qwen Workflow Subset Summary"
+    write_json(manifest_path, manifest_payload)
+    lines = [
+        f"# {title}",
+        "",
+        f"- Workflow ID: `{manifest_payload.get('workflow_id')}`",
+        f"- Git SHA: `{manifest_payload.get('git_sha')}`",
+        f"- Backend: `{manifest_payload.get('backend')}`",
+        f"- Status: `{manifest_payload.get('status')}`",
+        f"- Model: `{manifest_payload.get('model_id')}`",
+        f"- Endpoint: `{manifest_payload.get('endpoint_url')}`",
+        f"- Backend type: `{manifest_payload.get('backend_type')}`",
+        f"- LOCAL_ONLY: `{manifest_payload.get('LOCAL_ONLY')}`",
+        f"- Cloud fallback allowed: `{manifest_payload.get('cloud_fallback_allowed')}`",
+        f"- Cloud fallback called: `{manifest_payload.get('cloud_fallback_called')}`",
+        f"- Case count: `{manifest_payload.get('case_count')}`",
+        f"- Valid JSON: `{manifest_payload.get('valid_json')}`",
+        f"- Fallback count: `{manifest_payload.get('fallback_count')}`",
+        f"- LLM error count: `{manifest_payload.get('llm_error_count')}`",
+        "",
+        "## Claim Boundary",
+        "",
+        str(manifest_payload.get("claim_boundary") or LOCAL_WORKFLOW_CLAIM_BOUNDARY),
+        "",
+    ]
+    write_text(report_path, "\n".join(lines))
 
 
 def workflow_id_for(workflow_type: str, case_id: str, created_at: datetime) -> str:
@@ -750,13 +1186,13 @@ def as_optional_str(value: Any) -> str | None:
     return value if isinstance(value, str) and value.strip() else None
 
 
-def print_workflow_result(manifest_path: Path, report_path: Path, *, blocked: bool) -> None:
+def print_workflow_result(manifest_path: Path, report_path: Path, *, blocked: bool, dry_run: bool) -> None:
     print(
         json.dumps(
             {
                 "manifest": str(manifest_path),
                 "report": str(report_path),
-                "dry_run": True,
+                "dry_run": dry_run,
                 "blocked": blocked,
             },
             indent=2,
