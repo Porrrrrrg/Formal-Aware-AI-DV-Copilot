@@ -15,6 +15,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from copilot.agents.sva_repair_agent import PROMPT_VERSIONS  # noqa: E402
 
 EXTERNAL_SEND_WARNING = """\
 This command will send local JasperLoop benchmark content to Codex/OpenAI:
@@ -138,7 +141,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--model")
     parser.add_argument("--out")
-    parser.add_argument("--prompt-version", choices=["baseline", "cex_aware"], default="baseline")
+    parser.add_argument("--prompt-version", choices=PROMPT_VERSIONS, default="baseline")
     parser.add_argument("--packet-source", choices=["minimal", "actual"], default="minimal")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--acknowledge-external-send", action="store_true")

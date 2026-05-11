@@ -68,3 +68,45 @@ def test_cex_fields_present_reports_available_fields() -> None:
     assert fields["failing_cycle"] is True
     assert fields["allowed_signal_whitelist"] is True
     assert fields["assumption_risks"] is False
+
+
+def test_signal_whitelist_prompt_keeps_reference_out() -> None:
+    prompt = build_prompt(
+        CASE,
+        str(CASE["broken_sva"]),
+        "feedback",
+        1,
+        prompt_version="signal_whitelist",
+    )
+
+    assert "Signal-Whitelist SVA Repair Prompt" in prompt
+    assert '"allowed_signal_whitelist"' in prompt
+    assert '"reference_sva"' not in prompt
+
+
+def test_temporal_hint_prompt_exposes_reset_clock_semantics() -> None:
+    prompt = build_prompt(
+        CASE,
+        str(CASE["broken_sva"]),
+        "feedback",
+        1,
+        prompt_version="temporal_hint",
+    )
+
+    assert "Temporal-Hint SVA Repair Prompt" in prompt
+    assert '"reset_clock_semantics"' in prompt
+    assert '"clocking_event": "@(posedge clk)"' in prompt
+
+
+def test_self_check_prompt_asks_for_internal_check_only() -> None:
+    prompt = build_prompt(
+        CASE,
+        str(CASE["broken_sva"]),
+        "feedback",
+        1,
+        prompt_version="self_check",
+    )
+
+    assert "Self-Check SVA Repair Prompt" in prompt
+    assert "Do not include the self-check transcript" in prompt
+    assert '"reference_sva"' not in prompt

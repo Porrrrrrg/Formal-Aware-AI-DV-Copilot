@@ -15,10 +15,13 @@ from copilot.llm_client import call_llm_json, llm_configured
 from copilot.sva_library import SVA_TEMPLATES
 
 PROMPT_DIR = ROOT / "copilot" / "prompts"
-PROMPT_VERSIONS = ("baseline", "cex_aware")
+PROMPT_VERSIONS = ("baseline", "cex_aware", "signal_whitelist", "temporal_hint", "self_check")
 PROMPT_FILES = {
     "baseline": PROMPT_DIR / "sva_repair_prompt.md",
     "cex_aware": PROMPT_DIR / "sva_repair_cex_prompt.md",
+    "signal_whitelist": PROMPT_DIR / "sva_repair_signal_whitelist_prompt.md",
+    "temporal_hint": PROMPT_DIR / "sva_repair_temporal_hint_prompt.md",
+    "self_check": PROMPT_DIR / "sva_repair_self_check_prompt.md",
 }
 CEX_FIELD_NAMES = (
     "failing_property_intent",
@@ -91,6 +94,8 @@ def build_prompt(
     validate_prompt_version(prompt_version)
     if prompt_version == "cex_aware":
         return build_cex_aware_prompt(case, failed_sva, feedback, round_index, feedback_context)
+    if prompt_version in {"signal_whitelist", "temporal_hint", "self_check"}:
+        return build_variant_prompt(case, failed_sva, feedback, round_index, prompt_version)
 
     payload = sanitized_case(case)
     return (
@@ -104,6 +109,31 @@ def build_prompt(
         + failed_sva
         + "\n\nJASPER_FEEDBACK:\n"
         + (feedback or "No JasperGold feedback is available.")
+    )
+
+
+def build_variant_prompt(
+    case: dict[str, object],
+    failed_sva: str,
+    feedback: str,
+    round_index: int,
+    prompt_version: str,
+) -> str:
+    template = PROMPT_FILES[prompt_version].read_text()
+    context = {
+        "case": sanitized_case(case),
+        "broken_sva": failed_sva,
+        "allowed_signal_whitelist": allowed_signal_whitelist(case),
+        "reset_clock_semantics": reset_clock_semantics(case, failed_sva),
+    }
+    return (
+        template.rstrip()
+        + "\n\nROUND: "
+        + str(round_index)
+        + "\n\nREPAIR_CONTEXT:\n"
+        + json.dumps(context, indent=2)
+        + "\n\nTOOL_FEEDBACK:\n"
+        + (feedback or "No tool feedback is available.")
     )
 
 
