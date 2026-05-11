@@ -316,13 +316,14 @@ Source: [{source["source_repository"]}]({source["source_repository"]}) at `{sour
 def render_subset_rows(by_subset: dict[str, dict[str, Any]]) -> str:
     rendered = []
     for subset, metrics in by_subset.items():
+        exact_value = "n/a" if metrics["exact_match_cases"] == 0 else f"{metrics['exact_match_rate']:.3f}"
         rendered.append(
-            "| {subset} | {cases} | {syntax:.3f} | {exact:.3f} | {exact_cases} | "
+            "| {subset} | {cases} | {syntax:.3f} | {exact} | {exact_cases} | "
             "{json_rate:.3f} | {fallback:.3f} | {hallucinated:.3f} | {jasper} |".format(
                 subset=subset,
                 cases=metrics["num_cases"],
                 syntax=metrics["syntax_pass_rate"],
-                exact=metrics["exact_match_rate"],
+                exact=exact_value,
                 exact_cases=metrics["exact_match_cases"],
                 json_rate=metrics["valid_json_rate"],
                 fallback=metrics["fallback_rate"],

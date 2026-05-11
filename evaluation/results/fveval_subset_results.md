@@ -23,7 +23,7 @@ Source: [https://github.com/NVlabs/FVEval](https://github.com/NVlabs/FVEval) at 
 
 | Subset | Cases | Syntax | Exact/reference | Exact eligible | Valid JSON | Fallback | Hallucinated signals | Jasper |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Design2SVA | 10 | 1.000 | 0.000 | 0 | 1.000 | 1.000 | 0.000 | not_run |
+| Design2SVA | 10 | 1.000 | n/a | 0 | 1.000 | 1.000 | 0.000 | not_run |
 | NL2SVA-Human | 10 | 1.000 | 0.000 | 10 | 1.000 | 1.000 | 0.000 | not_run |
 | NL2SVA-Machine | 10 | 1.000 | 0.000 | 10 | 1.000 | 1.000 | 0.000 | not_run |
 
