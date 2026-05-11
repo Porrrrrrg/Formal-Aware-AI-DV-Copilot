@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 
 from copilot.json_utils import coerce_string_list
 from copilot.llm_client import call_llm_json, llm_configured
+from copilot.playbook_guidance import prompt_guidance_refs
 
 ACTION_BY_ISSUE = {
     "rtl_design_bug": "fix_rtl",
@@ -205,6 +206,13 @@ def build_prompt(packet: dict[str, object]) -> str:
         "You are JasperLoop-DV, a formal-aware DV triage assistant. "
         "Classify the issue using only the evidence packet. Do not invent signals. "
         "Return JSON matching diagnosis_output.schema.json.\n\n"
+        "PLAYBOOK_GUIDANCE:\n"
+        + prompt_guidance_refs(
+            "CEX debug checklist",
+            "assumption/vacuity review checklist",
+            "intent alignment review note",
+        )
+        + "\n\n"
         + json.dumps(payload, indent=2)
     )
 

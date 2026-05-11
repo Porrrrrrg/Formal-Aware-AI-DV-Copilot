@@ -30,6 +30,7 @@ def test_baseline_prompt_keeps_legacy_shape() -> None:
 
     assert prompt.startswith("You are JasperLoop-DV in SVA repair mode.")
     assert "CEX_AWARE_REPAIR_CONTEXT" not in prompt
+    assert "copilot/playbooks/cex_debug_playbook.md#cex-review-checklist" in prompt
     assert "reference_sva" not in prompt
 
 
@@ -57,6 +58,7 @@ def test_cex_prompt_exposes_structured_counterexample_context() -> None:
     assert context["allowed_signal_whitelist"] == ["clk", "rst", "valid", "ready", "done", "p_demo"]
     assert context["reset_clock_semantics"]["clock"] == "clk"
     assert context["vacuity_hint"] == "non_vacuous"
+    assert "copilot/playbooks/cex_debug_playbook.md#cex-review-checklist" in prompt
     assert "reference_sva" not in prompt
 
 

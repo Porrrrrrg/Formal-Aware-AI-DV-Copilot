@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 
 from copilot.json_utils import coerce_string_list
 from copilot.llm_client import call_llm_json, llm_configured
+from copilot.playbook_guidance import prompt_guidance_refs
 
 
 def recommend(
@@ -98,6 +99,13 @@ def build_prompt(packet: dict[str, object]) -> str:
         "You are JasperLoop-DV, a formal-aware coverage closure assistant. "
         "Use cover reachability, coverage intent, assumptions, and related signals. "
         "Return JSON with coverage_gap_type, recommended_next_action, directed_sequence, and evidence.\n\n"
+        "PLAYBOOK_GUIDANCE:\n"
+        + prompt_guidance_refs(
+            "coverage closure decision checklist",
+            "assumption/vacuity review checklist",
+            "intent alignment review note",
+        )
+        + "\n\n"
         + json.dumps(sanitized_packet(packet), indent=2)
     )
 
