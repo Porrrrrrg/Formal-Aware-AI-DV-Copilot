@@ -1,5 +1,7 @@
 # Integration Plan - 20260510T221015Z
 
+Update: the original merge order below was superseded during the PR gate by the maintainer-approved sequence `#12 -> #10 -> #11 -> #13 -> #14 -> #15 -> #16`. The original plan is retained as the freeze record; the applied sequence and outcomes are tracked in `reports/status/integration_gate_20260510T225715Z.md`.
+
 ## Freeze record
 
 - Repo: `Porrrrrrg/Formal-Aware-AI-DV-Copilot`
