@@ -1,0 +1,18 @@
+{
+  "name": "fveval_subset",
+  "source_repository": "https://github.com/NVlabs/FVEval",
+  "source_commit": "141afe7dcf03a0b86547b94657d9d610b6087724",
+  "source_license": "Apache-2.0",
+  "selection": {
+    "NL2SVA-Human": "first 10 rows from data_nl2sva/data/nl2sva_human.csv",
+    "NL2SVA-Machine": "first 10 rows from data_nl2sva/data/nl2sva_machine.csv",
+    "Design2SVA": "first 5 pipeline rows and first 5 fsm rows from data_design2sva/data/*.csv"
+  },
+  "case_count": 30,
+  "subsets": {
+    "NL2SVA-Human": 10,
+    "NL2SVA-Machine": 10,
+    "Design2SVA": 10
+  },
+  "reference_handling": "reference_sva/expected_sva fields are evaluation-only and omitted from runner prompt payloads."
+}
