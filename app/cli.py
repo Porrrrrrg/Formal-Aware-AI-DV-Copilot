@@ -184,7 +184,7 @@ def run_command(args: argparse.Namespace, argv: list[str]) -> int:
 def planned_internal_command(spec: CommandSpec, out_dir: Path) -> list[str] | None:
     if spec.planned_runner is None:
         return None
-    command = [sys.executable, spec.planned_runner]
+    command = ["bash" if spec.planned_runner.endswith(".sh") else sys.executable, spec.planned_runner]
     command.extend(spec.planned_args)
     if spec.planned_runner.endswith("build_all_evidence_packets.py"):
         command.extend(["--out-dir", str(out_dir / "case_packets")])
@@ -217,7 +217,7 @@ def build_core_run_manifest(
         model_snapshot="none_external_calls_disabled",
         toolchain=ToolchainVersions(),
         artifacts_key=artifact_manifest_key(run_id),
-        status=RunStatus.QUEUED,
+        status=RunStatus.PASSED if stage5_manifest["dry_run"] else RunStatus.BLOCKED,
         metadata={
             "command": "jasperloop",
             "subcommand": subcommand,
