@@ -233,6 +233,33 @@ def summarize(rows: list[dict[str, Any]], invalid_prediction_json: int) -> dict[
     }
 
 
+def summarize_by_subset(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = collections.defaultdict(list)
+    for row in rows:
+        grouped[str(row["subset"])].append(row)
+
+    summary: dict[str, dict[str, Any]] = {}
+    for subset, subset_rows in sorted(grouped.items()):
+        reference_rows = [row for row in subset_rows if row["reference_available"]]
+        exact_rows = [row for row in reference_rows if row["exact_match"] is not None]
+        summary[subset] = {
+            "num_cases": len(subset_rows),
+            "syntax_pass_rate": rate(subset_rows, "syntax_pass"),
+            "exact_match_rate": rate(exact_rows, "exact_match"),
+            "exact_match_cases": len(exact_rows),
+            "valid_json_rate": valid_json_rate(
+                len(subset_rows),
+                sum(1 for row in subset_rows if row["valid_json"]),
+            ),
+            "fallback_rate": rate(subset_rows, "fallback"),
+            "hallucinated_signal_rate": rate(subset_rows, "has_hallucinated_signal"),
+            "jasper_proof_status": sorted(
+                {str(row["jasper_proof_status"]) for row in subset_rows}
+            ),
+        }
+    return summary
+
+
 def rate(rows: list[dict[str, Any]], key: str) -> float:
     if not rows:
         return 0.0
@@ -264,6 +291,12 @@ Source: [{source["source_repository"]}]({source["source_repository"]}) at `{sour
 | Hallucinated signal rate | {summary["hallucinated_signal_rate"]:.3f} |
 | Invalid prediction JSON rows | {summary["invalid_prediction_json"]} |
 
+## Metrics By Subset
+
+| Subset | Cases | Syntax | Exact/reference | Exact eligible | Valid JSON | Fallback | Hallucinated signals | Jasper |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+{render_subset_rows(summary["by_subset"])}
+
 ## Evidence Fields
 
 {evidence_lines}
@@ -278,6 +311,27 @@ Source: [{source["source_repository"]}]({source["source_repository"]}) at `{sour
 
 {limitation_lines}
 """
+
+
+def render_subset_rows(by_subset: dict[str, dict[str, Any]]) -> str:
+    rendered = []
+    for subset, metrics in by_subset.items():
+        exact_value = "n/a" if metrics["exact_match_cases"] == 0 else f"{metrics['exact_match_rate']:.3f}"
+        rendered.append(
+            "| {subset} | {cases} | {syntax:.3f} | {exact} | {exact_cases} | "
+            "{json_rate:.3f} | {fallback:.3f} | {hallucinated:.3f} | {jasper} |".format(
+                subset=subset,
+                cases=metrics["num_cases"],
+                syntax=metrics["syntax_pass_rate"],
+                exact=exact_value,
+                exact_cases=metrics["exact_match_cases"],
+                json_rate=metrics["valid_json_rate"],
+                fallback=metrics["fallback_rate"],
+                hallucinated=metrics["hallucinated_signal_rate"],
+                jasper=", ".join(metrics["jasper_proof_status"]),
+            )
+        )
+    return "\n".join(rendered)
 
 
 def render_rows(rows: list[dict[str, Any]]) -> str:
@@ -335,6 +389,7 @@ def main() -> int:
     manifest_path = ROOT / "benchmarks" / "fveval_subset" / "source_manifest.json"
     source = json.loads(manifest_path.read_text(encoding="utf-8"))
     summary = summarize(rows, invalid_prediction_json)
+    summary["by_subset"] = summarize_by_subset(rows)
     summary["valid_prediction_json_rows"] = valid_prediction_json
     payload = {
         "summary": summary,

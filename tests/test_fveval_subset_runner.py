@@ -7,6 +7,7 @@ from evaluation.run_fveval_subset import (
     main,
     render_markdown,
     summarize,
+    summarize_by_subset,
 )
 
 
@@ -88,6 +89,7 @@ def test_runner_markdown_includes_limitations() -> None:
         for case in cases
     ]
     summary = summarize(rows, invalid_prediction_json=0)
+    summary["by_subset"] = summarize_by_subset(rows)
     markdown = render_markdown(
         summary,
         rows,
@@ -105,3 +107,7 @@ def test_runner_markdown_includes_limitations() -> None:
     assert "does not reproduce FVEval's commercial functional-equivalence flow" in markdown
     assert "Design2SVA exact/reference match is not treated as functional equivalence" in markdown
     assert "No JasperGold, Codex, or Qwen execution is performed by this runner" in markdown
+    assert "## Metrics By Subset" in markdown
+    assert "| Design2SVA | 10 | 1.000 | n/a | 0 |" in markdown
+    assert "| NL2SVA-Human | 10 |" in markdown
+    assert "| NL2SVA-Machine | 10 |" in markdown
