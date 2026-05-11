@@ -1,0 +1,44 @@
+version: 1
+name: vacuity_patterns
+description: Patterns for assumption and vacuity review.
+claim_boundaries:
+  - proof_pass_not_intent_alignment
+  - not_flagged_vacuous_not_certificate
+patterns:
+  - id: contradictory_antecedent
+    cues:
+      - signal_and_not_signal_same_cycle
+      - constant_false_trigger
+    risk: antecedent_unsatisfiable
+    action: rewrite_trigger_or_fix_assumption
+    evidence_required:
+      - property_text
+      - trigger_reachability_result
+  - id: overconstrained_handshake
+    cues:
+      - request_never_allowed
+      - ready_never_allowed
+      - simultaneous_legal_operation_forbidden
+    risk: legal_behavior_blocked
+    action: relax_or_justify_assumption
+    evidence_required:
+      - assumption_intent
+      - protocol_legality_review
+  - id: reset_stuck
+    cues:
+      - reset_assumed_active_forever
+      - reset_never_released
+      - cover_only_hits_reset_state
+    risk: post_reset_behavior_unchecked
+    action: repair_reset_environment
+    evidence_required:
+      - reset_semantics
+      - cover_trace
+  - id: non_vacuity_claim
+    cues:
+      - not_flagged_vacuous_only
+      - no_trigger_cover
+    risk: unsupported_claim
+    action: require_positive_trigger_evidence
+    evidence_required:
+      - cover_witness_or_tool_certificate
