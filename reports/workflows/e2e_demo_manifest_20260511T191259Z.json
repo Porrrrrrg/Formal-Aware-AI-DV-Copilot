@@ -1,0 +1,78 @@
+{
+  "backend": "replay",
+  "claim_boundary": "Stage 5F end-to-end demo evidence only. The replay demo loads local fixtures, prepares local manifests, imports a sanitized verifier sample, and runs static intent alignment. It does not call Codex, Qwen, JasperGold, Moore, or network services, and it does not claim production readiness.",
+  "codex_called": false,
+  "command": [
+    "python",
+    "-m",
+    "app.cli",
+    "workflow",
+    "repair",
+    "--case",
+    "examples\\workflows\\sva_repair_demo\\demo_case.json",
+    "--backend",
+    "replay",
+    "--run-intent-alignment",
+    "--prepare-moore-handoff",
+    "--out-dir",
+    "artifacts\\workflow-demo",
+    "--dry-run"
+  ],
+  "external_backends_called": false,
+  "jaspergold_called": false,
+  "moore_called": false,
+  "network_used": false,
+  "qwen_called": false,
+  "raw_logs_committed": false,
+  "schema_version": "stage5f.e2e_demo.v1",
+  "timestamp_utc": "20260511T191259Z",
+  "workflow_artifact_refs": [
+    {
+      "name": "problem_spec_stub",
+      "path": "artifacts/workflow-demo/problem_spec_stub.json",
+      "sha256": "e7907e43a707be4b4dd5cec006ff359b41a0193c0c770111e1c60341855e4a43",
+      "size_bytes": 932
+    },
+    {
+      "name": "repair_candidate",
+      "path": "artifacts/workflow-demo/repair_candidate.json",
+      "sha256": "fb8286e2155bc9665a8973c75b901876fc7b664279e3b94a836ce024948bfe27",
+      "size_bytes": 246
+    },
+    {
+      "name": "candidate_stub",
+      "path": "artifacts/workflow-demo/candidate_stub.json",
+      "sha256": "5027f11dcf6ed32268555069546004064d63da2682ebc54fb71db003042a25d0",
+      "size_bytes": 633
+    },
+    {
+      "name": "moore_handoff_manifest",
+      "path": "artifacts/workflow-demo/moore_handoff_manifest.json",
+      "sha256": "878f504a13425555625691173a117318b76173946d3fd5e451915bbf2287fce1",
+      "size_bytes": 578
+    },
+    {
+      "name": "imported_verifier_outcome",
+      "path": "artifacts/workflow-demo/imported_verifier_outcome.json",
+      "sha256": "5e259068aeba8626d0c7cc9b5e707fdadb5b7c83e79e5ca0690789332533bba3",
+      "size_bytes": 507
+    },
+    {
+      "name": "intent_alignment_result",
+      "path": "artifacts/workflow-demo/intent_alignment_result.json",
+      "sha256": "005572b3f500478bbe221092dd7c5cdd62c9c621a942b31d251d6fbee4a9c802",
+      "size_bytes": 3116
+    },
+    {
+      "name": "final_report",
+      "path": "artifacts/workflow-demo/workflow_report.md",
+      "sha256": "d4014ce4298c71a565aa8b88a244ea4f39aab5ae9bdfcd8b5ee9fe3ff8ff4c2a",
+      "size_bytes": 1285
+    }
+  ],
+  "workflow_manifest": "artifacts/workflow-demo/workflow_manifest.json",
+  "workflow_manifest_sha256": "d119633ffdb334effedf67f599e5c434ca22342e88387e639911adac3e70de12",
+  "workflow_report": "artifacts/workflow-demo/workflow_report.md",
+  "workflow_report_sha256": "d4014ce4298c71a565aa8b88a244ea4f39aab5ae9bdfcd8b5ee9fe3ff8ff4c2a",
+  "workflow_status": "dry_run"
+}
