@@ -38,6 +38,15 @@ def test_expanded_reference_oracle_local_dry_run(tmp_path, monkeypatch) -> None:
     assert summary["invariant_reference_count"] >= 1
     assert summary["cover_generated_count"] == summary["cover_required_count"]
     assert summary["root_cause_summaries"] == []
+    assert summary["reference_proven@1"] == 0.0
+    assert summary["reference_non_vacuous@1"] == 0.0
+    assert summary["reference_antecedent_reachable@1"] == 0.0
+    assert summary["wrapper_parity_pass_rate"] == 0.0
+    assert summary["root_cause_candidate_counts"] == {"unknown": 4}
+    assert summary["root_cause_detail_counts"] == {"formal_check_not_run": 4}
+    assert payload["metrics"]["root_cause_candidate_counts"] == {"unknown": 4}
+    assert payload["output_mode"] == "local_dry_run"
+    assert payload["prompt_safety"]["reference_sva_in_prompts"] is False
     assert payload["result_artifact_paths"]["local"].endswith(
         "design2sva_reference_oracle_expanded_local.json"
     )

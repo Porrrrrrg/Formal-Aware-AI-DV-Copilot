@@ -12,6 +12,18 @@ from copilot.agents.design2sva_agent import build_prompt
 ROOT = Path(__file__).resolve().parents[1]
 CASES_PATH = ROOT / "benchmarks" / "design2sva_cases.json"
 TASK_SCHEMA_PATH = ROOT / "copilot" / "schemas" / "design2sva_task.schema.json"
+REQUIRED_EXPANDED_CASE_FIELDS = {
+    "case_id",
+    "design_id",
+    "property_id",
+    "design_rtl_path",
+    "harness_header_path",
+    "visible_signals",
+    "clock_reset",
+    "intent",
+    "helper_code_policy",
+    "evaluation_metadata",
+}
 
 
 def load_cases() -> list[dict[str, object]]:
@@ -49,6 +61,45 @@ def test_design2sva_expanded_cases_are_schema_valid() -> None:
         assert metadata["reference_available"] is True
         assert isinstance(metadata["reference_sva"], str)
         assert metadata["reference_sva"]
+
+
+def test_design2sva_expanded_cases_have_stage15_fixture_fields() -> None:
+    valid_count = 0
+
+    for case in load_cases():
+        missing_fields = REQUIRED_EXPANDED_CASE_FIELDS - case.keys()
+        assert not missing_fields, f"{case.get('case_id', '<unknown>')} missing {missing_fields}"
+
+        assert isinstance(case["case_id"], str) and case["case_id"].strip()
+        assert isinstance(case["design_id"], str) and case["design_id"].strip()
+        assert isinstance(case["property_id"], str) and case["property_id"].strip()
+        assert isinstance(case["design_rtl_path"], str) and case["design_rtl_path"].strip()
+        assert isinstance(case["harness_header_path"], str) and case["harness_header_path"].strip()
+
+        visible_signals = case["visible_signals"]
+        assert isinstance(visible_signals, list) and visible_signals
+        assert all(isinstance(signal, str) and signal.strip() for signal in visible_signals)
+
+        clock_reset = case["clock_reset"]
+        assert isinstance(clock_reset, dict)
+        assert {"clock", "reset", "clock_edge", "reset_polarity"} <= clock_reset.keys()
+
+        intent = case["intent"]
+        assert isinstance(intent, str) and intent.strip()
+        assert re.search(r"[A-Za-z]", intent), f"{case['case_id']} intent is not natural language"
+
+        helper_code_policy = case["helper_code_policy"]
+        assert isinstance(helper_code_policy, dict)
+        assert {"allowed", "allowed_kinds", "max_lines", "rationale"} <= helper_code_policy.keys()
+
+        metadata = case["evaluation_metadata"]
+        assert isinstance(metadata, dict)
+        assert "reference_sva" in metadata
+        assert isinstance(metadata["reference_sva"], str) and metadata["reference_sva"].strip()
+
+        valid_count += 1
+
+    assert valid_count == len(load_cases())
 
 
 def test_design2sva_expanded_cases_have_valid_paths() -> None:

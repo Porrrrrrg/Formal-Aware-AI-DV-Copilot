@@ -23,8 +23,17 @@ Reference and native-oracle controls are kept separate from generated-candidate 
 | design2sva_eval_reference_oracle_parity_jasper.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=3 | JasperGold-measured | failures: proven_non_vacuous=3; root causes: unknown=3; harness: not_run=1, reachable=2 |
 | design2sva_eval_reference_oracle_rootcause_jasper.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=3 | JasperGold-measured | failures: unreachable_antecedent=2, unreachable_cover_goal=1; root causes: design2sva_embedding_bug=3; harness: not_run=1, unreachable=2 |
 | design2sva_native_reference_oracle_jasper.json | native oracle | native_reference_oracle | 3 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=3 | native JasperGold-measured | root causes: unknown=3; native proof: proven=3; native vacuity: not_run=3 |
-| design2sva_reference_oracle_expanded_local.json | reference oracle | reference_oracle | 10 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=10 | not_run | failures: not_run=10; root causes: unknown=10; root details: formal_check_not_run=10; backend: not_run=10; harness: not_run=10 |
-| design2sva_reference_oracle_expanded_jasper.json | design2sva_reference_oracle_expanded | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | N/A | N/A | N/A | 1.000 | 0.000 | reference_oracle=12 | not_run | native proof: not_run=12; native vacuity: not_run=12 |
+
+## Expanded oracle validation
+
+Stage 15 expanded native and wrapper reference-oracle controls are rendered separately from generated-candidate rows. Dry-run, replay, and real JasperGold outputs must not be collapsed into one result.
+
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_native_oracle_expanded_local.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=12 | local_dry_run | root causes: unknown=12; native proof: not_run=12; native vacuity: not_run=12 |
+| design2sva_native_oracle_expanded_jasper.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=12 | jasper_dry_run | root causes: unknown=12; native proof: not_run=12; native vacuity: not_run=12 |
+| design2sva_reference_oracle_expanded_local.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=12 | local_dry_run | root causes: unknown=12; root details: formal_check_not_run=12; native proof: not_run=12; native vacuity: not_run=12 |
+| design2sva_reference_oracle_expanded_jasper.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=12 | jasper_dry_run | root causes: unknown=12; root details: formal_check_not_run=12; native proof: not_run=12; native vacuity: not_run=12 |
 
 ## Real LLM Subset
 
@@ -55,8 +64,8 @@ Expanded anti-vacuity fixture rows are isolated from the original subset to avoi
 | design2sva_eval_anti_vacuity_jasper_subset.json | replay | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | JasperGold-measured | failures: unreachable_antecedent=12, unreachable_cover_goal=6 |
 | design2sva_eval_antivacuity_codex_new_subset.json | real LLM | real_llm | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=15 | not_run | failures: not_run=15, temporal_mismatch=15 |
 | design2sva_eval_antivacuity_codex_new_jasper_subset.json | replay | replay | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=15 | JasperGold-measured | failures: unreachable_antecedent=20, unreachable_cover_goal=10 |
-| design2sva_codex_replay_expanded_local.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | not_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
-| design2sva_codex_replay_expanded_jasper.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | not_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
+| design2sva_codex_replay_expanded_local.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | jasper_dry_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
+| design2sva_codex_replay_expanded_jasper.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | jasper_dry_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
 
 ## Ablation Plan
 
@@ -80,3 +89,5 @@ Design2SVA ablation artifacts are rendered here when present; planned rows below
 - JasperGold-measured rows are the only rows where `proven@*` and `non_vacuous@k` should be cited as formal outcomes.
 - Reference and native-oracle rows are infrastructure controls; exact/reference agreement on fixtures is not production signoff.
 - Fixed-wrapper reruns isolate wrapper correctness from candidate generation quality.
+- If expanded references prove non-vacuously with high native/wrapper parity, the expanded fixtures are valid for LLM evaluation.
+- If expanded references fail, do not run the expanded LLM benchmark yet; repair the fixture, harness, or wrapper first.
