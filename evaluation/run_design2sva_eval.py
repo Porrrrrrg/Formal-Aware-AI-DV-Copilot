@@ -1723,8 +1723,9 @@ def main() -> int:
         jasper_dry_run=jasper_dry_run,
         jasper_replay=jasper_replay_records is not None,
     )
+    public_summary = {key: value for key, value in summary.items() if key != "rows"}
     payload = {
-        "summary": summary,
+        "summary": public_summary,
         "mode": run_mode(args),
         "formal_check_mode": formal_check_mode(args, jasper_replay_records),
         "native_oracle_results": (
@@ -1740,7 +1741,7 @@ def main() -> int:
         markdown_path = resolve_repo_path(args.markdown)
         markdown_path.parent.mkdir(parents=True, exist_ok=True)
         markdown_path.write_text(render_markdown(summary, run_mode(args)), encoding="utf-8")
-    print(json.dumps({key: value for key, value in summary.items() if key != "rows"}, indent=2))
+    print(json.dumps(public_summary, indent=2))
     return 0
 
 

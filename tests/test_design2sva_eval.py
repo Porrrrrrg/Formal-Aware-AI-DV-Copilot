@@ -287,10 +287,16 @@ def test_design2sva_anti_vacuity_replay_repairs_nonvacuously(tmp_path, monkeypat
     assert main() == 0
     payload = json.loads(out.read_text(encoding="utf-8"))
     summary = payload["summary"]
-    rows = summary["rows"]
+    rows = [
+        round_record["metrics"]
+        for result in payload["results"]
+        for path in result["candidate_paths"]
+        for round_record in path["rounds"]
+    ]
 
     assert payload["mode"] == "replay"
     assert payload["formal_check_mode"] == "replay"
+    assert "rows" not in summary
     assert summary["formal_metrics_status"] == "replayed"
     assert summary["syntax@1"] == 1.0
     assert summary["proven@1"] == 0.0

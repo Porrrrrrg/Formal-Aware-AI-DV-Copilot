@@ -16,6 +16,7 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 | design2sva_eval_antivacuity_codex_new_subset.json | real_llm | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=15 | not_run | unknown |
 | design2sva_eval_reference_oracle_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown |
 | design2sva_eval_reference_oracle_local.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | not_run | unknown=3 |
+| design2sva_eval_reference_oracle_parity_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown=3 |
 | design2sva_eval_reference_oracle_parity_local.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | not_run | unknown=3 |
 | design2sva_eval_reference_oracle_rootcause_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | design2sva_embedding_bug=3 |
 
@@ -100,6 +101,14 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 - Failure categories: not_run=3
 - Root-cause candidates: unknown=3
 - Formal metrics status: `not_run`
+
+### design2sva_eval_reference_oracle_parity_jasper.json
+
+- Mode: `reference_oracle`
+- Source counts: reference_oracle=3
+- Failure categories: proven_non_vacuous=3
+- Root-cause candidates: unknown=3
+- Formal metrics status: `measured`
 
 ### design2sva_eval_reference_oracle_parity_local.json
 
