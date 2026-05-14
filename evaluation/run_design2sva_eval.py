@@ -257,6 +257,8 @@ def classify_failure(metrics: dict[str, Any]) -> str:
         return "weak_vacuous_assertion"
     if proof.get("proof_status") == "falsified":
         return "overstrong_assertion"
+    if proof.get("proof_status") in {"unreachable", "uncovered"}:
+        return "weak_vacuous_assertion"
     if proof.get("proof_status") in {"undetermined", "unknown"}:
         return "temporal_mismatch"
     if metrics["exact_match"] is False:

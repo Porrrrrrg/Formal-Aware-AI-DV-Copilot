@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from copilot.agents.design2sva_agent import build_prompt
-from evaluation.run_design2sva_eval import load_cases, main
+from evaluation.run_design2sva_eval import classify_failure, load_cases, main, row_success
 
 def test_design2sva_prompt_omits_reference_sva() -> None:
     case = load_cases(Path("benchmarks/design2sva_cases.json"))[0]
@@ -72,3 +72,25 @@ def test_design2sva_replay_source_counts(tmp_path, monkeypatch) -> None:
     summary = json.loads(out.read_text(encoding="utf-8"))["summary"]
     assert summary["source_counts"] == {"replay": 6}
     assert summary["fallback_rate"] == 0.0
+
+
+def test_unreachable_formal_result_is_not_counted_as_passed() -> None:
+    metrics = {
+        "valid_json": True,
+        "unsupported_helper_code_issue": False,
+        "has_hallucinated_signal": False,
+        "syntax_ok": True,
+        "reset_clock_mismatch": False,
+        "exact_match": True,
+        "proof_metadata": {
+            "status": "passed",
+            "syntax_status": "passed",
+            "proof_status": "unreachable",
+            "vacuity_status": "not_flagged_vacuous",
+        },
+    }
+
+    metrics["failure_category"] = classify_failure(metrics)
+
+    assert metrics["failure_category"] == "weak_vacuous_assertion"
+    assert row_success(metrics, formal_mode=True) is False

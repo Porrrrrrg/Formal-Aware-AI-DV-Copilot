@@ -1,28 +1,49 @@
 # Design2SVA Results
 
+These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact and provenance so deterministic scaffold, replay, real LLM, and JasperGold-checked runs are not conflated.
+
 ## Summary
 
-Mode: `replay`
+| Artifact | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | hallucinated_signal_rate | fallback_rate | valid_json_rate | avg_rounds | repair_success | Source | Formal |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| design2sva_eval_local.json | deterministic_scaffold | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | 0.000 | structured_fallback=9 | not_run |
+| design2sva_eval_replay_local.json | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | replay=9 | not_run |
+| design2sva_eval_codex_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=9 | not_run |
+| design2sva_eval_codex_jasper_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured |
 
-| Metric | Value |
-| --- | ---: |
-| Cases | 3 |
-| k | 3 |
-| syntax@1 | 1.000 |
-| syntax@k | 1.000 |
-| proven@1 | 0.000 |
-| proven@k | 0.000 |
-| non_vacuous@k | 0.000 |
-| Hallucinated signal rate | 0.000 |
-| Fallback rate | 0.000 |
-| Valid JSON rate | 1.000 |
-| Average rounds | 0.000 |
-| Repair success after feedback | 0.000 |
+## Provenance
 
-Formal metrics status: `not_run`.
+### design2sva_eval_local.json
 
-## Boundaries
+- Mode: `deterministic_scaffold`
+- Source counts: structured_fallback=9
+- Failure categories: passed=9
+- Formal metrics status: `not_run`
 
-- Dry-run and replay rows validate local infrastructure and JSON contracts; they are not production signoff.
-- `proven@*` and `non_vacuous@k` remain `0.000` with status `not_run` unless real JasperGold checks are explicitly enabled and available.
-- Exact/reference agreement is a local scaffold signal for these fixtures, not a semantic equivalence result.
+### design2sva_eval_replay_local.json
+
+- Mode: `replay`
+- Source counts: replay=9
+- Failure categories: passed=9
+- Formal metrics status: `not_run`
+
+### design2sva_eval_codex_subset.json
+
+- Mode: `real_llm`
+- Source counts: llm=9
+- Failure categories: passed=9, temporal_mismatch=9
+- Formal metrics status: `not_run`
+
+### design2sva_eval_codex_jasper_subset.json
+
+- Mode: `real_llm`
+- Source counts: llm=9
+- Failure categories: weak_vacuous_assertion=18
+- Formal metrics status: `measured`
+
+## Claim Boundary
+
+- Dry-run, replay, and deterministic scaffold rows do not measure hosted model quality.
+- Real LLM rows measure schema-constrained hosted-model behavior only when `source_counts` records `llm` outputs and fallback is low.
+- `proven@*` and `non_vacuous@k` are only meaningful when real JasperGold checks are enabled and available.
+- Exact/reference agreement on local fixtures is a scaffold signal, not functional equivalence or production signoff.
