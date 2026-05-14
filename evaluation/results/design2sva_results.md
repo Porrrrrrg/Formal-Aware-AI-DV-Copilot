@@ -1,161 +1,82 @@
 # Design2SVA Results
 
-These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact and provenance so deterministic scaffold, replay, real LLM, and JasperGold-checked runs are not conflated.
+These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact, provenance, and formal-check status so deterministic, replay, real LLM, and JasperGold-measured outcomes are not conflated.
 
-## Summary
+## Infrastructure Sanity
 
-| Artifact | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | hallucinated_signal_rate | fallback_rate | valid_json_rate | avg_rounds | repair_success | Source | Formal | Root-cause candidates |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
-| design2sva_eval_local.json | deterministic_scaffold | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | 0.000 | structured_fallback=9 | not_run | unknown |
-| design2sva_eval_replay_local.json | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | replay=9 | not_run | unknown |
-| design2sva_eval_codex_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=9 | not_run | unknown |
-| design2sva_eval_codex_jasper_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured | unknown |
-| design2sva_eval_anti_vacuity_jasper_subset.json | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured | unknown |
-| design2sva_eval_anti_vacuity_replay.json | replay | 1 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | replay=1 | replayed | unknown |
-| design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json | committed_codex_candidate_replay | 3 | 5 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | llm=15 | measured | unknown=15 |
-| design2sva_eval_antivacuity_codex_new_jasper_subset.json | replay | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=15 | measured | unknown |
-| design2sva_eval_antivacuity_codex_new_subset.json | real_llm | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=15 | not_run | unknown |
-| design2sva_eval_codex_fixed_wrapper_rerun.json | committed_codex_candidate_replay | 3 | 3 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | llm=9 | measured | unknown=9 |
-| design2sva_eval_reference_oracle_fixed_wrapper_sanity.json | reference_oracle_fixed_wrapper_sanity | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown=3 |
-| design2sva_eval_reference_oracle_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown |
-| design2sva_eval_reference_oracle_local.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | not_run | unknown=3 |
-| design2sva_eval_reference_oracle_parity_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown=3 |
-| design2sva_eval_reference_oracle_parity_local.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | not_run | unknown=3 |
-| design2sva_eval_reference_oracle_rootcause_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | design2sva_embedding_bug=3 |
+Local scaffold rows used to validate parsing, schema, and replay plumbing before citing model or JasperGold behavior.
 
-## Provenance
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_eval_local.json | deterministic | deterministic_scaffold | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | structured_fallback=9 | not_run | failures: passed=9 |
+| design2sva_eval_replay_local.json | replay | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | replay=9 | not_run | failures: passed=9 |
 
-### design2sva_eval_local.json
+## Reference/Native Oracle
 
-- Mode: `deterministic_scaffold`
-- Source counts: structured_fallback=9
-- Failure categories: passed=9
-- Root-cause candidates: unknown
-- Formal metrics status: `not_run`
+Reference and native-oracle controls are kept separate from generated-candidate rows so oracle/tooling checks do not overwrite LLM measurements.
 
-### design2sva_eval_replay_local.json
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_eval_reference_oracle_local.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=3 | not_run | failures: not_run=3; root causes: unknown=3; harness: not_run=3 |
+| design2sva_eval_reference_oracle_jasper.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=3 | JasperGold-measured | failures: unreachable_antecedent=2, unreachable_cover_goal=1; harness: unreachable=3 |
+| design2sva_eval_reference_oracle_parity_local.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=3 | not_run | failures: not_run=3; root causes: unknown=3; harness: not_run=3 |
+| design2sva_eval_reference_oracle_parity_jasper.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=3 | JasperGold-measured | failures: proven_non_vacuous=3; root causes: unknown=3; harness: not_run=1, reachable=2 |
+| design2sva_eval_reference_oracle_rootcause_jasper.json | reference oracle | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=3 | JasperGold-measured | failures: unreachable_antecedent=2, unreachable_cover_goal=1; root causes: design2sva_embedding_bug=3; harness: not_run=1, unreachable=2 |
+| design2sva_native_reference_oracle_jasper.json | native oracle | native_reference_oracle | 3 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=3 | native JasperGold-measured | root causes: unknown=3; native proof: proven=3; native vacuity: not_run=3 |
+| design2sva_reference_oracle_expanded_local.json | reference oracle | reference_oracle | 10 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=10 | not_run | failures: not_run=10; root causes: unknown=10; root details: formal_check_not_run=10; backend: not_run=10; harness: not_run=10 |
+| design2sva_reference_oracle_expanded_jasper.json | design2sva_reference_oracle_expanded | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | N/A | N/A | N/A | 1.000 | 0.000 | reference_oracle=12 | not_run | native proof: not_run=12; native vacuity: not_run=12 |
 
-- Mode: `replay`
-- Source counts: replay=9
-- Failure categories: passed=9
-- Root-cause candidates: unknown
-- Formal metrics status: `not_run`
+## Real LLM Subset
 
-### design2sva_eval_codex_subset.json
+Hosted-model subset rows are separated by whether JasperGold was run, so schema success is not conflated with measured proof quality.
 
-- Mode: `real_llm`
-- Source counts: llm=9
-- Failure categories: passed=9, temporal_mismatch=9
-- Root-cause candidates: unknown
-- Formal metrics status: `not_run`
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_eval_codex_subset.json | real LLM | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | not_run | failures: passed=9, temporal_mismatch=9 |
+| design2sva_eval_codex_jasper_subset.json | real LLM | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | JasperGold-measured | failures: weak_vacuous_assertion=18 |
 
-### design2sva_eval_codex_jasper_subset.json
+## JasperGold Fixed-Wrapper Rerun
 
-- Mode: `real_llm`
-- Source counts: llm=9
-- Failure categories: weak_vacuous_assertion=18
-- Root-cause candidates: unknown
-- Formal metrics status: `measured`
+Fixed-wrapper rows replay committed candidates through the corrected wrapper and report JasperGold-measured outcomes.
 
-### design2sva_eval_anti_vacuity_jasper_subset.json
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_eval_reference_oracle_fixed_wrapper_sanity.json | reference oracle | reference_oracle_fixed_wrapper_sanity | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=3 | JasperGold-measured | failures: proven_non_vacuous=3; root causes: unknown=3; root details: reference_oracle_matches_native_formal_behavior=3; backend: passed=3; harness: not_run=1, reachable=2 |
+| design2sva_eval_codex_fixed_wrapper_rerun.json | replay of committed LLM candidates | committed_codex_candidate_replay | 3 | 3 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | llm=9 | JasperGold-measured | failures: proven_non_vacuous=9; root causes: unknown=9; root details: assertion_proven_non_vacuous=9; backend: passed=9; harness: not_run=3 |
+| design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json | replay of committed LLM candidates | committed_codex_candidate_replay | 3 | 5 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | llm=15 | JasperGold-measured | failures: proven_non_vacuous=15; root causes: unknown=15; root details: assertion_proven_non_vacuous=15; backend: passed=15; harness: not_run=3 |
 
-- Mode: `replay`
-- Source counts: llm=9
-- Failure categories: unreachable_antecedent=12, unreachable_cover_goal=6
-- Root-cause candidates: unknown
-- Formal metrics status: `measured`
+## Expanded Fixtures
 
-### design2sva_eval_anti_vacuity_replay.json
+Expanded anti-vacuity fixture rows are isolated from the original subset to avoid replacing earlier measurements.
 
-- Mode: `replay`
-- Source counts: replay=1
-- Failure categories: proven_non_vacuous=1, unreachable_antecedent=1
-- Root-cause candidates: unknown
-- Formal metrics status: `replayed`
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_eval_anti_vacuity_replay.json | replay | replay | 1 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | replay=1 | replayed | failures: proven_non_vacuous=1, unreachable_antecedent=1 |
+| design2sva_eval_anti_vacuity_jasper_subset.json | replay | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | JasperGold-measured | failures: unreachable_antecedent=12, unreachable_cover_goal=6 |
+| design2sva_eval_antivacuity_codex_new_subset.json | real LLM | real_llm | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=15 | not_run | failures: not_run=15, temporal_mismatch=15 |
+| design2sva_eval_antivacuity_codex_new_jasper_subset.json | replay | replay | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=15 | JasperGold-measured | failures: unreachable_antecedent=20, unreachable_cover_goal=10 |
+| design2sva_codex_replay_expanded_local.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | not_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
+| design2sva_codex_replay_expanded_jasper.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | not_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
 
-### design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json
+## Ablation Plan
 
-- Mode: `committed_codex_candidate_replay`
-- Source counts: llm=15
-- Failure categories: proven_non_vacuous=15
-- Root-cause candidates: unknown=15
-- Formal metrics status: `measured`
+Design2SVA ablation artifacts are rendered here when present; planned rows below reserve non-overlapping reporting slots for follow-up runs.
 
-### design2sva_eval_antivacuity_codex_new_jasper_subset.json
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_ablation_replay_local.json | replay | dry_run_replay_plan | 12 | 1 | N/A | N/A | N/A | N/A | N/A | 1.000 | 0.000 | ablation_plan=6 | not_run | none |
 
-- Mode: `replay`
-- Source counts: llm=15
-- Failure categories: unreachable_antecedent=20, unreachable_cover_goal=10
-- Root-cause candidates: unknown
-- Formal metrics status: `measured`
+| Variant | Status | Isolation target |
+| --- | --- | --- |
+| No retrieval examples | planned | Isolate how much retrieval context affects valid JSON, syntax, and candidate diversity. |
+| No JasperGold feedback repair | planned | Disable feedback-guided repair and compare repair_success_after_feedback plus non_vacuous@k. |
+| No fixed wrapper | planned control | Compare against fixed-wrapper reruns to separate wrapper integration defects from generated SVA quality. |
+| Reference/native oracle controls | measured controls above | Use oracle rows to bound harness, wrapper, and native-reference failures before attributing errors to the LLM. |
 
-### design2sva_eval_antivacuity_codex_new_subset.json
-
-- Mode: `real_llm`
-- Source counts: llm=15
-- Failure categories: not_run=15, temporal_mismatch=15
-- Root-cause candidates: unknown
-- Formal metrics status: `not_run`
-
-### design2sva_eval_codex_fixed_wrapper_rerun.json
-
-- Mode: `committed_codex_candidate_replay`
-- Source counts: llm=9
-- Failure categories: proven_non_vacuous=9
-- Root-cause candidates: unknown=9
-- Formal metrics status: `measured`
-
-### design2sva_eval_reference_oracle_fixed_wrapper_sanity.json
-
-- Mode: `reference_oracle_fixed_wrapper_sanity`
-- Source counts: reference_oracle=3
-- Failure categories: proven_non_vacuous=3
-- Root-cause candidates: unknown=3
-- Formal metrics status: `measured`
-
-### design2sva_eval_reference_oracle_jasper.json
-
-- Mode: `reference_oracle`
-- Source counts: reference_oracle=3
-- Failure categories: unreachable_antecedent=2, unreachable_cover_goal=1
-- Root-cause candidates: unknown
-- Formal metrics status: `measured`
-
-### design2sva_eval_reference_oracle_local.json
-
-- Mode: `reference_oracle`
-- Source counts: reference_oracle=3
-- Failure categories: not_run=3
-- Root-cause candidates: unknown=3
-- Formal metrics status: `not_run`
-
-### design2sva_eval_reference_oracle_parity_jasper.json
-
-- Mode: `reference_oracle`
-- Source counts: reference_oracle=3
-- Failure categories: proven_non_vacuous=3
-- Root-cause candidates: unknown=3
-- Formal metrics status: `measured`
-
-### design2sva_eval_reference_oracle_parity_local.json
-
-- Mode: `reference_oracle`
-- Source counts: reference_oracle=3
-- Failure categories: not_run=3
-- Root-cause candidates: unknown=3
-- Formal metrics status: `not_run`
-
-### design2sva_eval_reference_oracle_rootcause_jasper.json
-
-- Mode: `reference_oracle`
-- Source counts: reference_oracle=3
-- Failure categories: unreachable_antecedent=2, unreachable_cover_goal=1
-- Root-cause candidates: design2sva_embedding_bug=3
-- Formal metrics status: `measured`
-
-## Claim Boundary
+## Claim Boundaries
 
 - Dry-run, replay, and deterministic scaffold rows do not measure hosted model quality.
 - Real LLM rows measure schema-constrained hosted-model behavior only when `source_counts` records `llm` outputs and fallback is low.
-- `proven@*` and `non_vacuous@k` are only meaningful when real JasperGold checks are enabled and available.
-- Exact/reference agreement on local fixtures is a scaffold signal, not functional equivalence or production signoff.
+- JasperGold-measured rows are the only rows where `proven@*` and `non_vacuous@k` should be cited as formal outcomes.
+- Reference and native-oracle rows are infrastructure controls; exact/reference agreement on fixtures is not production signoff.
+- Fixed-wrapper reruns isolate wrapper correctness from candidate generation quality.

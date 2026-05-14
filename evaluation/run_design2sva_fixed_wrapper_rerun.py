@@ -41,6 +41,13 @@ DEFAULT_ANTIVACUITY_OUT = Path(
 DEFAULT_REFERENCE_OUT = Path(
     "evaluation/results/design2sva_eval_reference_oracle_fixed_wrapper_sanity.json"
 )
+DEFAULT_EXPANDED_SOURCE = DEFAULT_ORIGINAL_SOURCE
+DEFAULT_EXPANDED_LOCAL_OUT = Path(
+    "evaluation/results/design2sva_codex_replay_expanded_local.json"
+)
+DEFAULT_EXPANDED_JASPER_OUT = Path(
+    "evaluation/results/design2sva_codex_replay_expanded_jasper.json"
+)
 DEFAULT_JASPER_OUT_ROOT = Path("jasper/reports/design2sva_stage13_fixed_wrapper_rerun")
 
 
@@ -77,6 +84,52 @@ def select_cases(cases_path: Path, records: list[dict[str, Any]]) -> list[dict[s
     return selected
 
 
+def replay_candidate_keys(records: list[dict[str, Any]]) -> set[tuple[str, str]]:
+    keys = set()
+    for record in records:
+        if not isinstance(record.get("response"), dict):
+            continue
+        case_id = str(record.get("case_id") or "")
+        property_id = str(record.get("property_id") or "")
+        if case_id and property_id:
+            keys.add((case_id, property_id))
+    return keys
+
+
+def missing_replay_cases(
+    cases: list[dict[str, Any]],
+    records: list[dict[str, Any]],
+) -> list[dict[str, str]]:
+    available = replay_candidate_keys(records)
+    missing = []
+    for case in cases:
+        key = (str(case["case_id"]), str(case["property_id"]))
+        if key not in available:
+            missing.append(
+                {
+                    "case_id": key[0],
+                    "property_id": key[1],
+                    "design_id": str(case["design_id"]),
+                }
+            )
+    return missing
+
+
+def require_no_missing_replay_cases(missing: list[dict[str, str]], source_result: Path) -> None:
+    if not missing:
+        return
+    preview = ", ".join(
+        f"{item['case_id']}:{item['property_id']}" for item in missing[:10]
+    )
+    suffix = "" if len(missing) <= 10 else f", ... ({len(missing)} total)"
+    raise ValueError(
+        "Replay source is missing candidates for expanded Design2SVA case(s): "
+        f"{preview}{suffix}. Source: {source_result}. "
+        "Provide a future expanded candidate JSONL/JSON artifact or rerun without "
+        "--require-expanded-candidates to emit a partial coverage report."
+    )
+
+
 def infer_k(records: list[dict[str, Any]], source_summary: dict[str, Any]) -> int:
     if isinstance(source_summary.get("k"), int):
         return int(source_summary["k"])
@@ -109,6 +162,8 @@ def stage13_payload(
     source_summary: dict[str, Any] | None = None,
     native_oracle_results: Path | None = None,
     reference_limit: int | None = None,
+    replay_coverage: dict[str, Any] | None = None,
+    result_artifact_paths: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     public_summary = {key: value for key, value in summary.items() if key != "rows"}
     payload: dict[str, Any] = {
@@ -137,6 +192,10 @@ def stage13_payload(
         payload["native_oracle_results"] = str(native_oracle_results)
     if reference_limit is not None:
         payload["reference_limit"] = reference_limit
+    if replay_coverage is not None:
+        payload["replay_coverage"] = replay_coverage
+    if result_artifact_paths is not None:
+        payload["result_artifact_paths"] = result_artifact_paths
     return payload
 
 
@@ -340,7 +399,7 @@ def run_candidate_source(
     k = infer_k(replay_records, source_summary)
     max_repair_rounds = infer_max_repair_rounds(replay_records)
     cases = select_cases(cases_path, replay_records)
-    native_oracle = load_native_oracle_results(native_oracle_results_path)
+    native_oracle = {} if dry_run else load_native_oracle_results(native_oracle_results_path)
     results = [
         run_case(
             case=case,
@@ -382,6 +441,101 @@ def run_candidate_source(
         markdown_path.parent.mkdir(parents=True, exist_ok=True)
         markdown_path.write_text(
             render_markdown(summary, mode="stage13_committed_codex_candidate_replay"),
+            encoding="utf-8",
+        )
+    return payload
+
+
+def run_expanded_candidate_source(
+    *,
+    source_result: Path,
+    out: Path,
+    cases_path: Path,
+    native_oracle_results_path: Path | None,
+    jasper_out_root: Path,
+    dry_run: bool,
+    context_budget: int,
+    require_expanded_candidates: bool,
+    markdown: Path | None = None,
+) -> dict[str, Any]:
+    source = resolve_repo_path(source_result)
+    replay_records = load_replay_records(source)
+    if not replay_records:
+        raise ValueError(f"No replayable candidates found in {source_result}")
+
+    all_cases = load_cases(cases_path)
+    missing = missing_replay_cases(all_cases, replay_records)
+    require_no_missing_replay_cases(missing, source_result) if require_expanded_candidates else None
+    missing_keys = {(item["case_id"], item["property_id"]) for item in missing}
+    cases = [
+        case
+        for case in all_cases
+        if (str(case["case_id"]), str(case["property_id"])) not in missing_keys
+    ]
+    if not cases:
+        raise ValueError(
+            f"Replay source {source_result} has no candidates for the expanded case set."
+        )
+
+    source_summary = load_source_summary(source_result)
+    k = infer_k(replay_records, source_summary)
+    max_repair_rounds = infer_max_repair_rounds(replay_records)
+    native_oracle = {} if dry_run else load_native_oracle_results(native_oracle_results_path)
+    results = [
+        run_case(
+            case=case,
+            k=k,
+            max_repair_rounds=max_repair_rounds,
+            reference_oracle=False,
+            use_llm=False,
+            llm_command=None,
+            replay_records=replay_records,
+            jasper_check=True,
+            jasper_dry_run=dry_run,
+            jasper_replay_records=None,
+            jasper_out_root=resolve_repo_path(jasper_out_root),
+            context_budget=context_budget,
+            native_oracle=native_oracle.get(str(case["case_id"])),
+            run_harness_diagnostics=False,
+        )
+        for case in cases
+    ]
+    summary = summarize(
+        results,
+        k=k,
+        jasper_check=True,
+        jasper_dry_run=dry_run,
+        jasper_replay=False,
+    )
+    replay_coverage = {
+        "expanded_case_count": len(all_cases),
+        "evaluated_case_count": len(cases),
+        "missing_case_count": len(missing),
+        "missing_candidates": missing,
+        "strict_candidates_required": require_expanded_candidates,
+        "fallback_used_for_missing_cases": False,
+    }
+    payload = stage13_payload(
+        mode="committed_codex_expanded_replay",
+        summary=summary,
+        results=results,
+        dry_run=dry_run,
+        source_result=source_result,
+        source_summary=source_summary,
+        native_oracle_results=native_oracle_results_path,
+        replay_coverage=replay_coverage,
+        result_artifact_paths={
+            "local": str(DEFAULT_EXPANDED_LOCAL_OUT),
+            "jasper": str(DEFAULT_EXPANDED_JASPER_OUT),
+        },
+    )
+    payload["stage"] = "stage14_expanded_codex_replay"
+    write_payload(out, payload)
+    if markdown is not None:
+        markdown_path = resolve_repo_path(markdown)
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
+        markdown_path.write_text(
+            render_markdown(summary, mode="stage14_committed_codex_expanded_replay"),
             encoding="utf-8",
         )
     return payload
@@ -468,9 +622,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cases", type=Path, default=DEFAULT_CASES)
     parser.add_argument("--original-source", type=Path, default=DEFAULT_ORIGINAL_SOURCE)
     parser.add_argument("--antivacuity-source", type=Path, default=DEFAULT_ANTIVACUITY_SOURCE)
+    parser.add_argument("--expanded-source", type=Path, default=DEFAULT_EXPANDED_SOURCE)
     parser.add_argument("--original-out", type=Path, default=DEFAULT_ORIGINAL_OUT)
     parser.add_argument("--antivacuity-out", type=Path, default=DEFAULT_ANTIVACUITY_OUT)
     parser.add_argument("--reference-out", type=Path, default=DEFAULT_REFERENCE_OUT)
+    parser.add_argument("--expanded-local-out", type=Path, default=DEFAULT_EXPANDED_LOCAL_OUT)
+    parser.add_argument("--expanded-jasper-out", type=Path, default=DEFAULT_EXPANDED_JASPER_OUT)
     parser.add_argument(
         "--native-oracle-results",
         nargs="?",
@@ -484,8 +641,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--only",
-        choices=("all", "original", "antivacuity", "reference"),
+        choices=("all", "original", "antivacuity", "reference", "expanded-local", "expanded-jasper"),
         default="all",
+    )
+    parser.add_argument(
+        "--require-expanded-candidates",
+        action="store_true",
+        help=(
+            "Fail expanded replay if the candidate artifact does not cover every "
+            "expanded Design2SVA case. Without this flag, missing cases are reported "
+            "separately and are not replaced by fallback candidates."
+        ),
     )
     args = parser.parse_args(argv)
 
@@ -525,8 +691,38 @@ def main(argv: list[str] | None = None) -> int:
         )
         print_summary("reference", payload)
 
+    if args.only == "expanded-local":
+        payload = run_expanded_candidate_source(
+            source_result=args.expanded_source,
+            out=args.expanded_local_out,
+            cases_path=args.cases,
+            native_oracle_results_path=args.native_oracle_results,
+            jasper_out_root=args.jasper_out_root / "codex_expanded_local",
+            dry_run=True,
+            context_budget=args.context_budget,
+            require_expanded_candidates=args.require_expanded_candidates,
+        )
+        print_summary("expanded-local", payload)
+
+    if args.only == "expanded-jasper":
+        payload = run_expanded_candidate_source(
+            source_result=args.expanded_source,
+            out=args.expanded_jasper_out,
+            cases_path=args.cases,
+            native_oracle_results_path=args.native_oracle_results,
+            jasper_out_root=args.jasper_out_root / "codex_expanded_jasper",
+            dry_run=args.dry_run,
+            context_budget=args.context_budget,
+            require_expanded_candidates=args.require_expanded_candidates,
+        )
+        print_summary("expanded-jasper", payload)
+
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(2) from exc

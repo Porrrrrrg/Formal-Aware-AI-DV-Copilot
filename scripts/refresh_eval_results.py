@@ -51,6 +51,83 @@ ABLATION_NOTES = {
     "structured:minimal_packet": "Keeps only IDs and Jasper status summary.",
 }
 
+DESIGN2SVA_SECTIONS = [
+    (
+        "Infrastructure Sanity",
+        "Local scaffold rows used to validate parsing, schema, and replay plumbing before citing model or JasperGold behavior.",
+        [
+            "design2sva_eval_local.json",
+            "design2sva_eval_replay_local.json",
+        ],
+    ),
+    (
+        "Reference/Native Oracle",
+        "Reference and native-oracle controls are kept separate from generated-candidate rows so oracle/tooling checks do not overwrite LLM measurements.",
+        [
+            "design2sva_eval_reference_oracle_local.json",
+            "design2sva_eval_reference_oracle_jasper.json",
+            "design2sva_eval_reference_oracle_parity_local.json",
+            "design2sva_eval_reference_oracle_parity_jasper.json",
+            "design2sva_eval_reference_oracle_rootcause_jasper.json",
+            "design2sva_native_reference_oracle_jasper.json",
+            "design2sva_reference_oracle_expanded_local.json",
+            "design2sva_reference_oracle_expanded_jasper.json",
+        ],
+    ),
+    (
+        "Real LLM Subset",
+        "Hosted-model subset rows are separated by whether JasperGold was run, so schema success is not conflated with measured proof quality.",
+        [
+            "design2sva_eval_codex_subset.json",
+            "design2sva_eval_codex_jasper_subset.json",
+        ],
+    ),
+    (
+        "JasperGold Fixed-Wrapper Rerun",
+        "Fixed-wrapper rows replay committed candidates through the corrected wrapper and report JasperGold-measured outcomes.",
+        [
+            "design2sva_eval_reference_oracle_fixed_wrapper_sanity.json",
+            "design2sva_eval_codex_fixed_wrapper_rerun.json",
+            "design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json",
+        ],
+    ),
+    (
+        "Expanded Fixtures",
+        "Expanded anti-vacuity fixture rows are isolated from the original subset to avoid replacing earlier measurements.",
+        [
+            "design2sva_eval_anti_vacuity_replay.json",
+            "design2sva_eval_anti_vacuity_jasper_subset.json",
+            "design2sva_eval_antivacuity_codex_new_subset.json",
+            "design2sva_eval_antivacuity_codex_new_jasper_subset.json",
+            "design2sva_codex_replay_expanded_local.json",
+            "design2sva_codex_replay_expanded_jasper.json",
+        ],
+    ),
+]
+
+DESIGN2SVA_ABLATION_PLAN = [
+    (
+        "No retrieval examples",
+        "planned",
+        "Isolate how much retrieval context affects valid JSON, syntax, and candidate diversity.",
+    ),
+    (
+        "No JasperGold feedback repair",
+        "planned",
+        "Disable feedback-guided repair and compare repair_success_after_feedback plus non_vacuous@k.",
+    ),
+    (
+        "No fixed wrapper",
+        "planned control",
+        "Compare against fixed-wrapper reruns to separate wrapper integration defects from generated SVA quality.",
+    ),
+    (
+        "Reference/native oracle controls",
+        "measured controls above",
+        "Use oracle rows to bound harness, wrapper, and native-reference failures before attributing errors to the LLM.",
+    ),
+]
+
 
 def run_summary(cmd: list[str]) -> dict[str, object]:
     result = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True)
@@ -358,76 +435,221 @@ def write_output_quality_results(
     (RESULTS / "output_quality_results.md").write_text("\n".join(lines))
 
 
+def fmt_design2sva(value: object) -> str:
+    if value is None:
+        return "N/A"
+    return fmt(value)
+
+
+def counts_text(counts: object) -> str:
+    if not isinstance(counts, dict) or not counts:
+        return "unknown"
+    return ", ".join(f"{key}={value}" for key, value in sorted(counts.items()))
+
+
+def design2sva_result_paths() -> list[Path]:
+    paths = {path.name: path for path in RESULTS.glob("design2sva*.json")}
+    return sorted(paths.values(), key=design2sva_result_sort_key)
+
+
+def design2sva_source_text(payload: dict[str, object], summary: dict[str, object]) -> str:
+    source_counts = summary.get("source_counts")
+    if isinstance(source_counts, dict) and source_counts:
+        return counts_text(source_counts)
+    if payload.get("mode") == "native_reference_oracle":
+        return f"native_reference_oracle={fmt_design2sva(summary.get('num_cases'))}"
+    return "unknown"
+
+
+def design2sva_row_type(payload: dict[str, object], summary: dict[str, object]) -> str:
+    mode = str(payload.get("mode", "unknown"))
+    source_counts = summary.get("source_counts")
+    source_keys = set(source_counts) if isinstance(source_counts, dict) else set()
+    if mode == "deterministic_scaffold" or "structured_fallback" in source_keys:
+        return "deterministic"
+    if mode == "native_reference_oracle":
+        return "native oracle"
+    if mode.startswith("reference_oracle"):
+        return "reference oracle"
+    if mode == "real_llm":
+        return "real LLM"
+    if mode == "committed_codex_candidate_replay":
+        return "replay of committed LLM candidates"
+    if "replay" in mode or "replay" in source_keys:
+        return "replay"
+    return mode
+
+
+def design2sva_formal_text(payload: dict[str, object], summary: dict[str, object]) -> str:
+    status = summary.get("formal_metrics_status")
+    if status == "measured":
+        return "JasperGold-measured"
+    if status:
+        return str(status)
+    if payload.get("mode") == "native_reference_oracle":
+        return "native dry-run" if summary.get("dry_run") else "native JasperGold-measured"
+    return "unknown"
+
+
+def design2sva_signal_text(summary: dict[str, object]) -> str:
+    signals = []
+    signal_keys = [
+        ("failures", "failure_categories"),
+        ("root causes", "root_cause_candidate_counts"),
+        ("root causes", "root_cause_candidates"),
+        ("root details", "root_cause_detail_counts"),
+        ("backend", "backend_status_counts"),
+        ("harness", "harness_reachability_status_counts"),
+        ("native proof", "native_proof_status_counts"),
+        ("native vacuity", "native_vacuity_status_counts"),
+    ]
+    seen_labels = set()
+    for label, key in signal_keys:
+        counts = summary.get(key)
+        if label in seen_labels or not isinstance(counts, dict) or not counts:
+            continue
+        signals.append(f"{label}: {counts_text(counts)}")
+        seen_labels.add(label)
+    if not signals:
+        return "none"
+    return "; ".join(signals)
+
+
+def design2sva_table_header() -> list[str]:
+    return [
+        "| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
+    ]
+
+
+def design2sva_row(result_path: Path, payload: dict[str, object], summary: dict[str, object]) -> str:
+    mode = str(payload.get("mode", "unknown"))
+    return (
+        "| "
+        + " | ".join(
+            [
+                result_path.name,
+                design2sva_row_type(payload, summary),
+                mode,
+                fmt_design2sva(summary.get("num_cases")),
+                fmt_design2sva(summary.get("k")),
+                fmt_design2sva(summary.get("syntax@1")),
+                fmt_design2sva(summary.get("syntax@k")),
+                fmt_design2sva(summary.get("proven@1")),
+                fmt_design2sva(summary.get("proven@k")),
+                fmt_design2sva(summary.get("non_vacuous@k")),
+                fmt_design2sva(summary.get("valid_json_rate")),
+                fmt_design2sva(summary.get("fallback_rate")),
+                design2sva_source_text(payload, summary),
+                design2sva_formal_text(payload, summary),
+                design2sva_signal_text(summary),
+            ]
+        )
+        + " |"
+    )
+
+
+def append_design2sva_section(
+    lines: list[str],
+    title: str,
+    description: str,
+    artifact_names: list[str],
+    records: dict[str, tuple[Path, dict[str, object], dict[str, object]]],
+) -> set[str]:
+    lines.extend(["", f"## {title}", "", description, ""])
+    lines.extend(design2sva_table_header())
+    written = set()
+    for artifact_name in artifact_names:
+        record = records.get(artifact_name)
+        if not record:
+            continue
+        result_path, payload, summary = record
+        lines.append(design2sva_row(result_path, payload, summary))
+        written.add(artifact_name)
+    if not written:
+        lines.append("| No artifact present | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | none |")
+    return written
+
+
 def write_design2sva_results_if_present() -> None:
-    result_paths = sorted(RESULTS.glob("design2sva_eval*.json"), key=design2sva_result_sort_key)
+    result_paths = design2sva_result_paths()
     if not result_paths:
         return
-    lines = [
-        "# Design2SVA Results",
-        "",
-        "These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact and provenance so deterministic scaffold, replay, real LLM, and JasperGold-checked runs are not conflated.",
-        "",
-        "## Summary",
-        "",
-        "| Artifact | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | hallucinated_signal_rate | fallback_rate | valid_json_rate | avg_rounds | repair_success | Source | Formal | Root-cause candidates |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
-    ]
-    provenance_lines = ["", "## Provenance", ""]
+    records: dict[str, tuple[Path, dict[str, object], dict[str, object]]] = {}
     for result_path in result_paths:
         payload = json.loads(result_path.read_text())
         summary = payload.get("summary", {})
         if not isinstance(summary, dict):
             continue
-        mode = str(payload.get("mode", "unknown"))
-        source_counts = summary.get("source_counts", {})
-        failure_categories = summary.get("failure_categories", {})
-        root_cause_candidates = summary.get("root_cause_candidates", {})
-        lines.append(
-            "| "
-            + " | ".join(
-                [
-                    result_path.name,
-                    mode,
-                    fmt(summary.get("num_cases")),
-                    fmt(summary.get("k")),
-                    fmt(summary.get("syntax@1")),
-                    fmt(summary.get("syntax@k")),
-                    fmt(summary.get("proven@1")),
-                    fmt(summary.get("proven@k")),
-                    fmt(summary.get("non_vacuous@k")),
-                    fmt(summary.get("hallucinated_signal_rate")),
-                    fmt(summary.get("fallback_rate")),
-                    fmt(summary.get("valid_json_rate")),
-                    fmt(summary.get("average_rounds")),
-                    fmt(summary.get("repair_success_after_feedback")),
-                    source_text({"source_counts": source_counts}),
-                    str(summary.get("formal_metrics_status", "unknown")),
-                    source_text({"source_counts": root_cause_candidates}),
-                ]
-            )
-            + " |"
+        records[result_path.name] = (result_path, payload, summary)
+    lines = [
+        "# Design2SVA Results",
+        "",
+        "These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact, provenance, and formal-check status so deterministic, replay, real LLM, and JasperGold-measured outcomes are not conflated.",
+    ]
+    written: set[str] = set()
+    for title, description, artifact_names in DESIGN2SVA_SECTIONS:
+        written.update(
+            append_design2sva_section(lines, title, description, artifact_names, records)
         )
-        provenance_lines.extend(
+    ablation_artifacts = [
+        name
+        for name in sorted(records, key=lambda name: design2sva_result_sort_key(Path(name)))
+        if "ablation" in name
+    ]
+    lines.extend(
+        [
+            "",
+            "## Ablation Plan",
+            "",
+            "Design2SVA ablation artifacts are rendered here when present; planned rows below reserve non-overlapping reporting slots for follow-up runs.",
+            "",
+        ]
+    )
+    if ablation_artifacts:
+        lines.extend(design2sva_table_header())
+        for artifact_name in ablation_artifacts:
+            result_path, payload, summary = records[artifact_name]
+            lines.append(design2sva_row(result_path, payload, summary))
+            written.add(artifact_name)
+        lines.append("")
+    lines.extend(
+        [
+            "| Variant | Status | Isolation target |",
+            "| --- | --- | --- |",
+        ]
+    )
+    for variant, status, isolation_target in DESIGN2SVA_ABLATION_PLAN:
+        lines.append(f"| {variant} | {status} | {isolation_target} |")
+    unwritten = [
+        name
+        for name in sorted(records, key=lambda name: design2sva_result_sort_key(Path(name)))
+        if name not in written and "ablation" not in name
+    ]
+    if unwritten:
+        lines.extend(
             [
-                f"### {result_path.name}",
                 "",
-                f"- Mode: `{mode}`",
-                f"- Source counts: {source_text({'source_counts': source_counts})}",
-                f"- Failure categories: {source_text({'source_counts': failure_categories})}",
-                f"- Root-cause candidates: {source_text({'source_counts': root_cause_candidates})}",
-                f"- Formal metrics status: `{summary.get('formal_metrics_status', 'unknown')}`",
+                "## Additional Artifacts",
+                "",
+                "These Design2SVA artifacts did not match a named reporting section and are listed to avoid silent omission.",
                 "",
             ]
         )
+        lines.extend(design2sva_table_header())
+        for artifact_name in unwritten:
+            result_path, payload, summary = records[artifact_name]
+            lines.append(design2sva_row(result_path, payload, summary))
     lines.extend(
-        provenance_lines
-        + [
-            "## Claim Boundary",
+        [
+            "",
+            "## Claim Boundaries",
             "",
             "- Dry-run, replay, and deterministic scaffold rows do not measure hosted model quality.",
             "- Real LLM rows measure schema-constrained hosted-model behavior only when `source_counts` records `llm` outputs and fallback is low.",
-            "- `proven@*` and `non_vacuous@k` are only meaningful when real JasperGold checks are enabled and available.",
-            "- Exact/reference agreement on local fixtures is a scaffold signal, not functional equivalence or production signoff.",
+            "- JasperGold-measured rows are the only rows where `proven@*` and `non_vacuous@k` should be cited as formal outcomes.",
+            "- Reference and native-oracle rows are infrastructure controls; exact/reference agreement on fixtures is not production signoff.",
+            "- Fixed-wrapper reruns isolate wrapper correctness from candidate generation quality.",
             "",
         ]
     )
@@ -438,8 +660,26 @@ def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
     priority = {
         "design2sva_eval_local.json": 0,
         "design2sva_eval_replay_local.json": 1,
-        "design2sva_eval_codex_subset.json": 2,
-        "design2sva_eval_codex_jasper_subset.json": 3,
+        "design2sva_eval_reference_oracle_local.json": 10,
+        "design2sva_eval_reference_oracle_jasper.json": 11,
+        "design2sva_eval_reference_oracle_parity_local.json": 12,
+        "design2sva_eval_reference_oracle_parity_jasper.json": 13,
+        "design2sva_eval_reference_oracle_rootcause_jasper.json": 14,
+        "design2sva_native_reference_oracle_jasper.json": 15,
+        "design2sva_reference_oracle_expanded_local.json": 16,
+        "design2sva_reference_oracle_expanded_jasper.json": 17,
+        "design2sva_eval_codex_subset.json": 20,
+        "design2sva_eval_codex_jasper_subset.json": 21,
+        "design2sva_eval_reference_oracle_fixed_wrapper_sanity.json": 30,
+        "design2sva_eval_codex_fixed_wrapper_rerun.json": 31,
+        "design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json": 32,
+        "design2sva_eval_anti_vacuity_replay.json": 40,
+        "design2sva_eval_anti_vacuity_jasper_subset.json": 41,
+        "design2sva_eval_antivacuity_codex_new_subset.json": 42,
+        "design2sva_eval_antivacuity_codex_new_jasper_subset.json": 43,
+        "design2sva_codex_replay_expanded_local.json": 44,
+        "design2sva_codex_replay_expanded_jasper.json": 45,
+        "design2sva_ablation_replay_local.json": 50,
     }
     return (priority.get(path.name, 100), path.name)
 
