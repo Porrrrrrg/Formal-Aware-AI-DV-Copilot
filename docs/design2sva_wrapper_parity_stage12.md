@@ -80,6 +80,22 @@ The Moore/JasperGold parity command writes measured evidence to
 That file should be interpreted separately from the local dry-run and replay
 fixture paths.
 
+Measured Moore/JasperGold parity result for the first three fixture cases:
+
+- `reference_proven@1 = 1.000`
+- `reference_non_vacuous@1 = 1.000`
+- `reference_antecedent_reachable@1 = 1.000`
+- `proven_non_vacuous@k = 1.000`
+- `wrapper_parity_pass_rate = 1.000`
+- `root_cause_details = reference_oracle_matches_native_formal_behavior=3`
+
+Two parser/checking issues were fixed while validating this result. The backend
+legacy adapter now uses the focused property result instead of the first parsed
+report row, so assumption precondition covers cannot mask a target assertion
+proof. The generated cover-mode Tcl now uses `prove -all`, because the Moore
+JasperGold 2018 build reports cover-property reachability through prove results
+and does not support an all-properties cover command.
+
 ## Claim Boundary
 
 Supported only when proven or replayed from measured evidence:
