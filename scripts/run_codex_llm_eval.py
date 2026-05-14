@@ -95,7 +95,8 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--prompt-version",
             args.prompt_version,
         ]
-        default_out = ROOT / "evaluation" / "results" / "sva_repair_codex_subset.json"
+        subset_out = ROOT / "evaluation" / "results" / "sva_repair_codex_subset.json"
+        full_out = ROOT / "evaluation" / "results" / "sva_repair_codex_full.json"
     elif args.task == "triage":
         schema = ROOT / "copilot" / "schemas" / "diagnosis_output.schema.json"
         cmd = [
@@ -108,7 +109,8 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--packet-source",
             args.packet_source,
         ]
-        default_out = ROOT / "evaluation" / "results" / "agent_eval_codex_subset.json"
+        subset_out = ROOT / "evaluation" / "results" / "agent_eval_codex_subset.json"
+        full_out = ROOT / "evaluation" / "results" / "agent_eval_codex_full.json"
     elif args.task == "coverage":
         schema = ROOT / "copilot" / "schemas" / "coverage_closure_output.schema.json"
         cmd = [
@@ -121,10 +123,12 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--packet-source",
             args.packet_source,
         ]
-        default_out = ROOT / "evaluation" / "results" / "coverage_eval_codex_subset.json"
+        subset_out = ROOT / "evaluation" / "results" / "coverage_eval_codex_subset.json"
+        full_out = ROOT / "evaluation" / "results" / "coverage_eval_codex_full.json"
     else:
         raise ValueError(f"Unsupported task: {args.task}")
 
+    default_out = subset_out if args.limit is not None else full_out
     out_path = Path(args.out) if args.out else default_out
     if args.limit is not None:
         cmd.extend(["--limit", str(args.limit)])
