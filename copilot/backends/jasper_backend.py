@@ -63,6 +63,13 @@ class JasperBackend(FormalBackend):
             )
             result.feedback = str(legacy.get("feedback") or result.feedback)
             result.elapsed_ms = elapsed_ms(started)
+            legacy_metadata = {}
+            if isinstance(legacy.get("artifact_paths"), dict):
+                legacy_metadata["artifact_paths"] = legacy["artifact_paths"]
+            if isinstance(legacy.get("embedding_audit"), dict):
+                legacy_metadata["embedding_audit"] = legacy["embedding_audit"]
+            if legacy_metadata:
+                result.metadata = {**result.metadata, **legacy_metadata}
             return result
         except RuntimeError as exc:
             return blocked_result(report_dir, property_id, str(exc), elapsed_ms(started))
@@ -101,7 +108,9 @@ class JasperBackend(FormalBackend):
         log_path = report_dir / "jg.log"
         proof_path = properties_path if properties_path.exists() else cover_path
 
-        proof_properties = [] if dry_run else parse_report(proof_path) if proof_path.exists() else []
+        proof_properties = (
+            [] if dry_run else parse_report(proof_path) if proof_path.exists() else []
+        )
         vacuity_properties = (
             [] if dry_run else parse_report(vacuity_path) if vacuity_path.exists() else []
         )
@@ -168,7 +177,10 @@ def elapsed_ms(started: float) -> int:
     return int((time.monotonic() - started) * 1000)
 
 
-def focus_property(properties: list[dict[str, Any]], property_id: str | None) -> dict[str, Any] | None:
+def focus_property(
+    properties: list[dict[str, Any]],
+    property_id: str | None,
+) -> dict[str, Any] | None:
     if not properties:
         return None
     if not property_id:

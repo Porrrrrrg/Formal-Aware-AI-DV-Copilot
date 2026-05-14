@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -216,7 +218,9 @@ def check_generated_sva(
         raise ValueError(f"Unsupported design for generated SVA check: {design_id}")
     config = DESIGNS[design_id]
     case_id = str(case["case_id"])
-    property_id = str(prediction.get("property_id") or case.get("property_id", "generated_property"))
+    property_id = str(
+        prediction.get("property_id") or case.get("property_id", "generated_property")
+    )
     sva = str(prediction.get("sva", ""))
 
     out_root = out_root or ROOT / "jasper" / "reports" / "sva_generation"
@@ -225,9 +229,10 @@ def check_generated_sva(
 
     generated_properties = report_dir / "generated_properties.sv"
     generated_harness = report_dir / "generated_harness.sv"
-    generated_properties.write_text(render_generated_properties(config, sva))
-    generated_harness.write_text(config.harness)
-    (report_dir / "candidate_sva.json").write_text(json.dumps(prediction, indent=2) + "\n")
+    candidate_json = report_dir / "candidate_sva.json"
+    generated_properties.write_text(render_generated_properties(config, sva), encoding="utf-8")
+    generated_harness.write_text(config.harness, encoding="utf-8")
+    candidate_json.write_text(json.dumps(prediction, indent=2) + "\n", encoding="utf-8")
 
     env = os.environ.copy()
     env["JASPERLOOP_ROOT"] = str(ROOT)
@@ -251,16 +256,51 @@ def check_generated_sva(
         "-tcl",
         str(tcl),
     ]
-    (report_dir / "run_command.txt").write_text(" ".join(cmd) + "\n")
+    run_command = report_dir / "run_command.txt"
+    run_command.write_text(" ".join(cmd) + "\n", encoding="utf-8")
+
+    artifact_paths = build_artifact_paths(
+        report_dir=report_dir,
+        generated_properties=generated_properties,
+        generated_harness=generated_harness,
+        candidate_json=candidate_json,
+        run_command=run_command,
+        tcl=tcl,
+    )
+    embedding_audit = build_embedding_audit(
+        case=case,
+        prediction=prediction,
+        config=config,
+        report_dir=report_dir,
+        generated_properties=generated_properties,
+        generated_harness=generated_harness,
+        run_command=run_command,
+        tcl=tcl,
+        cmd=cmd,
+        env=env,
+        artifact_paths=artifact_paths,
+    )
+    write_debug_artifacts(
+        artifact_paths=artifact_paths,
+        generated_properties=generated_properties,
+        generated_harness=generated_harness,
+        candidate_json=candidate_json,
+        run_command=run_command,
+        tcl=tcl,
+        cmd=cmd,
+        env=env,
+        audit=embedding_audit,
+    )
 
     if dry_run:
-        return summarize_check(
+        result = summarize_check(
             report_dir,
             property_id,
             syntax_pass=None,
             returncode=None,
             ignore_reports=True,
         )
+        return attach_artifacts(result, artifact_paths, embedding_audit)
 
     if shutil.which(jasper_bin) is None:
         raise RuntimeError(
@@ -278,7 +318,13 @@ def check_generated_sva(
             check=False,
         )
     syntax_pass = completed.returncode == 0 and (report_dir / "properties.rpt").exists()
-    return summarize_check(report_dir, property_id, syntax_pass=syntax_pass, returncode=completed.returncode)
+    result = summarize_check(
+        report_dir,
+        property_id,
+        syntax_pass=syntax_pass,
+        returncode=completed.returncode,
+    )
+    return attach_artifacts(result, artifact_paths, embedding_audit)
 
 
 def render_generated_properties(config: DesignConfig, sva: str) -> str:
@@ -316,9 +362,785 @@ def summarize_check(
         "feedback": summarize_feedback(report_dir, properties, vacuity, syntax_pass),
         "report_dir": str(report_dir),
         "properties_report": str(report_dir / "properties.rpt"),
-        "vacuity_report": str(report_dir / "vacuity.rpt") if (report_dir / "vacuity.rpt").exists() else None,
+        "vacuity_report": str(report_dir / "vacuity.rpt")
+        if (report_dir / "vacuity.rpt").exists()
+        else None,
         "log": str(report_dir / "jg.log"),
     }
+
+
+def attach_artifacts(
+    result: dict[str, object],
+    artifact_paths: dict[str, object],
+    embedding_audit: dict[str, object],
+) -> dict[str, object]:
+    updated = dict(result)
+    updated["artifact_paths"] = artifact_paths
+    updated["embedding_audit"] = embedding_audit
+    return updated
+
+
+def build_artifact_paths(
+    report_dir: Path,
+    generated_properties: Path,
+    generated_harness: Path,
+    candidate_json: Path,
+    run_command: Path,
+    tcl: Path,
+) -> dict[str, object]:
+    debug_dir = report_dir / "embedding_audit"
+    debug_artifacts = {
+        "generated_properties": str(debug_dir / generated_properties.name),
+        "generated_harness": str(debug_dir / generated_harness.name),
+        "candidate_json": str(debug_dir / candidate_json.name),
+        "run_command": str(debug_dir / run_command.name),
+        "run_metadata": str(debug_dir / "run_metadata.json"),
+        "tcl_snapshot": str(debug_dir / tcl.name),
+        "audit_json": str(debug_dir / "embedding_audit.json"),
+        "audit_markdown": str(debug_dir / "embedding_audit.md"),
+    }
+    return {
+        "report_dir": str(report_dir),
+        "generated_properties": str(generated_properties),
+        "generated_harness": str(generated_harness),
+        "candidate_json": str(candidate_json),
+        "run_command": str(run_command),
+        "tcl_path": str(tcl),
+        "properties_report": str(report_dir / "properties.rpt"),
+        "vacuity_report": str(report_dir / "vacuity.rpt"),
+        "log": str(report_dir / "jg.log"),
+        "debug_artifact_dir": str(debug_dir),
+        "debug_generated_properties": debug_artifacts["generated_properties"],
+        "debug_generated_harness": debug_artifacts["generated_harness"],
+        "debug_candidate_json": debug_artifacts["candidate_json"],
+        "debug_run_command": debug_artifacts["run_command"],
+        "run_metadata_json": debug_artifacts["run_metadata"],
+        "tcl_snapshot": debug_artifacts["tcl_snapshot"],
+        "embedding_audit_json": debug_artifacts["audit_json"],
+        "embedding_audit_markdown": debug_artifacts["audit_markdown"],
+        "debug_artifacts": debug_artifacts,
+    }
+
+
+def write_debug_artifacts(
+    artifact_paths: dict[str, object],
+    generated_properties: Path,
+    generated_harness: Path,
+    candidate_json: Path,
+    run_command: Path,
+    tcl: Path,
+    cmd: list[str],
+    env: dict[str, str],
+    audit: dict[str, object],
+) -> None:
+    debug_dir = Path(str(artifact_paths["debug_artifact_dir"]))
+    debug_dir.mkdir(parents=True, exist_ok=True)
+
+    copies = {
+        generated_properties: Path(str(artifact_paths["debug_generated_properties"])),
+        generated_harness: Path(str(artifact_paths["debug_generated_harness"])),
+        candidate_json: Path(str(artifact_paths["debug_candidate_json"])),
+        run_command: Path(str(artifact_paths["debug_run_command"])),
+    }
+    for source, target in copies.items():
+        if source.exists():
+            shutil.copy2(source, target)
+    if tcl.exists():
+        shutil.copy2(tcl, Path(str(artifact_paths["tcl_snapshot"])))
+
+    run_metadata = {
+        "command": cmd,
+        "command_text": " ".join(cmd),
+        "tcl_path": str(tcl),
+        "tcl_snapshot": artifact_paths["tcl_snapshot"],
+        "report_dir": artifact_paths["report_dir"],
+        "jasperloop_env": {
+            key: env[key]
+            for key in sorted(env)
+            if key.startswith("JASPERLOOP_")
+        },
+    }
+    Path(str(artifact_paths["run_metadata_json"])).write_text(
+        json.dumps(run_metadata, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    Path(str(artifact_paths["embedding_audit_json"])).write_text(
+        json.dumps(audit, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    Path(str(artifact_paths["embedding_audit_markdown"])).write_text(
+        render_embedding_audit_markdown(audit),
+        encoding="utf-8",
+    )
+
+
+def build_embedding_audit(
+    case: dict[str, object],
+    prediction: dict[str, object],
+    config: DesignConfig,
+    report_dir: Path,
+    generated_properties: Path,
+    generated_harness: Path,
+    run_command: Path,
+    tcl: Path,
+    cmd: list[str],
+    env: dict[str, str],
+    artifact_paths: dict[str, object],
+) -> dict[str, object]:
+    generated_properties_text = generated_properties.read_text(encoding="utf-8")
+    generated_harness_text = generated_harness.read_text(encoding="utf-8")
+    run_command_text = run_command.read_text(encoding="utf-8")
+    tcl_text = tcl.read_text(encoding="utf-8") if tcl.exists() else ""
+
+    candidate_sva = str(prediction.get("sva", ""))
+    property_id = str(prediction.get("property_id") or case.get("property_id") or "")
+    reference_sva = first_text_value(case, ("reference_sva",))
+    native_expression = first_text_value(
+        case,
+        (
+            "original_native_property_expression",
+            "native_property_expression",
+            "native_assertion",
+            "native_property",
+            "source_property_expression",
+            "original_property_expression",
+        ),
+    )
+    cover_sva = first_text_value(
+        prediction,
+        (
+            "cover_before_assert_sva",
+            "cover_before_assert_property",
+            "antecedent_cover_sva",
+            "cover_sva",
+        ),
+    )
+
+    expected_clock_reset = expected_clock_reset_metadata(case, config)
+    checks = {
+        "label_collisions": audit_label_collisions(
+            property_id=property_id,
+            candidate_sva=candidate_sva,
+            reference_sva=reference_sva,
+            native_expression=native_expression,
+            cover_sva=cover_sva,
+        ),
+        "wrong_top_module": audit_wrong_top_module(
+            prediction=prediction,
+            config=config,
+            generated_harness_text=generated_harness_text,
+            env=env,
+        ),
+        "missing_bind_or_instantiation": audit_missing_bind_or_instantiation(
+            design_id=str(case.get("design_id") or ""),
+            generated_harness_text=generated_harness_text,
+        ),
+        "wrong_include_or_path_metadata": audit_path_metadata(
+            case=case,
+            prediction=prediction,
+            generated_properties=generated_properties,
+            generated_harness=generated_harness,
+            run_command=run_command,
+            tcl=tcl,
+            run_command_text=run_command_text,
+            tcl_text=tcl_text,
+            report_dir=report_dir,
+        ),
+        "clock_reset_mismatch": audit_clock_reset_mismatch(
+            candidate_sva=candidate_sva,
+            reference_sva=reference_sva,
+            native_expression=native_expression,
+            cover_sva=cover_sva,
+            expected=expected_clock_reset,
+        ),
+        "disable_iff_mismatch": audit_disable_iff_mismatch(
+            candidate_sva=candidate_sva,
+            reference_sva=reference_sva,
+            native_expression=native_expression,
+            cover_sva=cover_sva,
+            expected=expected_clock_reset,
+        ),
+        "helper_code_placement": audit_helper_code_placement(
+            case=case,
+            prediction=prediction,
+            generated_properties_text=generated_properties_text,
+        ),
+    }
+    issue_flags = {
+        name: bool(check.get("has_issue"))
+        for name, check in checks.items()
+        if isinstance(check, dict)
+    }
+    return {
+        "schema_version": "stage11_candidate_embedding_audit_v1",
+        "case_id": str(case.get("case_id") or ""),
+        "design_id": str(case.get("design_id") or ""),
+        "property_id": property_id,
+        "report_dir": str(report_dir),
+        "comparison": {
+            "original_native_property_expression": native_expression,
+            "reference_sva": reference_sva,
+            "embedded_candidate_sva": candidate_sva,
+            "generated_cover_before_assert_sva": cover_sva,
+            "candidate_matches_reference_text": normalized_sva(candidate_sva)
+            == normalized_sva(reference_sva)
+            if reference_sva
+            else None,
+            "candidate_matches_native_text": normalized_sva(candidate_sva)
+            == normalized_sva(native_expression)
+            if native_expression
+            else None,
+        },
+        "embedding": {
+            "generated_properties_contains_candidate_sva": candidate_sva.strip()
+            in generated_properties_text,
+            "generated_properties_module": extract_module_names(generated_properties_text),
+            "generated_harness_modules": extract_module_names(generated_harness_text),
+            "command": cmd,
+            "command_text": " ".join(cmd),
+            "tcl_path": str(tcl),
+        },
+        "expected_clock_reset": expected_clock_reset,
+        "checks": checks,
+        "issue_flags": issue_flags,
+        "issues": [name for name, flagged in issue_flags.items() if flagged],
+        "artifact_paths": artifact_paths,
+    }
+
+
+def render_embedding_audit_markdown(audit: dict[str, object]) -> str:
+    comparison = audit.get("comparison") if isinstance(audit.get("comparison"), dict) else {}
+    issue_flags = audit.get("issue_flags") if isinstance(audit.get("issue_flags"), dict) else {}
+    artifact_paths = (
+        audit.get("artifact_paths") if isinstance(audit.get("artifact_paths"), dict) else {}
+    )
+    lines = [
+        "# Candidate Embedding Audit",
+        "",
+        f"- Case: `{audit.get('case_id')}`",
+        f"- Design: `{audit.get('design_id')}`",
+        f"- Property: `{audit.get('property_id')}`",
+        f"- Report directory: `{audit.get('report_dir')}`",
+        "",
+        "## Issue Flags",
+        "",
+    ]
+    if issue_flags:
+        for name, flagged in issue_flags.items():
+            lines.append(f"- `{name}`: {'issue' if flagged else 'ok'}")
+    else:
+        lines.append("- No audit flags were produced.")
+    lines.extend(["", "## Compared SVA", ""])
+    for key in (
+        "original_native_property_expression",
+        "reference_sva",
+        "embedded_candidate_sva",
+        "generated_cover_before_assert_sva",
+    ):
+        value = comparison.get(key)
+        lines.extend([f"### {key}", ""])
+        if value:
+            lines.extend(["```systemverilog", str(value).strip(), "```", ""])
+        else:
+            lines.extend(["not available", ""])
+    lines.extend(["## Artifact Paths", ""])
+    for key in (
+        "generated_properties",
+        "generated_harness",
+        "candidate_json",
+        "run_command",
+        "tcl_path",
+        "debug_artifact_dir",
+        "embedding_audit_json",
+        "embedding_audit_markdown",
+    ):
+        if key in artifact_paths:
+            lines.append(f"- `{key}`: `{artifact_paths[key]}`")
+    return "\n".join(lines) + "\n"
+
+
+def audit_label_collisions(
+    property_id: str,
+    candidate_sva: str,
+    reference_sva: str | None,
+    native_expression: str | None,
+    cover_sva: str | None,
+) -> dict[str, object]:
+    candidate_labels = extract_property_labels(candidate_sva)
+    cover_labels = extract_property_labels(cover_sva or "")
+    embedded_labels = candidate_labels + cover_labels
+    duplicate_embedded_labels = sorted(
+        label for label, count in Counter(embedded_labels).items() if count > 1
+    )
+    property_id_label_mismatch = bool(
+        property_id and candidate_labels and property_id not in candidate_labels
+    )
+    reference_labels = extract_property_labels(reference_sva or "")
+    native_labels = extract_property_labels(native_expression or "")
+    return {
+        "has_issue": bool(duplicate_embedded_labels or property_id_label_mismatch),
+        "candidate_labels": candidate_labels,
+        "cover_labels": cover_labels,
+        "reference_labels": reference_labels,
+        "native_labels": native_labels,
+        "duplicate_embedded_labels": duplicate_embedded_labels,
+        "property_id_label_mismatch": property_id_label_mismatch,
+        "candidate_reference_label_overlap": sorted(set(candidate_labels) & set(reference_labels)),
+        "candidate_native_label_overlap": sorted(set(candidate_labels) & set(native_labels)),
+    }
+
+
+def audit_wrong_top_module(
+    prediction: dict[str, object],
+    config: DesignConfig,
+    generated_harness_text: str,
+    env: dict[str, str],
+) -> dict[str, object]:
+    harness_modules = extract_module_names(generated_harness_text)
+    provided_top = first_text_value(
+        prediction,
+        ("generated_top_module", "jasper_top_module", "jasper_top", "jg_top", "top_module"),
+    )
+    env_top = env.get("JASPERLOOP_TOP", "")
+    provided_top_mismatch = bool(provided_top and provided_top != config.top)
+    return {
+        "has_issue": bool(
+            env_top != config.top or config.top not in harness_modules or provided_top_mismatch
+        ),
+        "expected_top": config.top,
+        "env_top": env_top,
+        "provided_top_metadata": provided_top,
+        "provided_top_mismatch": provided_top_mismatch,
+        "harness_modules": harness_modules,
+        "expected_top_declared_in_harness": config.top in harness_modules,
+    }
+
+
+def audit_missing_bind_or_instantiation(
+    design_id: str,
+    generated_harness_text: str,
+) -> dict[str, object]:
+    properties_instantiated = bool(
+        re.search(
+            r"\bgenerated_sva_properties\b(?:\s*#\s*\([^;]*?\))?\s+"
+            r"[A-Za-z_][A-Za-z0-9_$]*\s*\(",
+            generated_harness_text,
+            flags=re.DOTALL,
+        )
+    )
+    properties_bound = bool(
+        re.search(r"\bbind\b[^\n;]*\bgenerated_sva_properties\b", generated_harness_text)
+    )
+    dut_instantiated = bool(
+        design_id
+        and re.search(
+            rf"\b{re.escape(design_id)}\b(?:\s*#\s*\([^;]*?\))?\s+"
+            r"[A-Za-z_][A-Za-z0-9_$]*\s*\(",
+            generated_harness_text,
+            flags=re.DOTALL,
+        )
+    )
+    return {
+        "has_issue": not (properties_instantiated or properties_bound),
+        "generated_properties_instantiated": properties_instantiated,
+        "generated_properties_bound": properties_bound,
+        "dut_instantiated": dut_instantiated,
+    }
+
+
+def audit_path_metadata(
+    case: dict[str, object],
+    prediction: dict[str, object],
+    generated_properties: Path,
+    generated_harness: Path,
+    run_command: Path,
+    tcl: Path,
+    run_command_text: str,
+    tcl_text: str,
+    report_dir: Path,
+) -> dict[str, object]:
+    expected_paths = {
+        "generated_properties": str(generated_properties),
+        "generated_harness": str(generated_harness),
+        "run_command": str(run_command),
+        "tcl_path": str(tcl),
+        "report_dir": str(report_dir),
+    }
+    provided = collect_path_metadata(case, prediction)
+    wrong_paths = []
+    for key, provided_value in provided.items():
+        expected = expected_paths.get(key)
+        if expected and not paths_equivalent(provided_value, expected):
+            wrong_paths.append(
+                {
+                    "kind": key,
+                    "provided": provided_value,
+                    "expected": expected,
+                }
+            )
+    missing_files = [
+        key
+        for key, value in expected_paths.items()
+        if key != "report_dir" and not Path(value).exists()
+    ]
+    tcl_uses_generated_env = all(
+        token in tcl_text
+        for token in ("JASPERLOOP_GENERATED_PROPERTIES", "JASPERLOOP_GENERATED_HARNESS")
+    )
+    run_command_mentions_tcl = str(tcl) in run_command_text
+    return {
+        "has_issue": bool(
+            wrong_paths
+            or missing_files
+            or not tcl_uses_generated_env
+            or not run_command_mentions_tcl
+        ),
+        "expected_paths": expected_paths,
+        "provided_path_metadata": provided,
+        "wrong_paths": wrong_paths,
+        "missing_files": missing_files,
+        "tcl_uses_generated_artifact_env": tcl_uses_generated_env,
+        "run_command_mentions_tcl": run_command_mentions_tcl,
+    }
+
+
+def audit_clock_reset_mismatch(
+    candidate_sva: str,
+    reference_sva: str | None,
+    native_expression: str | None,
+    cover_sva: str | None,
+    expected: dict[str, object],
+) -> dict[str, object]:
+    candidate_event = extract_clock_event(candidate_sva)
+    reference_event = extract_clock_event(reference_sva or "")
+    native_event = extract_clock_event(native_expression or "")
+    cover_event = extract_clock_event(cover_sva or "")
+    expected_clock = str(expected.get("clock") or "")
+    expected_edge = str(expected.get("clock_edge") or "")
+    candidate_clock_matches = bool(
+        candidate_event
+        and candidate_event.get("clock") == expected_clock
+        and candidate_event.get("edge") == expected_edge
+    )
+    candidate_disable = extract_disable_iff(candidate_sva)
+    expected_reset = normalize_expression(str(expected.get("reset_condition") or ""))
+    candidate_reset = normalize_expression(
+        str(candidate_disable.get("condition") or "") if candidate_disable else ""
+    )
+    candidate_reset_matches = (
+        candidate_reset == expected_reset if expected_reset else not candidate_reset
+    )
+    return {
+        "has_issue": not (candidate_clock_matches and candidate_reset_matches),
+        "expected_clock": expected_clock,
+        "expected_clock_edge": expected_edge,
+        "expected_reset_condition": expected.get("reset_condition"),
+        "candidate_event_control": candidate_event,
+        "reference_event_control": reference_event,
+        "native_event_control": native_event,
+        "cover_event_control": cover_event,
+        "candidate_clock_matches_expected": candidate_clock_matches,
+        "candidate_disable_condition": candidate_disable.get("condition")
+        if candidate_disable
+        else None,
+        "candidate_reset_matches_expected": candidate_reset_matches,
+    }
+
+
+def audit_disable_iff_mismatch(
+    candidate_sva: str,
+    reference_sva: str | None,
+    native_expression: str | None,
+    cover_sva: str | None,
+    expected: dict[str, object],
+) -> dict[str, object]:
+    candidate_disable = extract_disable_iff(candidate_sva)
+    reference_disable = extract_disable_iff(reference_sva or "")
+    native_disable = extract_disable_iff(native_expression or "")
+    cover_disable = extract_disable_iff(cover_sva or "")
+    expected_reset = str(expected.get("reset_condition") or "")
+    candidate_condition = str(candidate_disable.get("condition") or "") if candidate_disable else ""
+    reference_condition = str(reference_disable.get("condition") or "") if reference_disable else ""
+    native_condition = str(native_disable.get("condition") or "") if native_disable else ""
+    normalized_candidate = normalize_expression(candidate_condition)
+    expected_mismatch = bool(
+        normalize_expression(expected_reset)
+        and normalized_candidate != normalize_expression(expected_reset)
+    )
+    reference_mismatch = bool(
+        normalize_expression(reference_condition)
+        and normalized_candidate != normalize_expression(reference_condition)
+    )
+    native_mismatch = bool(
+        normalize_expression(native_condition)
+        and normalized_candidate != normalize_expression(native_condition)
+    )
+    return {
+        "has_issue": expected_mismatch or reference_mismatch or native_mismatch,
+        "expected_disable_condition": expected_reset or None,
+        "candidate_disable_iff": candidate_disable,
+        "reference_disable_iff": reference_disable,
+        "native_disable_iff": native_disable,
+        "cover_disable_iff": cover_disable,
+        "candidate_matches_expected": not expected_mismatch,
+        "candidate_matches_reference": None
+        if not reference_condition
+        else not reference_mismatch,
+        "candidate_matches_native": None if not native_condition else not native_mismatch,
+    }
+
+
+def audit_helper_code_placement(
+    case: dict[str, object],
+    prediction: dict[str, object],
+    generated_properties_text: str,
+) -> dict[str, object]:
+    helper_code = str(prediction.get("helper_code") or "")
+    policy = case.get("helper_code_policy")
+    helper_allowed = bool(policy.get("allowed")) if isinstance(policy, dict) else False
+    helper_constructs_in_candidate = helper_constructs(str(prediction.get("sva") or ""))
+    helper_constructs_in_helper_code = helper_constructs(helper_code)
+    helper_not_embedded = bool(
+        helper_code.strip()
+        and normalize_whitespace(helper_code) not in normalize_whitespace(generated_properties_text)
+    )
+    return {
+        "has_issue": bool(
+            (helper_code.strip() and not helper_allowed)
+            or helper_not_embedded
+            or helper_constructs_in_candidate
+        ),
+        "helper_code_present": bool(helper_code.strip()),
+        "helper_code_allowed_by_case": helper_allowed,
+        "helper_code_not_embedded_in_generated_properties": helper_not_embedded,
+        "helper_constructs_in_candidate_sva": helper_constructs_in_candidate,
+        "helper_constructs_in_helper_code": helper_constructs_in_helper_code,
+    }
+
+
+def collect_path_metadata(
+    case: dict[str, object],
+    prediction: dict[str, object],
+) -> dict[str, str]:
+    key_map = {
+        "generated_properties": (
+            "generated_properties_path",
+            "generated_properties_file",
+            "jasper_generated_properties_path",
+        ),
+        "generated_harness": (
+            "generated_harness_path",
+            "generated_harness_file",
+            "jasper_generated_harness_path",
+        ),
+        "run_command": ("run_command_path", "jasper_run_command_path"),
+        "tcl_path": ("tcl_path", "jasper_tcl_path", "check_tcl_path"),
+        "report_dir": ("report_dir", "jasper_report_dir"),
+    }
+    result: dict[str, str] = {}
+    for metadata_name, keys in key_map.items():
+        for source in (prediction, case):
+            value = first_text_value(source, keys)
+            if value:
+                result[metadata_name] = value
+                break
+    return result
+
+
+def expected_clock_reset_metadata(
+    case: dict[str, object],
+    config: DesignConfig,
+) -> dict[str, object]:
+    clock_reset = case.get("clock_reset")
+    clock_reset = clock_reset if isinstance(clock_reset, dict) else {}
+    clock = str(clock_reset.get("clock") or config.clock)
+    edge = str(clock_reset.get("clock_edge") or "posedge")
+    reset = str(clock_reset.get("reset") or "")
+    polarity = str(clock_reset.get("reset_polarity") or "unknown")
+    reset_condition = ""
+    if reset:
+        reset_condition = f"!{reset}" if polarity == "active_low" else reset
+    if not reset_condition:
+        reset_condition = reset_condition_from_config(config.reset_cmd)
+    return {
+        "clock": clock,
+        "clock_edge": edge,
+        "reset": reset or reset_signal_from_condition(reset_condition),
+        "reset_polarity": polarity,
+        "reset_condition": reset_condition,
+        "jasper_reset_command": config.reset_cmd,
+    }
+
+
+def reset_condition_from_config(reset_cmd: str) -> str:
+    text = reset_cmd.strip()
+    if not text:
+        return ""
+    if "-expression" in text:
+        expression = text.split("-expression", 1)[1].strip()
+        if expression.startswith("{") and expression.endswith("}"):
+            expression = expression[1:-1].strip()
+        return expression
+    parts = text.split()
+    if len(parts) >= 2 and parts[0] == "reset":
+        return parts[1]
+    return ""
+
+
+def reset_signal_from_condition(condition: str) -> str:
+    stripped = condition.strip()
+    stripped = stripped[1:].strip() if stripped.startswith("!") else stripped
+    return re.sub(r"[^A-Za-z0-9_$].*$", "", stripped)
+
+
+def first_text_value(data: object, keys: tuple[str, ...]) -> str | None:
+    if isinstance(data, dict):
+        for key in keys:
+            value = data.get(key)
+            if value is not None and not isinstance(value, (dict, list, tuple)):
+                text = str(value).strip()
+                if text:
+                    return text
+        for value in data.values():
+            found = first_text_value(value, keys)
+            if found:
+                return found
+    elif isinstance(data, (list, tuple)):
+        for value in data:
+            found = first_text_value(value, keys)
+            if found:
+                return found
+    return None
+
+
+def extract_property_labels(text: str) -> list[str]:
+    return re.findall(
+        r"\b([A-Za-z_][A-Za-z0-9_$]*)\s*:\s*(?=(?:assert|cover|assume)\s+property\b)",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+
+def extract_module_names(text: str) -> list[str]:
+    return re.findall(r"\bmodule\s+([A-Za-z_][A-Za-z0-9_$]*)\b", text)
+
+
+def extract_clock_event(text: str) -> dict[str, str] | None:
+    match = re.search(
+        r"@\s*\(\s*(posedge|negedge)\s+([A-Za-z_][A-Za-z0-9_$]*)\s*\)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    return {"raw": match.group(0), "edge": match.group(1).lower(), "clock": match.group(2)}
+
+
+def extract_disable_iff(text: str) -> dict[str, str] | None:
+    match = re.search(r"\bdisable\s+iff\b", text, flags=re.IGNORECASE)
+    if not match:
+        return None
+    open_index = text.find("(", match.end())
+    if open_index < 0:
+        return {"raw": text[match.start() :].strip(), "condition": ""}
+    close_index = find_matching_paren(text, open_index)
+    if close_index is None:
+        return {"raw": text[match.start() :].strip(), "condition": ""}
+    return {
+        "raw": text[match.start() : close_index + 1].strip(),
+        "condition": text[open_index + 1 : close_index].strip(),
+    }
+
+
+def find_matching_paren(text: str, open_index: int) -> int | None:
+    depth = 0
+    in_string = False
+    escaped = False
+    for index in range(open_index, len(text)):
+        char = text[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+            continue
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return index
+    return None
+
+
+def normalized_sva(text: str | None) -> str:
+    return normalize_whitespace(text or "").rstrip(";").lower()
+
+
+def normalize_expression(text: str) -> str:
+    stripped = strip_enclosing_parens(text.strip())
+    return re.sub(r"\s+", "", stripped).lower()
+
+
+def strip_enclosing_parens(text: str) -> str:
+    stripped = text.strip()
+    while stripped.startswith("("):
+        close_index = find_matching_paren(stripped, 0)
+        if close_index != len(stripped) - 1:
+            break
+        stripped = stripped[1:-1].strip()
+    return stripped
+
+
+def normalize_whitespace(text: str) -> str:
+    return re.sub(r"\s+", " ", text.strip())
+
+
+def helper_constructs(text: str) -> list[str]:
+    tokens = (
+        "module",
+        "endmodule",
+        "always",
+        "always_ff",
+        "always_comb",
+        "assign",
+        "function",
+        "endfunction",
+        "task",
+        "endtask",
+        "logic",
+        "wire",
+        "reg",
+        "typedef",
+        "localparam",
+        "parameter",
+    )
+    found = []
+    for token in tokens:
+        if re.search(rf"\b{re.escape(token)}\b", text):
+            found.append(token)
+    return found
+
+
+def paths_equivalent(left: str, right: str) -> bool:
+    return normalize_path_text(left) == normalize_path_text(right)
+
+
+def normalize_path_text(path_text: str) -> str:
+    expanded = os.path.expandvars(os.path.expanduser(path_text))
+    path = Path(expanded)
+    if not path.is_absolute():
+        path = ROOT / path
+    try:
+        resolved = path.resolve(strict=False)
+    except OSError:
+        resolved = path.absolute()
+    return os.path.normcase(str(resolved))
 
 
 def find_status(results: list[dict[str, object]], property_id: str) -> str | None:
@@ -370,7 +1192,11 @@ def summarize_feedback(
 
 def select_log_lines(lines: list[str], limit: int = 20) -> list[str]:
     keywords = ["error", "syntax", "unknown", "failed", "can't", "cannot", "not found"]
-    selected = [line.strip() for line in lines if any(keyword in line.lower() for keyword in keywords)]
+    selected = [
+        line.strip()
+        for line in lines
+        if any(keyword in line.lower() for keyword in keywords)
+    ]
     selected = [line for line in selected if line]
     if not selected:
         selected = [line.strip() for line in lines[-limit:] if line.strip()]

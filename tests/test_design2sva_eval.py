@@ -126,11 +126,19 @@ def test_design2sva_reference_oracle_dry_run_audits_reference(tmp_path, monkeypa
 
     for result in payload["results"]:
         audit = result["harness_reachability_audit"]
-        candidate = result["candidate_paths"][0]["rounds"][0]["candidate"]
+        first_round = result["candidate_paths"][0]["rounds"][0]
+        candidate = first_round["candidate"]
+        metrics = first_round["metrics"]
         assert audit["reference_sva"] == candidate["sva"]
         assert audit["clock_reset_metadata"]["clock"]
-        assert audit["cover_sva"]
+        if audit["reference_antecedent_metadata"]["trigger_kind"] == "invariant":
+            assert audit["cover_sva"] == ""
+        else:
+            assert audit["cover_sva"]
         assert audit["harness_reachability_status"] == "not_run"
+        assert metrics["root_cause_candidate"] == "unknown"
+        assert metrics["reset_release_reachable"] in {"unknown", "not_run"}
+        assert "embedding_audit" in metrics
         assert candidate["source"] == "reference_oracle"
 
 
@@ -164,8 +172,8 @@ def test_design2sva_reference_oracle_replay_metrics(tmp_path, monkeypatch) -> No
     assert summary["reference_proven@1"] == 1.0
     assert summary["reference_non_vacuous@1"] == 1.0
     assert summary["reference_antecedent_reachable@1"] == 1.0
-    assert summary["harness_reachability_status"] == "reachable"
-    assert summary["harness_reachability_status_counts"] == {"reachable": 3}
+    assert summary["harness_reachability_status"] == "mixed"
+    assert summary["harness_reachability_status_counts"] == {"not_run": 1, "reachable": 2}
     assert summary["proven@1"] == 1.0
     assert summary["source_counts"] == {"reference_oracle": 3}
     for result in payload["results"]:
@@ -173,7 +181,10 @@ def test_design2sva_reference_oracle_replay_metrics(tmp_path, monkeypatch) -> No
         assert audit["reference_proven"] is True
         assert audit["reference_non_vacuous"] is True
         assert audit["reference_antecedent_reachable"] is True
-        assert audit["cover_status"] == "covered"
+        if audit["reference_antecedent_metadata"]["trigger_kind"] == "invariant":
+            assert audit["cover_status"] == "not_run"
+        else:
+            assert audit["cover_status"] == "covered"
 
 
 def test_unreachable_formal_result_is_not_counted_as_passed() -> None:

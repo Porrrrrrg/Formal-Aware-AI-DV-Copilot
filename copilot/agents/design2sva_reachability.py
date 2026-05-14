@@ -18,6 +18,8 @@ UNKNOWN = "unknown"
 EXTRACTED = "extracted"
 APPROXIMATED = "approximated"
 GENERATED = "generated"
+NO_ANTECEDENT = "no_antecedent"
+INVARIANT = "invariant"
 
 REACHABLE = "reachable"
 UNREACHABLE = "unreachable"
@@ -32,13 +34,12 @@ _IDENTIFIER_RE = re.compile(r"[^A-Za-z0-9_$]+")
 
 
 def extract_assertion_trigger(sva: str) -> dict[str, Any]:
-    """Extract an assertion antecedent, or approximate a trigger expression.
+    """Extract an assertion antecedent when one exists.
 
     The returned dictionary is JSON-friendly and always has ``ok``, ``status``,
     ``condition``, ``condition_kind``, ``reason``, and ``unknown_reason`` keys.
     ``condition_kind`` is ``antecedent`` when a top-level implication operator is
-    found, otherwise ``trigger_condition`` for a conservative whole-body
-    approximation.
+    found, otherwise ``invariant`` with ``status`` set to ``no_antecedent``.
     """
 
     if not isinstance(sva, str):
@@ -112,19 +113,27 @@ def extract_assertion_trigger(sva: str) -> dict[str, Any]:
             )
         status = EXTRACTED
         condition_kind = "antecedent"
+        trigger_kind = "antecedent"
+        trigger_status = EXTRACTED
         confidence = "high"
         reason = ""
         approximate = False
+        has_antecedent = True
+        requires_antecedent_cover = True
     else:
-        condition = body
+        condition = None
         operator = None
-        status = APPROXIMATED
-        condition_kind = "trigger_condition"
-        confidence = "low"
+        status = NO_ANTECEDENT
+        condition_kind = INVARIANT
+        trigger_kind = INVARIANT
+        trigger_status = NO_ANTECEDENT
+        confidence = "high"
         reason = "no_top_level_implication"
-        approximate = True
+        approximate = False
+        has_antecedent = False
+        requires_antecedent_cover = False
 
-    if len(condition) > MAX_EXPR_CHARS:
+    if condition is not None and len(condition) > MAX_EXPR_CHARS:
         return _unknown(
             "condition_too_long",
             property_id=payload_info.get("property_id"),
@@ -145,9 +154,13 @@ def extract_assertion_trigger(sva: str) -> dict[str, Any]:
         "property_body": body,
         "condition": condition,
         "condition_kind": condition_kind,
+        "trigger_kind": trigger_kind,
+        "trigger_status": trigger_status,
         "operator": operator,
         "confidence": confidence,
         "approximate": approximate,
+        "has_antecedent": has_antecedent,
+        "requires_antecedent_cover": requires_antecedent_cover,
         "warnings": warnings,
     }
 
@@ -157,7 +170,7 @@ def generate_antecedent_cover(
     cover_property_id: str | None = None,
     source_property_id: str | None = None,
 ) -> dict[str, Any]:
-    """Generate a companion cover property for the extracted trigger condition."""
+    """Generate a companion cover property for an extracted antecedent."""
 
     extraction = extract_assertion_trigger(sva)
     if source_property_id and not extraction.get("property_id"):
@@ -175,9 +188,32 @@ def generate_antecedent_cover(
             "source_property_id": extraction.get("property_id"),
             "condition": None,
             "condition_kind": None,
+            "trigger_kind": extraction.get("trigger_kind"),
+            "trigger_status": extraction.get("trigger_status", UNKNOWN),
+            "has_antecedent": extraction.get("has_antecedent"),
+            "requires_antecedent_cover": extraction.get("requires_antecedent_cover"),
             "cover_sva": None,
             "extraction": extraction,
             "warnings": [],
+        }
+
+    if not extraction.get("has_antecedent"):
+        return {
+            "ok": False,
+            "status": NO_ANTECEDENT,
+            "reason": NO_ANTECEDENT,
+            "unknown_reason": None,
+            "property_id": None,
+            "source_property_id": extraction.get("property_id"),
+            "condition": None,
+            "condition_kind": extraction.get("condition_kind"),
+            "trigger_kind": extraction.get("trigger_kind"),
+            "trigger_status": extraction.get("trigger_status"),
+            "has_antecedent": False,
+            "requires_antecedent_cover": False,
+            "cover_sva": None,
+            "extraction": extraction,
+            "warnings": list(extraction.get("warnings") or []),
         }
 
     condition = str(extraction.get("condition") or "").strip()
@@ -192,6 +228,10 @@ def generate_antecedent_cover(
             "source_property_id": extraction.get("property_id"),
             "condition": None,
             "condition_kind": extraction.get("condition_kind"),
+            "trigger_kind": extraction.get("trigger_kind"),
+            "trigger_status": extraction.get("trigger_status"),
+            "has_antecedent": extraction.get("has_antecedent"),
+            "requires_antecedent_cover": extraction.get("requires_antecedent_cover"),
             "cover_sva": None,
             "extraction": extraction,
             "warnings": [],
@@ -228,6 +268,10 @@ def generate_antecedent_cover(
         "source_property_id": extraction.get("property_id"),
         "condition": condition,
         "condition_kind": extraction.get("condition_kind"),
+        "trigger_kind": extraction.get("trigger_kind"),
+        "trigger_status": extraction.get("trigger_status"),
+        "has_antecedent": True,
+        "requires_antecedent_cover": True,
         "cover_sva": f"{cover_id}: cover property ({cover_body});",
         "extraction": extraction,
         "warnings": warnings,
@@ -244,6 +288,13 @@ def classify_reachability(
 
     if isinstance(cover_status, Mapping):
         metadata = cover_status
+        if _metadata_has_no_antecedent(metadata):
+            return _no_antecedent_reachability(
+                cover_status=metadata,
+                proof_status=proof_status,
+                vacuity_status=vacuity_status,
+                syntax_status=syntax_status,
+            )
         cover_status = _first_present(
             metadata,
             "cover_status",
@@ -362,11 +413,21 @@ def cover_before_assert_metadata(
     """Return extraction, companion cover, and status classification metadata."""
 
     cover = generate_antecedent_cover(sva, cover_property_id=cover_property_id)
-    reachability = classify_reachability(
-        cover_status=cover_status,
-        proof_status=proof_status,
-        vacuity_status=vacuity_status,
-        syntax_status=syntax_status,
+    no_antecedent = cover.get("status") == NO_ANTECEDENT
+    reachability = (
+        _no_antecedent_reachability(
+            cover_status=cover_status,
+            proof_status=proof_status,
+            vacuity_status=vacuity_status,
+            syntax_status=syntax_status,
+        )
+        if no_antecedent
+        else classify_reachability(
+            cover_status=cover_status,
+            proof_status=proof_status,
+            vacuity_status=vacuity_status,
+            syntax_status=syntax_status,
+        )
     )
     if not cover.get("ok") and reachability["status"] in {UNKNOWN, NOT_RUN}:
         reachability = dict(reachability)
@@ -374,11 +435,71 @@ def cover_before_assert_metadata(
         reachability["reachability_status"] = UNKNOWN
         reachability["reason"] = "trigger_extraction_unknown"
     return {
-        "ok": bool(cover.get("ok")),
-        "status": cover.get("status", UNKNOWN) if cover.get("ok") else UNKNOWN,
+        "ok": bool(cover.get("ok") or no_antecedent),
+        "status": cover.get("status", UNKNOWN) if cover.get("ok") or no_antecedent else UNKNOWN,
         "extraction": cover.get("extraction"),
         "cover": cover,
+        "has_antecedent": cover.get("has_antecedent"),
+        "requires_antecedent_cover": cover.get("requires_antecedent_cover"),
+        "trigger_kind": cover.get("trigger_kind"),
+        "trigger_status": cover.get("trigger_status"),
         "reachability": reachability,
+    }
+
+
+def _no_antecedent_reachability(
+    cover_status: str | Mapping[str, Any] | None = None,
+    proof_status: str | None = None,
+    vacuity_status: str | None = None,
+    syntax_status: str | None = None,
+) -> dict[str, Any]:
+    if isinstance(cover_status, Mapping):
+        metadata = cover_status
+        proof_status = proof_status or _first_present(
+            metadata,
+            "proof_status",
+            "assert_proof_status",
+        )
+        vacuity_status = vacuity_status or _first_present(
+            metadata,
+            "vacuity_status",
+            "assert_vacuity_status",
+        )
+        syntax_status = syntax_status or _first_present(metadata, "syntax_status")
+        cover_status = _first_present(
+            metadata,
+            "cover_status",
+            "reachability_cover_status",
+            "antecedent_cover_status",
+            "trigger_cover_status",
+        )
+
+    normalized = {
+        "cover_status": _normalize_status(cover_status),
+        "proof_status": _normalize_status(proof_status),
+        "vacuity_status": _normalize_status(vacuity_status),
+        "syntax_status": _normalize_status(syntax_status),
+    }
+    status = NO_ANTECEDENT
+    reason = "invariant_has_no_antecedent_cover"
+
+    return {
+        "ok": True,
+        "status": status,
+        "reachability_status": status,
+        "is_reachable": None,
+        "is_non_vacuous": (
+            normalized["vacuity_status"] != VACUOUS
+            if normalized["proof_status"] in {"proven", "passed", "pass"}
+            else None
+        ),
+        "reason": reason,
+        "cover_status": normalized["cover_status"],
+        "proof_status": normalized["proof_status"],
+        "vacuity_status": normalized["vacuity_status"],
+        "syntax_status": normalized["syntax_status"],
+        "has_antecedent": False,
+        "requires_antecedent_cover": False,
     }
 
 
@@ -396,6 +517,10 @@ def _unknown(reason: str, **metadata: Any) -> dict[str, Any]:
         "property_body": None,
         "condition": None,
         "condition_kind": None,
+        "trigger_kind": None,
+        "trigger_status": UNKNOWN,
+        "has_antecedent": None,
+        "requires_antecedent_cover": None,
         "operator": None,
         "confidence": "none",
         "approximate": False,
@@ -703,16 +828,46 @@ def _first_present(metadata: Mapping[str, Any], *keys: str) -> str | None:
     return None
 
 
+def _metadata_has_no_antecedent(metadata: Mapping[str, Any]) -> bool:
+    return (
+        metadata.get("has_antecedent") is False
+        or str(metadata.get("extraction_status") or "") == NO_ANTECEDENT
+        or str(metadata.get("trigger_status") or "") == NO_ANTECEDENT
+    )
+
+
 def build_antecedent_metadata(sva: str, property_id: str) -> dict[str, Any]:
     """Compatibility wrapper used by the Design2SVA evaluator."""
 
     cover = generate_antecedent_cover(sva, source_property_id=property_id)
     extraction = cover.get("extraction") if isinstance(cover.get("extraction"), Mapping) else {}
+    if cover.get("status") == NO_ANTECEDENT:
+        return {
+            "extraction_status": NO_ANTECEDENT,
+            "reason": str(extraction.get("reason") or cover.get("reason") or NO_ANTECEDENT),
+            "antecedent": None,
+            "antecedent_kind": INVARIANT,
+            "trigger_kind": INVARIANT,
+            "trigger_status": NO_ANTECEDENT,
+            "has_antecedent": False,
+            "requires_antecedent_cover": False,
+            "event_control": extraction.get("clocking_event"),
+            "disable_iff": extraction.get("disable_iff"),
+            "cover_property_id": "",
+            "cover_sva": "",
+            "cover_status": NOT_RUN,
+            "antecedent_reachability": NO_ANTECEDENT,
+        }
     if not cover.get("ok"):
         return {
             "extraction_status": UNKNOWN,
             "reason": str(cover.get("reason") or cover.get("unknown_reason") or UNKNOWN),
             "antecedent": None,
+            "antecedent_kind": cover.get("condition_kind"),
+            "trigger_kind": cover.get("trigger_kind"),
+            "trigger_status": cover.get("trigger_status", UNKNOWN),
+            "has_antecedent": cover.get("has_antecedent"),
+            "requires_antecedent_cover": cover.get("requires_antecedent_cover"),
             "event_control": None,
             "disable_iff": None,
             "cover_property_id": "",
@@ -738,6 +893,11 @@ def build_antecedent_metadata(sva: str, property_id: str) -> dict[str, Any]:
         "extraction_status": extraction_status,
         "reason": str(extraction.get("reason") or cover.get("reason") or ""),
         "antecedent": antecedent,
+        "antecedent_kind": cover.get("condition_kind"),
+        "trigger_kind": cover.get("trigger_kind"),
+        "trigger_status": cover.get("trigger_status"),
+        "has_antecedent": bool(cover.get("has_antecedent")),
+        "requires_antecedent_cover": bool(cover.get("requires_antecedent_cover")),
         "event_control": extraction.get("clocking_event"),
         "disable_iff": extraction.get("disable_iff"),
         "cover_property_id": str(cover.get("property_id") or ""),
@@ -763,6 +923,19 @@ def apply_cover_status(
     cover_proof_metadata: dict[str, Any] | None,
 ) -> dict[str, Any]:
     updated = dict(metadata)
+    if updated.get("has_antecedent") is False or updated.get("extraction_status") == NO_ANTECEDENT:
+        updated["extraction_status"] = NO_ANTECEDENT
+        updated["trigger_kind"] = updated.get("trigger_kind") or INVARIANT
+        updated["trigger_status"] = NO_ANTECEDENT
+        updated["has_antecedent"] = False
+        updated["requires_antecedent_cover"] = False
+        updated["cover_status"] = NOT_RUN
+        updated["antecedent_reachability"] = NO_ANTECEDENT
+        if cover_proof_metadata:
+            updated["cover_proof_metadata"] = dict(cover_proof_metadata)
+            updated["cover_status_ignored_reason"] = NO_ANTECEDENT
+        return updated
+
     proof = cover_proof_metadata or {}
     status = str(
         proof.get("proof_status")
@@ -790,10 +963,14 @@ def apply_cover_status(
 
 
 def antecedent_reachable(metadata: dict[str, Any]) -> bool:
+    if _metadata_has_no_antecedent(metadata):
+        return True
     return str(metadata.get("antecedent_reachability")) == REACHABLE
 
 
 def antecedent_unreachable(metadata: dict[str, Any]) -> bool:
+    if _metadata_has_no_antecedent(metadata):
+        return False
     return str(metadata.get("antecedent_reachability")) == UNREACHABLE
 
 
@@ -815,6 +992,8 @@ __all__ = [
     "BOUNDED_UNCOVERED",
     "EXTRACTED",
     "GENERATED",
+    "INVARIANT",
+    "NO_ANTECEDENT",
     "NOT_RUN",
     "REACHABLE",
     "SYNTAX_ERROR",

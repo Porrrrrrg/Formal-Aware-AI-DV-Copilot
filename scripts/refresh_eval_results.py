@@ -369,8 +369,8 @@ def write_design2sva_results_if_present() -> None:
         "",
         "## Summary",
         "",
-        "| Artifact | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | hallucinated_signal_rate | fallback_rate | valid_json_rate | avg_rounds | repair_success | Source | Formal |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |",
+        "| Artifact | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | hallucinated_signal_rate | fallback_rate | valid_json_rate | avg_rounds | repair_success | Source | Formal | Root-cause candidates |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
     ]
     provenance_lines = ["", "## Provenance", ""]
     for result_path in result_paths:
@@ -381,6 +381,7 @@ def write_design2sva_results_if_present() -> None:
         mode = str(payload.get("mode", "unknown"))
         source_counts = summary.get("source_counts", {})
         failure_categories = summary.get("failure_categories", {})
+        root_cause_candidates = summary.get("root_cause_candidates", {})
         lines.append(
             "| "
             + " | ".join(
@@ -401,6 +402,7 @@ def write_design2sva_results_if_present() -> None:
                     fmt(summary.get("repair_success_after_feedback")),
                     source_text({"source_counts": source_counts}),
                     str(summary.get("formal_metrics_status", "unknown")),
+                    source_text({"source_counts": root_cause_candidates}),
                 ]
             )
             + " |"
@@ -412,6 +414,7 @@ def write_design2sva_results_if_present() -> None:
                 f"- Mode: `{mode}`",
                 f"- Source counts: {source_text({'source_counts': source_counts})}",
                 f"- Failure categories: {source_text({'source_counts': failure_categories})}",
+                f"- Root-cause candidates: {source_text({'source_counts': root_cause_candidates})}",
                 f"- Formal metrics status: `{summary.get('formal_metrics_status', 'unknown')}`",
                 "",
             ]

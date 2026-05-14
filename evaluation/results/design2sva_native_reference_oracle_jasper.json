@@ -1,0 +1,134 @@
+{
+  "schema_version": "v1",
+  "mode": "native_reference_oracle",
+  "backend": "jaspergold",
+  "dry_run": false,
+  "variant": "correct",
+  "cases_path": "benchmarks/design2sva_cases.json",
+  "summary": {
+    "num_cases": 3,
+    "dry_run": false,
+    "mapped_cases": 3,
+    "all_cases_mapped": true,
+    "candidate_embedding": false,
+    "native_reference_proves_count": 3,
+    "native_reference_does_not_prove_count": 0,
+    "native_reference_unknown_count": 0,
+    "native_proof_status_counts": {
+      "proven": 3
+    },
+    "native_vacuity_status_counts": {
+      "not_run": 3
+    },
+    "root_cause_candidate_counts": {
+      "unknown": 3
+    }
+  },
+  "results": [
+    {
+      "case_id": "design2sva_arbiter_mutex",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "variant": "correct",
+      "mapping_status": "mapped",
+      "native_paths": {
+        "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+        "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+        "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+        "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+        "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+      },
+      "native_top_harness": "arbiter_rr2_harness",
+      "native_property_id": "p_mutex",
+      "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
+      "candidate_embedding": false,
+      "native_proof_status": "proven",
+      "native_vacuity_status": "not_run",
+      "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+      "native_report_dirs": {
+        "prove": "jasper/reports/arbiter_rr2_correct_prove",
+        "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+      },
+      "native_reference_proves": true,
+      "root_cause_candidate": "unknown",
+      "backend_status": "passed",
+      "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+      "raw_report_paths": {
+        "prove": {
+          "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+        },
+        "vacuity": {}
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_ready_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "variant": "correct",
+      "mapping_status": "mapped",
+      "native_paths": {
+        "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+        "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+        "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+        "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+        "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+      },
+      "native_top_harness": "rv_buffer_harness",
+      "native_property_id": "p_in_ready_when_full_and_out_ready",
+      "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
+      "candidate_embedding": false,
+      "native_proof_status": "proven",
+      "native_vacuity_status": "not_run",
+      "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+      "native_report_dirs": {
+        "prove": "jasper/reports/rv_buffer_correct_prove",
+        "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+      },
+      "native_reference_proves": true,
+      "root_cause_candidate": "unknown",
+      "backend_status": "passed",
+      "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+      "raw_report_paths": {
+        "prove": {
+          "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+        },
+        "vacuity": {}
+      }
+    },
+    {
+      "case_id": "design2sva_apb_setup_enable",
+      "design_id": "apb_regblock",
+      "property_id": "p_setup_then_enable",
+      "variant": "correct",
+      "mapping_status": "mapped",
+      "native_paths": {
+        "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+        "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+        "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+        "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+        "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+      },
+      "native_top_harness": "apb_regblock_harness",
+      "native_property_id": "p_setup_then_enable",
+      "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
+      "candidate_embedding": false,
+      "native_proof_status": "proven",
+      "native_vacuity_status": "not_run",
+      "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+      "native_report_dirs": {
+        "prove": "jasper/reports/apb_regblock_correct_prove",
+        "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+      },
+      "native_reference_proves": true,
+      "root_cause_candidate": "unknown",
+      "backend_status": "passed",
+      "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+      "raw_report_paths": {
+        "prove": {
+          "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+        },
+        "vacuity": {}
+      }
+    }
+  ]
+}
