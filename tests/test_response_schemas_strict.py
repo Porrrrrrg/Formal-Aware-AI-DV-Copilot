@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STRICT_RESPONSE_SCHEMAS = [
     ROOT / "copilot" / "schemas" / "coverage_closure_output.schema.json",
     ROOT / "copilot" / "schemas" / "diagnosis_output.schema.json",
+    ROOT / "copilot" / "schemas" / "design2sva_candidate.schema.json",
     ROOT / "copilot" / "schemas" / "sva_generation_output.schema.json",
     ROOT / "copilot" / "schemas" / "sva_repair_candidate.schema.json",
     ROOT / "copilot" / "schemas" / "sva_repair_output.schema.json",
@@ -95,6 +96,28 @@ def test_minimal_response_fixtures_validate() -> None:
             "property_id": "p_mutex",
             "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
             "explanation": "Use mutual exclusion over the two grant signals.",
+        },
+        "design2sva_candidate.schema.json": {
+            "property_id": "p_mutex",
+            "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+            "helper_code": "",
+            "referenced_signals": ["clk", "rst", "gnt0", "gnt1"],
+            "intent_summary": "The arbiter grants must be mutually exclusive.",
+            "source": "structured_fallback",
+            "repair_metadata": {
+                "round": 0,
+                "failure_category": "not_run",
+                "feedback": "",
+                "changed_by_repair": False,
+            },
+            "proof_metadata": {
+                "backend": "jaspergold",
+                "status": "not_run",
+                "syntax_status": "not_run",
+                "proof_status": None,
+                "vacuity_status": None,
+                "report_dir": None,
+            },
         },
     }
 

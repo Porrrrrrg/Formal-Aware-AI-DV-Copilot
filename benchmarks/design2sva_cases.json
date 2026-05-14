@@ -1,0 +1,138 @@
+[
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_arbiter_mutex",
+    "task_type": "design2sva",
+    "case_id": "design2sva_arbiter_mutex",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_mutex",
+    "module_name": "arbiter_rr2",
+    "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+    "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+    "intent": "Generate an assertion that the two-client round-robin arbiter never grants both clients in the same cycle.",
+    "visible_signals": ["clk", "rst", "req0", "req1", "gnt0", "gnt1", "turn"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "A simple safety assertion should not need helper logic."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_rv_buffer_ready_full",
+    "task_type": "design2sva",
+    "case_id": "design2sva_rv_buffer_ready_full",
+    "design_id": "rv_buffer",
+    "property_id": "p_in_ready_when_full_and_out_ready",
+    "module_name": "rv_buffer",
+    "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+    "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+    "intent": "Generate an assertion that a full one-entry ready/valid buffer can accept input when the output side is ready in the same cycle.",
+    "visible_signals": ["clk", "rst", "in_valid", "in_ready", "out_valid", "out_ready", "full"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The property only references existing handshake and state signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_apb_setup_enable",
+    "task_type": "design2sva",
+    "case_id": "design2sva_apb_setup_enable",
+    "design_id": "apb_regblock",
+    "property_id": "p_setup_then_enable",
+    "module_name": "apb_regblock",
+    "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+    "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+    "intent": "Generate an assertion that an APB setup phase with psel high and penable low is followed by an access phase.",
+    "visible_signals": ["pclk", "presetn", "psel", "penable", "pwrite", "pready"],
+    "clock_reset": {
+      "clock": "pclk",
+      "reset": "presetn",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_low"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The APB phase property is expressible directly over interface signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_fifo_no_underflow",
+    "task_type": "design2sva",
+    "case_id": "design2sva_fifo_no_underflow",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_no_underflow",
+    "module_name": "fifo_1r1w",
+    "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+    "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+    "intent": "Generate an assertion that the FIFO never completes a pop transaction while it is empty.",
+    "visible_signals": ["clk", "rst", "empty", "pop_valid", "pop_ready", "pop_fire"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The no-underflow property is direct over existing FIFO status and handshake signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  }
+]

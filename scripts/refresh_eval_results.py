@@ -358,6 +358,55 @@ def write_output_quality_results(
     (RESULTS / "output_quality_results.md").write_text("\n".join(lines))
 
 
+def write_design2sva_results_if_present() -> None:
+    result_path = RESULTS / "design2sva_eval_local.json"
+    if not result_path.exists():
+        return
+    payload = json.loads(result_path.read_text())
+    summary = payload.get("summary", {})
+    if not isinstance(summary, dict):
+        return
+    source_counts = summary.get("source_counts", {})
+    failure_categories = summary.get("failure_categories", {})
+    lines = [
+        "# Design2SVA Results",
+        "",
+        "These results are generated from the local retrieval-assisted Design2SVA scaffold. They are infrastructure and replay/dry-run evidence unless the run mode records real LLM and JasperGold execution.",
+        "",
+        "## Local Summary",
+        "",
+        "| Metric | Value |",
+        "| --- | ---: |",
+        f"| Mode | {payload.get('mode', 'unknown')} |",
+        f"| Cases | {fmt(summary.get('num_cases'))} |",
+        f"| k | {fmt(summary.get('k'))} |",
+        f"| syntax@1 | {fmt(summary.get('syntax@1'))} |",
+        f"| syntax@k | {fmt(summary.get('syntax@k'))} |",
+        f"| proven@1 | {fmt(summary.get('proven@1'))} |",
+        f"| proven@k | {fmt(summary.get('proven@k'))} |",
+        f"| non_vacuous@k | {fmt(summary.get('non_vacuous@k'))} |",
+        f"| hallucinated_signal_rate | {fmt(summary.get('hallucinated_signal_rate'))} |",
+        f"| fallback_rate | {fmt(summary.get('fallback_rate'))} |",
+        f"| valid_json_rate | {fmt(summary.get('valid_json_rate'))} |",
+        f"| average_rounds | {fmt(summary.get('average_rounds'))} |",
+        f"| repair_success_after_feedback | {fmt(summary.get('repair_success_after_feedback'))} |",
+        "",
+        "## Provenance",
+        "",
+        f"- Source counts: {source_text({'source_counts': source_counts})}",
+        f"- Failure categories: {source_text({'source_counts': failure_categories})}",
+        f"- Formal metrics status: `{summary.get('formal_metrics_status', 'unknown')}`",
+        "",
+        "## Claim Boundary",
+        "",
+        "- Dry-run, replay, and deterministic scaffold rows do not measure hosted model quality.",
+        "- `proven@*` and `non_vacuous@k` are only meaningful when real JasperGold checks are enabled and available.",
+        "- Exact/reference agreement on local fixtures is a scaffold metric, not functional equivalence or production signoff.",
+        "",
+    ]
+    (RESULTS / "design2sva_results.md").write_text("\n".join(lines))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--packet-root", type=Path, default=DEFAULT_PACKET_ROOT)
@@ -414,6 +463,7 @@ def main() -> int:
     write_coverage_results(coverage_payload)
     write_ablation_results(ablation_payload)
     write_output_quality_results(agent_payload, coverage_payload)
+    write_design2sva_results_if_present()
     print(f"Refreshed markdown results in {RESULTS.relative_to(ROOT)}")
     return 0
 

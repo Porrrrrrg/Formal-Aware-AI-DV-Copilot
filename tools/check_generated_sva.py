@@ -150,6 +150,57 @@ endmodule
 endmodule
 """,
     ),
+    "fifo_1r1w": DesignConfig(
+        rtl="benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+        assumptions="benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+        top="fifo_1r1w_generated_harness",
+        clock="clk",
+        reset_cmd="reset rst",
+        properties_header="""module generated_sva_properties #(
+  parameter int WIDTH = 8,
+  parameter int DEPTH = 4,
+  parameter int COUNT_W = $clog2(DEPTH + 1)
+) (
+  input logic               clk,
+  input logic               rst,
+  input logic               push_valid,
+  input logic               push_ready,
+  input logic [WIDTH-1:0]   push_data,
+  input logic               pop_valid,
+  input logic               pop_ready,
+  input logic [WIDTH-1:0]   pop_data,
+  input logic               full,
+  input logic               empty,
+  input logic [COUNT_W-1:0] level,
+  input logic               push_fire,
+  input logic               pop_fire
+);""",
+        harness="""module fifo_1r1w_generated_harness;
+  localparam int WIDTH = 8;
+  localparam int DEPTH = 4;
+  localparam int COUNT_W = $clog2(DEPTH + 1);
+
+  logic clk;
+  logic rst;
+  logic push_valid;
+  logic push_ready;
+  logic [WIDTH-1:0] push_data;
+  logic pop_valid;
+  logic pop_ready;
+  logic [WIDTH-1:0] pop_data;
+  logic full;
+  logic empty;
+  logic [COUNT_W-1:0] level;
+  logic push_fire;
+  logic pop_fire;
+
+  fifo_1r1w #(.WIDTH(WIDTH), .DEPTH(DEPTH)) dut (.*);
+
+  fifo_1r1w_assumptions #(.WIDTH(WIDTH), .DEPTH(DEPTH)) assumptions_i (.*);
+  generated_sva_properties #(.WIDTH(WIDTH), .DEPTH(DEPTH)) generated_properties_i (.*);
+endmodule
+""",
+    ),
 }
 
 

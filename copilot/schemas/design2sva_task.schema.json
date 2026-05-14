@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Design2SVA Task",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "task_type",
+    "case_id",
+    "design_id",
+    "property_id",
+    "module_name",
+    "design_rtl_path",
+    "harness_header_path",
+    "intent",
+    "visible_signals",
+    "clock_reset",
+    "helper_code_policy",
+    "evaluation_metadata"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "v1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "task_type": { "type": "string", "const": "design2sva" },
+    "case_id": { "type": "string", "minLength": 1 },
+    "design_id": { "type": "string", "minLength": 1 },
+    "property_id": { "type": "string", "minLength": 1 },
+    "module_name": { "type": ["string", "null"] },
+    "design_rtl_path": { "type": "string", "minLength": 1 },
+    "harness_header_path": { "type": "string", "minLength": 1 },
+    "intent": { "type": "string", "minLength": 1 },
+    "visible_signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "clock_reset": {
+      "type": "object",
+      "required": ["clock", "reset", "clock_edge", "reset_polarity"],
+      "properties": {
+        "clock": { "type": "string", "minLength": 1 },
+        "reset": { "type": ["string", "null"] },
+        "clock_edge": { "type": "string", "enum": ["posedge", "negedge"] },
+        "reset_polarity": {
+          "type": "string",
+          "enum": ["active_high", "active_low", "unknown"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "helper_code_policy": {
+      "type": "object",
+      "required": ["allowed", "allowed_kinds", "max_lines", "rationale"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "allowed_kinds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "max_lines": { "type": "integer", "minimum": 0 },
+        "rationale": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "evaluation_metadata": {
+      "type": "object",
+      "required": [
+        "benchmark",
+        "split",
+        "expected_result",
+        "reference_available",
+        "reference_sva",
+        "expected_proof_status",
+        "notes"
+      ],
+      "properties": {
+        "benchmark": { "type": "string" },
+        "split": { "type": "string" },
+        "expected_result": { "type": "string" },
+        "reference_available": { "type": "boolean" },
+        "reference_sva": { "type": ["string", "null"] },
+        "expected_proof_status": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
