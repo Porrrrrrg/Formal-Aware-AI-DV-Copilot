@@ -10,6 +10,7 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 | design2sva_eval_replay_local.json | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | replay=9 | not_run |
 | design2sva_eval_codex_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=9 | not_run |
 | design2sva_eval_codex_jasper_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured |
+| design2sva_eval_anti_vacuity_replay.json | replay | 1 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | replay=1 | replayed |
 
 ## Provenance
 
@@ -40,6 +41,13 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 - Source counts: llm=9
 - Failure categories: weak_vacuous_assertion=18
 - Formal metrics status: `measured`
+
+### design2sva_eval_anti_vacuity_replay.json
+
+- Mode: `replay`
+- Source counts: replay=1
+- Failure categories: proven_non_vacuous=1, unreachable_antecedent=1
+- Formal metrics status: `replayed`
 
 ## Claim Boundary
 

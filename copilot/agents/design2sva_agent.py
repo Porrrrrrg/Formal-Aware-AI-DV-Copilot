@@ -14,17 +14,55 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from copilot.llm_client import call_llm_json, llm_configured  # noqa: E402
+from copilot.llm_client import call_llm_json  # noqa: E402
 from copilot.sva_library import SVA_TEMPLATES, extract_identifiers  # noqa: E402
 
 SCHEMA_PATH = ROOT / "copilot" / "schemas" / "design2sva_candidate.schema.json"
 DEFAULT_REPLAY_PATH = ROOT / "evaluation" / "fixtures" / "design2sva_replay_outputs.jsonl"
+PROMPT_OMIT_KEYS = {"reference_sva", "expected_proof_status"}
+
+REACHABILITY_GUIDANCE = [
+    (
+        "Choose an antecedent or trigger condition that should be reachable under "
+        "the RTL and harness context after legal reset release."
+    ),
+    (
+        "Do not guard the property with contradictory or impossible state "
+        "combinations, reset-only states, or handshakes that the context shows "
+        "cannot fire."
+    ),
+    (
+        "Prefer the simplest interface-level safety property that satisfies the "
+        "intent before using deeper implementation state."
+    ),
+    (
+        "Use reset_behavior, handshake_fire_conditions, and state_update_conditions "
+        "as evidence for legal triggers and temporal boundaries."
+    ),
+    (
+        "When the assertion has an antecedent, make intent_summary explain why "
+        "that antecedent should be reachable."
+    ),
+]
 
 
 def build_prompt(task: dict[str, Any], context: dict[str, Any]) -> str:
     payload = {
         "task": sanitized_task(task),
-        "retrieved_context": context,
+        "retrieved_context": sanitized_context(context),
+        "generation_guidance": {
+            "reachability_requirements": REACHABILITY_GUIDANCE,
+            "field_semantics": {
+                "intent_summary": (
+                    "Summarize the intent and, when the SVA uses an antecedent, "
+                    "briefly explain why the selected trigger should be reachable."
+                ),
+                "sva": (
+                    "Use only task.visible_signals and retrieved_context.visible_signals "
+                    "for signal references; other retrieved fields are supporting evidence."
+                ),
+            },
+        },
         "output_contract": {
             "required_json_fields": [
                 "property_id",
@@ -40,22 +78,45 @@ def build_prompt(task: dict[str, Any], context: dict[str, Any]) -> str:
         },
     }
     return (
-        "You are JasperLoop-DV in Design2SVA mode. Generate one useful "
+        "You are JasperLoop-DV in Design2SVA mode. Generate one useful, "
+        "non-vacuous "
         "SystemVerilog assertion from the natural-language intent and bounded "
-        "RTL/harness context. Use only visible or retrieved signals. Do not "
-        "include helper code unless the helper-code policy allows it. Return "
-        "strict JSON matching the output contract.\n\n"
+        "RTL/harness context. Reachability is part of correctness: require "
+        "reachable trigger conditions, avoid impossible states, and prefer "
+        "simple interface-level safety properties before implementation-specific "
+        "properties. Use only visible or retrieved signals. Do not include "
+        "helper code unless the helper-code policy allows it. The benchmark "
+        "answer assertion is intentionally omitted; do not request or rely on "
+        "evaluation-only answers. Return strict JSON matching the output "
+        "contract.\n\n"
         + json.dumps(payload, indent=2)
     )
 
 
 def sanitized_task(task: dict[str, Any]) -> dict[str, Any]:
-    clone = dict(task)
+    clone = sanitize_prompt_payload(task)
+    if not isinstance(clone, dict):
+        return {}
     metadata = dict(clone.get("evaluation_metadata", {}))
-    metadata.pop("reference_sva", None)
-    metadata.pop("expected_proof_status", None)
     clone["evaluation_metadata"] = metadata
     return clone
+
+
+def sanitized_context(context: dict[str, Any]) -> dict[str, Any]:
+    sanitized = sanitize_prompt_payload(context)
+    return sanitized if isinstance(sanitized, dict) else {}
+
+
+def sanitize_prompt_payload(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: sanitize_prompt_payload(item)
+            for key, item in value.items()
+            if str(key) not in PROMPT_OMIT_KEYS
+        }
+    if isinstance(value, (list, tuple)):
+        return [sanitize_prompt_payload(item) for item in value]
+    return value
 
 
 def generate_candidates(
@@ -73,7 +134,7 @@ def generate_candidates(
         if replay_records is not None:
             raw = replay_candidate(task, replay_records, index)
             source = "replay"
-        elif use_llm or llm_configured(llm_command):
+        elif use_llm:
             try:
                 response = call_llm_json(build_prompt(task, context), llm_command, timeout_s=240)
                 raw = response.json_object
@@ -130,6 +191,7 @@ def replay_candidate(
     task: dict[str, Any],
     records: list[dict[str, Any]],
     index: int,
+    round_index: int = 0,
 ) -> dict[str, Any]:
     case_id = str(task.get("case_id") or "")
     property_id = str(task.get("property_id") or "")
@@ -138,6 +200,8 @@ def replay_candidate(
         for record in records
         if str(record.get("case_id", "")) == case_id
         and str(record.get("property_id", property_id)) == property_id
+        and int(record.get("round", 0)) == round_index
+        and isinstance(record.get("response"), dict)
     ]
     if not matches:
         return structured_candidate(task)
@@ -211,7 +275,9 @@ def allowed_signal_set(task: dict[str, Any], context: dict[str, Any]) -> set[str
     allowed.update(str(signal) for signal in context.get("visible_signals", []))
     interface = context.get("interface", {})
     if isinstance(interface, dict):
-        allowed.update(str(port.get("name")) for port in interface.get("ports", []) if port.get("name"))
+        allowed.update(
+            str(port.get("name")) for port in interface.get("ports", []) if port.get("name")
+        )
     clock_reset = context.get("clock_reset_candidates", {})
     if isinstance(clock_reset, dict):
         for names in clock_reset.values():

@@ -17,6 +17,21 @@ from copilot.retrieval.rtl_index import (
 
 SCHEMA_VERSION = "design2sva-context-v1"
 IDENT_RE = re.compile(r"\b[A-Za-z_][A-Za-z0-9_$]*\b")
+ASSIGNMENT_RE = re.compile(
+    r"\b(?P<lhs>[A-Za-z_][A-Za-z0-9_.$]*(?:\[[^\]]+\])?)\s*"
+    r"(?P<op><=|(?<![=!<>])=(?!=))\s*(?P<rhs>.*?);",
+    re.DOTALL,
+)
+IF_BEGIN_RE = re.compile(r"\b(?:if|else\s+if)\s*\((?P<condition>.*?)\)\s*begin", re.DOTALL)
+CASE_BLOCK_RE = re.compile(
+    r"\b(?:unique\s+|priority\s+)?case\s*\((?P<selector>.*?)\)"
+    r"(?P<body>.*?)\bendcase\b",
+    re.DOTALL,
+)
+CASE_ITEM_RE = re.compile(
+    r"(?P<label>(?:\d+'[bhd][0-9A-Fa-f_xXzZ?]+)|default)\s*:",
+    re.MULTILINE,
+)
 
 
 @dataclass(frozen=True)
@@ -28,6 +43,7 @@ class Design2SVAContextOptions:
     max_assigns: int = 12
     max_always_blocks: int = 8
     max_logic_entries_per_signal: int = 4
+    max_derived_conditions: int = 16
     include_source_text: bool = True
     max_block_chars: int = 1200
 
@@ -92,6 +108,20 @@ def build_design2sva_context(
         )
         for signal in visible_signals
     }
+    reset_behavior = derive_reset_behavior(module, clock_reset, options, limitations)
+    handshake_fire_conditions = derive_handshake_fire_conditions(
+        module,
+        visible_signals,
+        options,
+        limitations,
+    )
+    state_update_conditions = derive_state_update_conditions(
+        module,
+        reset_behavior,
+        visible_signals,
+        options,
+        limitations,
+    )
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -105,6 +135,9 @@ def build_design2sva_context(
         "assigns": assigns["records"],
         "always_blocks": always_blocks["records"],
         "signal_logic": signal_logic,
+        "reset_behavior": reset_behavior,
+        "handshake_fire_conditions": handshake_fire_conditions,
+        "state_update_conditions": state_update_conditions,
         "limitations": sorted(set(limitations)),
     }
 
@@ -188,6 +221,298 @@ def block_intersects(block: dict[str, Any], visible: list[str]) -> bool:
     assigned = {str(item) for item in block.get("assigned_signals", [])}
     deps = {str(dep) for dep in block.get("dependencies", [])}
     return bool(visible_set & (assigned | deps))
+
+
+def derive_reset_behavior(
+    module: dict[str, Any],
+    clock_reset: dict[str, list[str]],
+    options: Design2SVAContextOptions,
+    limitations: list[str],
+) -> dict[str, Any]:
+    resets = sorted({str(name) for name in clock_reset.get("resets", []) if name})
+    known = module_signal_names(module)
+    branches = []
+    for block in module.get("always_blocks", []):
+        text = str(block.get("text", ""))
+        if not text:
+            continue
+        for reset in resets:
+            for branch in find_reset_branches(text, reset):
+                assignments = assignment_values(
+                    branch["body"],
+                    known,
+                    options.max_derived_conditions,
+                )
+                branches.append(
+                    {
+                        "reset": reset,
+                        "active_condition": branch["condition"],
+                        "polarity": reset_polarity(reset, branch["condition"]),
+                        "always_block": str(block.get("id", "")),
+                        "assigned_values": assignments,
+                        "affected_signals": sorted({item["signal"] for item in assignments}),
+                        "source_range": block.get("source_range"),
+                    }
+                )
+    if len(branches) > options.max_derived_conditions:
+        limitations.append("Reset behavior context was truncated by max_derived_conditions.")
+    return {
+        "reset_candidates": resets,
+        "observed_reset_branches": branches[: options.max_derived_conditions],
+    }
+
+
+def find_reset_branches(text: str, reset: str) -> list[dict[str, str]]:
+    pattern = re.compile(
+        rf"\bif\s*\(\s*(?P<condition>[^)]*\b{re.escape(reset)}\b[^)]*)\)\s*begin"
+        rf"(?P<body>.*?)(?=\n\s*end\s+else|\n\s*end\s*$)",
+        re.DOTALL | re.MULTILINE,
+    )
+    return [
+        {
+            "condition": normalize_expr(match.group("condition")),
+            "body": match.group("body"),
+        }
+        for match in pattern.finditer(text)
+    ]
+
+
+def reset_polarity(reset: str, condition: str) -> str:
+    compact = condition.replace(" ", "")
+    if (
+        compact.startswith(f"!{reset}")
+        or f"{reset}==1'b0" in compact
+        or f"1'b0=={reset}" in compact
+    ):
+        return "active_low"
+    if compact == reset or f"{reset}==1'b1" in compact or f"1'b1=={reset}" in compact:
+        return "active_high"
+    return "unknown"
+
+
+def derive_handshake_fire_conditions(
+    module: dict[str, Any],
+    visible_signals: list[str],
+    options: Design2SVAContextOptions,
+    limitations: list[str],
+) -> list[dict[str, Any]]:
+    records = []
+    for assign in module.get("assigns", []):
+        lhs = str(assign.get("lhs", ""))
+        rhs = normalize_expr(assign.get("rhs", ""))
+        deps = sorted(str(dep) for dep in assign.get("dependencies", []))
+        if is_handshake_condition(lhs, rhs, deps):
+            records.append(
+                {
+                    "name": lhs,
+                    "condition": rhs,
+                    "dependencies": deps,
+                    "source": "assign",
+                    "source_range": assign.get("source_range"),
+                }
+            )
+    records.extend(interface_valid_ready_conditions(module, visible_signals))
+    records = dedupe_records(records, ("condition",))
+    if len(records) > options.max_derived_conditions:
+        limitations.append(
+            "Handshake fire condition context was truncated by max_derived_conditions."
+        )
+    return records[: options.max_derived_conditions]
+
+
+def is_handshake_condition(lhs: str, rhs: str, deps: list[str]) -> bool:
+    names = [lhs, *deps]
+    lowered = {name.lower() for name in names}
+    if any("fire" in name.lower() or "handshake" in name.lower() for name in names):
+        return "&&" in rhs or len(deps) >= 2
+    if lhs.lower() in {"access", "transfer", "xfer"} and len(deps) >= 2:
+        return True
+    return {"psel", "penable"} <= lowered
+
+
+def interface_valid_ready_conditions(
+    module: dict[str, Any],
+    visible_signals: list[str],
+) -> list[dict[str, Any]]:
+    known = module_signal_names(module)
+    visible = set(visible_signals)
+    records = []
+    for valid in sorted(name for name in known if name.endswith("_valid")):
+        prefix = valid[: -len("_valid")]
+        ready = f"{prefix}_ready"
+        if ready not in known:
+            continue
+        fire_signal = f"{prefix}_fire" if f"{prefix}_fire" in known else None
+        records.append(
+            {
+                "name": fire_signal or f"interface_{prefix}_valid_ready",
+                "condition": f"{valid} && {ready}",
+                "dependencies": [valid, ready],
+                "source": "interface_valid_ready_pair",
+                "visible": valid in visible and ready in visible,
+            }
+        )
+    return records
+
+
+def derive_state_update_conditions(
+    module: dict[str, Any],
+    reset_behavior: dict[str, Any],
+    visible_signals: list[str],
+    options: Design2SVAContextOptions,
+    limitations: list[str],
+) -> list[dict[str, Any]]:
+    known = module_signal_names(module)
+    visible = set(visible_signals)
+    reset_conditions = reset_conditions_by_block(reset_behavior)
+    reset_values = reset_values_by_block(reset_behavior)
+    records = []
+    for block in module.get("always_blocks", []):
+        if not is_sequential_block(block):
+            continue
+        block_id = str(block.get("id", ""))
+        assigned = sorted(
+            assigned_signals_from_text(str(block.get("text", "")), known),
+            key=lambda signal: (signal not in visible, signal),
+        )
+        if not assigned:
+            continue
+        conditions = non_reset_conditions(
+            str(block.get("text", "")),
+            reset_conditions.get(block_id, set()),
+        )
+        values = reset_values.get(block_id, {})
+        records.append(
+            {
+                "always_block": block_id,
+                "assigned_signals": assigned,
+                "conditions": conditions,
+                "reset_values": {
+                    signal: values[signal]
+                    for signal in assigned
+                    if signal in values
+                },
+                "source_range": block.get("source_range"),
+                "precision": "block_level_conservative",
+            }
+        )
+    if len(records) > options.max_derived_conditions:
+        limitations.append(
+            "State-update condition context was truncated by max_derived_conditions."
+        )
+    return records[: options.max_derived_conditions]
+
+
+def reset_conditions_by_block(reset_behavior: dict[str, Any]) -> dict[str, set[str]]:
+    result: dict[str, set[str]] = {}
+    for branch in reset_behavior.get("observed_reset_branches", []):
+        if not isinstance(branch, dict):
+            continue
+        block_id = str(branch.get("always_block", ""))
+        condition = str(branch.get("active_condition", ""))
+        result.setdefault(block_id, set()).add(condition)
+    return result
+
+
+def reset_values_by_block(reset_behavior: dict[str, Any]) -> dict[str, dict[str, str]]:
+    result: dict[str, dict[str, str]] = {}
+    for branch in reset_behavior.get("observed_reset_branches", []):
+        if not isinstance(branch, dict):
+            continue
+        block_id = str(branch.get("always_block", ""))
+        values = result.setdefault(block_id, {})
+        for assignment in branch.get("assigned_values", []):
+            if isinstance(assignment, dict):
+                values[str(assignment.get("signal", ""))] = str(assignment.get("value", ""))
+    return result
+
+
+def is_sequential_block(block: dict[str, Any]) -> bool:
+    text = str(block.get("text", ""))
+    kind = str(block.get("kind", ""))
+    return kind == "always_ff" or "@(posedge" in text or "@(negedge" in text
+
+
+def non_reset_conditions(text: str, reset_conditions: set[str]) -> list[str]:
+    conditions = []
+    for match in IF_BEGIN_RE.finditer(text):
+        condition = normalize_expr(match.group("condition"))
+        if condition in reset_conditions:
+            continue
+        conditions.append(condition)
+    conditions.extend(case_update_conditions(text))
+    return dedupe_list(conditions)
+
+
+def case_update_conditions(text: str) -> list[str]:
+    conditions = []
+    for match in CASE_BLOCK_RE.finditer(text):
+        selector = normalize_expr(match.group("selector"))
+        for item in CASE_ITEM_RE.finditer(match.group("body")):
+            label = normalize_expr(item.group("label"))
+            if label == "default":
+                conditions.append(f"{selector} default")
+            else:
+                conditions.append(f"{selector} == {label}")
+    return conditions
+
+
+def assignment_values(
+    text: str,
+    known_signals: set[str],
+    limit: int,
+) -> list[dict[str, str]]:
+    records = []
+    for match in ASSIGNMENT_RE.finditer(text):
+        signal = normalize_signal_name(match.group("lhs"))
+        if signal not in known_signals:
+            continue
+        records.append({"signal": signal, "value": normalize_expr(match.group("rhs"))})
+    return records[: max(0, limit)]
+
+
+def assigned_signals_from_text(text: str, known_signals: set[str]) -> set[str]:
+    return {
+        signal
+        for signal in (
+            normalize_signal_name(match.group("lhs"))
+            for match in ASSIGNMENT_RE.finditer(text)
+        )
+        if signal in known_signals
+    }
+
+
+def normalize_signal_name(signal: str) -> str:
+    return str(signal).split("[", 1)[0].rsplit(".", 1)[-1]
+
+
+def normalize_expr(value: Any) -> str:
+    return " ".join(str(value).strip().split())
+
+
+def dedupe_list(values: list[str]) -> list[str]:
+    seen = set()
+    result = []
+    for value in values:
+        if value and value not in seen:
+            result.append(value)
+            seen.add(value)
+    return result
+
+
+def dedupe_records(
+    records: list[dict[str, Any]],
+    key_fields: tuple[str, ...],
+) -> list[dict[str, Any]]:
+    seen = set()
+    result = []
+    for record in records:
+        key = tuple(str(record.get(field, "")) for field in key_fields)
+        if key in seen:
+            continue
+        result.append(record)
+        seen.add(key)
+    return result
 
 
 def trim_source_text(record: dict[str, Any], options: Design2SVAContextOptions) -> dict[str, Any]:
