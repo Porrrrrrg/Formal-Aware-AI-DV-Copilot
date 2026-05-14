@@ -33,6 +33,7 @@ xcelium.d/
 .formal/
 jgproject/
 dist/
+.codex/runs/
 
 # Local secrets and model configs
 .env

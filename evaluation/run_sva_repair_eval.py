@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from copilot.agents.sva_repair_agent import PROMPT_VERSIONS, cex_fields_present, repair_once  # noqa: E402
+from copilot.llm_client import llm_configured  # noqa: E402
 from copilot.sva_library import hallucinated_identifiers, normalize_sva, syntax_scaffold_ok  # noqa: E402
 from evaluation.output_quality import source_summary  # noqa: E402
 from tools.check_generated_sva import check_generated_sva  # noqa: E402
@@ -95,6 +96,7 @@ def run_repair_case(
         "bug_type": case.get("bug_type"),
         "feedback_mode": feedback_mode,
         "prompt_version": prompt_version,
+        "llm_attempted": bool(use_llm or llm_configured(llm_command)),
         "cex_fields_present": initial_cex_fields or {},
         "repair_rounds": repair_rounds,
         "hallucinated_signals": final_metrics.get("hallucinated_identifiers", [])
@@ -267,6 +269,7 @@ def summarize(results: list[dict[str, object]]) -> dict[str, object]:
         "exact_match_round0": rate(rows, lambda row: row["round0_exact_match"] is True),
         "exact_match_final": rate(rows, lambda row: row["final_exact_match"] is True),
         "hallucinated_signal_rate": rate(rows, lambda row: row["final_has_hallucinated_signal"] is True),
+        "hallucinated_signal_checked_count": len(rows),
         "jasper_syntax_pass_final": rate(syntax_rows, lambda row: row["final_jasper_syntax_pass"] is True),
         "proven_final": rate(proof_rows, lambda row: row["final_jasper_proof_status"] == "proven"),
         "vacuous_final": rate(vacuity_rows, lambda row: row["final_jasper_vacuity_status"] == "vacuous"),
@@ -291,6 +294,7 @@ def repair_action_rows(results: list[dict[str, object]]) -> list[dict[str, objec
                         "system": "sva_repair",
                         "feedback_mode": result.get("feedback_mode"),
                         "source": action.get("source", "unknown"),
+                        "llm_attempted": result.get("llm_attempted", False),
                         "llm_error": action.get("llm_error"),
                     }
                 )

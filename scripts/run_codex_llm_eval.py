@@ -9,6 +9,7 @@ require an explicit acknowledgement flag.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -67,7 +68,19 @@ def run_healthcheck(args: argparse.Namespace) -> int:
         print(subprocess.list2cmdline(cmd))
         print(prompt)
         return 0
-    completed = subprocess.run(cmd, input=prompt, text=True, cwd=ROOT, check=False)
+    completed = subprocess.run(
+        cmd,
+        input=prompt,
+        text=True,
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if completed.stdout.strip():
+        print(completed.stdout.strip())
+    if completed.stderr.strip():
+        sys.stderr.write(completed.stderr)
+    print(json.dumps({"codex_healthcheck_summary": healthcheck_summary(completed)}, indent=2))
     return completed.returncode
 
 
@@ -131,7 +144,94 @@ def run_eval_task(args: argparse.Namespace) -> int:
     if not args.acknowledge_external_send:
         sys.stderr.write(EXTERNAL_SEND_WARNING)
         return 2
-    return subprocess.run(cmd, cwd=ROOT, env=env, check=False).returncode
+    completed = subprocess.run(cmd, cwd=ROOT, env=env, check=False)
+    if completed.returncode == 0:
+        print_codex_eval_summary(out_path, args.task)
+    return completed.returncode
+
+
+def healthcheck_summary(completed: subprocess.CompletedProcess[str]) -> dict[str, object]:
+    valid_json = False
+    if completed.returncode == 0 and completed.stdout.strip():
+        try:
+            parsed = json.loads(completed.stdout)
+            valid_json = isinstance(parsed, dict)
+        except json.JSONDecodeError:
+            valid_json = False
+    return {
+        "task": "healthcheck",
+        "llm_attempted_count": 1,
+        "valid_json_count": 1 if valid_json else 0,
+        "valid_json_rate": 1.0 if valid_json else 0.0,
+        "fallback_rate": 0.0,
+        "hallucinated_signal_rate": 0.0,
+        "source_counts": {"llm": 1} if valid_json else {"llm_error": 1},
+        "deterministic_scaffold_count": 0,
+        "real_llm_count": 1 if valid_json else 0,
+        "returncode": completed.returncode,
+    }
+
+
+READINESS_KEYS = (
+    "num_outputs",
+    "llm_attempted_count",
+    "valid_json_count",
+    "valid_json_rate",
+    "fallback_rate",
+    "hallucinated_signal_rate",
+    "hallucinated_signal_checked_count",
+    "source_counts",
+    "output_family_counts",
+    "deterministic_scaffold_count",
+    "deterministic_scaffold_rate",
+    "real_llm_count",
+    "real_llm_rate",
+    "llm_error_count",
+    "llm_error_rate",
+)
+
+
+def print_codex_eval_summary(out_path: Path, task: str) -> None:
+    summary = load_codex_eval_summary(out_path, task)
+    print(json.dumps({"codex_eval_readiness_summary": summary}, indent=2))
+
+
+def load_codex_eval_summary(out_path: Path, task: str) -> dict[str, object]:
+    if not out_path.exists():
+        return {"task": task, "result_file": display_path(out_path), "error": "result file not found"}
+    payload = json.loads(out_path.read_text())
+    result_file = display_path(out_path)
+    if task == "sva_repair":
+        return {
+            "task": task,
+            "result_file": result_file,
+            "metrics": metric_subset(payload.get("summary", {})),
+        }
+    systems = payload.get("systems", {})
+    if isinstance(systems, dict):
+        return {
+            "task": task,
+            "result_file": result_file,
+            "systems": {
+                str(system): metric_subset(summary)
+                for system, summary in systems.items()
+                if isinstance(summary, dict)
+            },
+        }
+    return {"task": task, "result_file": result_file, "error": "unrecognized result payload"}
+
+
+def metric_subset(summary: dict[str, object]) -> dict[str, object]:
+    metrics = {key: summary[key] for key in READINESS_KEYS if key in summary}
+    metrics.setdefault("hallucinated_signal_rate", None)
+    return metrics
+
+
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
 
 
 def main() -> int:

@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT))
 from copilot.agents.dv_triage_agent import diagnose as structured_diagnose  # noqa: E402
 from copilot.baselines.heuristic_baseline import predict as heuristic_predict  # noqa: E402
 from copilot.baselines.raw_log_llm import diagnose_from_raw_log  # noqa: E402
+from copilot.llm_client import llm_configured  # noqa: E402
 from evaluation.metrics import accuracy  # noqa: E402
 from evaluation.output_quality import hallucinated_signals, rate, source_summary  # noqa: E402
 from scripts.build_all_evidence_packets import iter_case_files, resolve_repo_path  # noqa: E402
@@ -108,6 +109,7 @@ def evaluate_system(
 ) -> tuple[dict[str, object], list[dict[str, object]]]:
     rows = []
     predictions = []
+    attempted_llm = bool(use_llm or llm_configured(llm_command))
     for case_path in case_paths:
         case = json.loads(case_path.read_text())
         packet = load_or_build_packet(case_path, packet_root, packet_source)
@@ -119,6 +121,7 @@ def evaluate_system(
                 "case_id": case.get("case_id"),
                 "design_id": case.get("design_id"),
                 "source": prediction.get("source", "unknown"),
+                "llm_attempted": attempted_llm,
                 "llm_error": prediction.get("llm_error"),
                 "gold_issue_type": case.get("expected_issue_type"),
                 "predicted_issue_type": prediction.get("predicted_issue_type"),
@@ -140,6 +143,7 @@ def summarize_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         "issue_type_accuracy": accuracy(rows, "predicted_issue_type", "gold_issue_type"),
         "next_action_accuracy": accuracy(rows, "predicted_next_action", "gold_next_action"),
         "hallucinated_signal_rate": rate(rows, lambda row: bool(row.get("has_hallucinated_signal"))),
+        "hallucinated_signal_checked_count": len(rows),
         "predicted_issue_distribution": dict(
             sorted(collections.Counter(row["predicted_issue_type"] for row in rows).items())
         ),
