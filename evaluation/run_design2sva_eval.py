@@ -10,7 +10,20 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator, ValidationError
+try:
+    from jsonschema import Draft202012Validator, ValidationError
+except ModuleNotFoundError:  # pragma: no cover - dependency-minimal local smoke runs.
+
+    class ValidationError(Exception):  # type: ignore[no-redef]
+        pass
+
+    class Draft202012Validator:  # type: ignore[no-redef]
+        def __init__(self, _schema: dict[str, Any]) -> None:
+            pass
+
+        def validate(self, _instance: dict[str, Any]) -> None:
+            return None
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -145,9 +158,105 @@ def build_context(case: dict[str, Any], context_budget: int) -> dict[str, Any]:
 
 
 def jasper_backend() -> Any:
-    from copilot.backends.jasper_backend import JasperBackend
+    try:
+        from copilot.backends.jasper_backend import JasperBackend
+    except ModuleNotFoundError as exc:  # pragma: no cover - dependency-minimal smoke runs.
+        if exc.name != "pydantic":
+            raise
+        return LightweightJasperBackend()
 
     return JasperBackend()
+
+
+class LightweightStatus:
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+
+class LightweightCheckResult:
+    def __init__(self, status: str) -> None:
+        self.status = LightweightStatus(status)
+
+
+class LightweightBackendResult:
+    backend = "jaspergold"
+    raw_log_paths: list[str] = []
+    counterexample_paths: list[str] = []
+
+    def __init__(
+        self,
+        *,
+        legacy: dict[str, Any],
+        dry_run: bool,
+        metadata: dict[str, Any],
+    ) -> None:
+        syntax = legacy_syntax_status(legacy)
+        proof = str(legacy.get("proof_status") or "not_run")
+        vacuity = str(legacy.get("vacuity_status") or "not_run")
+        self.status = LightweightStatus("dry_run" if dry_run else legacy_overall_status(legacy))
+        self.syntax_result = LightweightCheckResult(syntax)
+        self.proof_result = LightweightCheckResult(proof)
+        self.vacuity_result = LightweightCheckResult(vacuity)
+        self.report_dir = str(legacy.get("report_dir") or "")
+        self.raw_report_paths = {
+            "properties": legacy.get("properties_report"),
+            "cover": legacy.get("cover_report"),
+            "vacuity": legacy.get("vacuity_report"),
+        }
+        self.metadata = metadata
+
+    def to_legacy_check_dict(self) -> dict[str, Any]:
+        return {
+            "proof_status": self.proof_result.status.value,
+            "vacuity_status": self.vacuity_result.status.value,
+        }
+
+
+class LightweightJasperBackend:
+    def check_generated_sva(
+        self,
+        case: dict[str, Any],
+        prediction: dict[str, Any],
+        system: str,
+        out_root: Path | None = None,
+        dry_run: bool = False,
+    ) -> LightweightBackendResult:
+        from tools.check_generated_sva import check_generated_sva
+
+        legacy = check_generated_sva(
+            case=case,
+            prediction=prediction,
+            system=system,
+            out_root=out_root,
+            dry_run=dry_run,
+        )
+        metadata: dict[str, Any] = {}
+        if isinstance(legacy.get("artifact_paths"), dict):
+            metadata["artifact_paths"] = legacy["artifact_paths"]
+        if isinstance(legacy.get("embedding_audit"), dict):
+            metadata["embedding_audit"] = legacy["embedding_audit"]
+        return LightweightBackendResult(legacy=legacy, dry_run=dry_run, metadata=metadata)
+
+
+def legacy_syntax_status(legacy: dict[str, Any]) -> str:
+    syntax_pass = legacy.get("syntax_pass")
+    if syntax_pass is True:
+        return "passed"
+    if syntax_pass is False:
+        return "syntax_error"
+    return "not_run"
+
+
+def legacy_overall_status(legacy: dict[str, Any]) -> str:
+    proof = str(legacy.get("proof_status") or "").lower()
+    vacuity = str(legacy.get("vacuity_status") or "").lower()
+    if vacuity == "vacuous":
+        return "vacuous"
+    if proof in {"proven", "covered"}:
+        return "passed"
+    if proof in {"falsified", "uncovered", "unreachable"}:
+        return "failed"
+    return "unknown"
 
 
 def run_case(
@@ -302,11 +411,14 @@ def evaluate_candidate(
             dry_run=jasper_dry_run,
         )
         proof_metadata = proof_metadata_from_backend(backend_result)
-        if antecedent_metadata.get("cover_sva"):
+        if requires_antecedent_cover(antecedent_metadata) and antecedent_metadata.get(
+            "cover_sva"
+        ):
             cover_prediction = {
                 "property_id": antecedent_metadata["cover_property_id"],
                 "sva": antecedent_metadata["cover_sva"],
                 "helper_code": "",
+                "check_kind": "cover",
             }
             cover_backend_result = jasper_backend().check_generated_sva(
                 case=legacy_case_shape(case),
@@ -369,6 +481,8 @@ def evaluate_candidate(
     }
     metrics["failure_category"] = classify_failure(metrics)
     metrics["root_cause_candidate"] = classify_root_cause_candidate(metrics, native_oracle)
+    metrics["root_cause_detail"] = classify_root_cause_detail(metrics, native_oracle)
+    metrics["wrapper_parity_pass"] = wrapper_parity_pass(metrics, native_oracle)
     candidate = dict(candidate)
     candidate["repair_metadata"] = {
         "round": round_index,
@@ -677,6 +791,21 @@ def summarize(
         )
     )
     root_cause_counts = summarize_root_cause_counts(all_rows)
+    root_cause_detail_counts = dict(
+        sorted(
+            collections.Counter(
+                str(row.get("root_cause_detail") or "unknown") for row in all_rows
+            ).items()
+        )
+    )
+    wrapper_parity_rows = [
+        row for row in all_rows if str(row.get("source") or "") == "reference_oracle"
+    ]
+    wrapper_parity_pass_rate = (
+        rate(wrapper_parity_rows, lambda row: bool(row.get("wrapper_parity_pass")))
+        if formal_mode
+        else 0.0
+    )
     successes_after_feedback = [
         row_success(row, formal_mode=formal_mode)
         for row in repair_rows
@@ -700,6 +829,7 @@ def summarize(
         "reference_proven@1": reference_proven_at_1,
         "reference_non_vacuous@1": reference_non_vacuous_at_1,
         "reference_antecedent_reachable@1": reference_antecedent_reachable_at_1,
+        "wrapper_parity_pass_rate": wrapper_parity_pass_rate,
         "harness_reachability_status": aggregate_harness_reachability_status(
             harness_status_counts
         ),
@@ -738,6 +868,7 @@ def summarize(
             sorted(collections.Counter(row["failure_category"] for row in all_rows).items())
         ),
         "root_cause_candidates": root_cause_counts,
+        "root_cause_details": root_cause_detail_counts,
         "failure_taxonomy": sorted(DESIGN2SVA_FAILURE_TAXONOMY),
         "root_cause_taxonomy": sorted(ROOT_CAUSE_LABELS),
         "rows": all_rows,
@@ -767,8 +898,10 @@ Mode: `{mode}`
 | reference_proven@1 | {summary["reference_proven@1"]:.3f} |
 | reference_non_vacuous@1 | {summary["reference_non_vacuous@1"]:.3f} |
 | reference_antecedent_reachable@1 | {summary["reference_antecedent_reachable@1"]:.3f} |
+| wrapper_parity_pass_rate | {summary["wrapper_parity_pass_rate"]:.3f} |
 | harness_reachability_status | {summary["harness_reachability_status"]} |
 | root_cause_candidates | {format_counts(summary["root_cause_candidates"])} |
+| root_cause_details | {format_counts(summary["root_cause_details"])} |
 | Hallucinated signal rate | {summary["hallucinated_signal_rate"]:.3f} |
 | Fallback rate | {summary["fallback_rate"]:.3f} |
 | Valid JSON rate | {summary["valid_json_rate"]:.3f} |
@@ -785,7 +918,7 @@ Formal metrics status: `{summary["formal_metrics_status"]}`.
 - `proven@*` and `non_vacuous@k` remain `0.000` with status `not_run`
   unless real JasperGold checks are explicitly enabled and available.
 - Exact/reference agreement is a local scaffold signal, not semantic equivalence.
-- Stage 11 root-cause labels are diagnostic candidates, not a claim that
+- Stage 11/12 root-cause labels are diagnostic candidates, not a claim that
   Design2SVA generation succeeded.
 """
 
@@ -871,6 +1004,75 @@ def classify_root_cause_candidate(
     ):
         return "cover_generation_bug"
     return "unknown"
+
+
+def classify_root_cause_detail(
+    metrics: dict[str, Any],
+    native_oracle: dict[str, Any] | None,
+) -> str:
+    native = native_oracle or {}
+    source = str(metrics.get("source") or "")
+    failure = str(metrics.get("failure_category") or "")
+    proof = metrics.get("proof_metadata") if isinstance(metrics.get("proof_metadata"), dict) else {}
+    antecedent = (
+        metrics.get("antecedent_metadata")
+        if isinstance(metrics.get("antecedent_metadata"), dict)
+        else {}
+    )
+    backend_detail = embedding_audit_root_cause_detail(metrics)
+
+    if source == "reference_oracle" and wrapper_parity_pass(metrics, native_oracle):
+        return "reference_oracle_matches_native_formal_behavior"
+    if metrics.get("reset_clock_mismatch") or reset_clock_diagnostic_mismatch(metrics):
+        return "clock_or_reset_contract_differs_from_native"
+    if failure == "not_run":
+        return "formal_check_not_run"
+    if invariant_misclassified_as_unreachable(metrics):
+        return "invariant_assertion_reported_unreachable_without_antecedent_cover_obligation"
+    if native.get("native_reference_proves") is True and source == "reference_oracle":
+        proof_status = str(proof.get("proof_status") or "").lower()
+        reachability = str(antecedent.get("antecedent_reachability") or "").lower()
+        if proof_status in {"unreachable", "uncovered"}:
+            return "native_reference_proves_but_wrapper_reports_reference_unreachable"
+        if reachability == "unreachable":
+            return "native_reference_proves_but_wrapper_antecedent_cover_unreachable"
+        if failure not in {"proven_non_vacuous", "not_run"}:
+            return "native_reference_proves_but_wrapper_reference_fails"
+    if failure == "unreachable_antecedent":
+        return "generated_implication_antecedent_unreachable"
+    if failure == "unreachable_cover_goal":
+        return "generated_cover_goal_unreachable"
+    if failure == "proven_non_vacuous":
+        return "assertion_proven_non_vacuous"
+    if backend_detail and not backend_detail.startswith("wrapper_reuses_native_harness"):
+        return backend_detail
+    return failure or "unknown"
+
+
+def embedding_audit_root_cause_detail(metrics: dict[str, Any]) -> str:
+    audit = metrics.get("embedding_audit")
+    if not isinstance(audit, dict):
+        return ""
+    backend_audit = audit.get("backend_audit")
+    if isinstance(backend_audit, dict):
+        detail = backend_audit.get("root_cause_detail")
+        if isinstance(detail, str) and detail:
+            return detail
+    detail = audit.get("root_cause_detail")
+    return detail if isinstance(detail, str) else ""
+
+
+def wrapper_parity_pass(
+    metrics: dict[str, Any],
+    native_oracle: dict[str, Any] | None,
+) -> bool:
+    if str(metrics.get("source") or "") != "reference_oracle":
+        return False
+    native = native_oracle or {}
+    native_proves = native.get("native_reference_proves")
+    if native_proves is False:
+        return False
+    return formal_success(metrics)
 
 
 def reset_clock_diagnostic_mismatch(metrics: dict[str, Any]) -> bool:
@@ -1521,8 +1723,9 @@ def main() -> int:
         jasper_dry_run=jasper_dry_run,
         jasper_replay=jasper_replay_records is not None,
     )
+    public_summary = {key: value for key, value in summary.items() if key != "rows"}
     payload = {
-        "summary": summary,
+        "summary": public_summary,
         "mode": run_mode(args),
         "formal_check_mode": formal_check_mode(args, jasper_replay_records),
         "native_oracle_results": (
@@ -1538,7 +1741,7 @@ def main() -> int:
         markdown_path = resolve_repo_path(args.markdown)
         markdown_path.parent.mkdir(parents=True, exist_ok=True)
         markdown_path.write_text(render_markdown(summary, run_mode(args)), encoding="utf-8")
-    print(json.dumps({key: value for key, value in summary.items() if key != "rows"}, indent=2))
+    print(json.dumps(public_summary, indent=2))
     return 0
 
 

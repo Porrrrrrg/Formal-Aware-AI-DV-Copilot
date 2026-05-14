@@ -268,9 +268,9 @@ class EvaluationResult(AgentModel):
 
 
 def first_property_status(result: CheckResult) -> str | None:
+    if result.status not in {CheckStatus.NOT_RUN, CheckStatus.PASSED, CheckStatus.FAILED}:
+        return result.status.value
     for row in result.properties:
         if row.get("status"):
             return str(row["status"])
-    if result.status not in {CheckStatus.NOT_RUN, CheckStatus.PASSED, CheckStatus.FAILED}:
-        return result.status.value
     return None

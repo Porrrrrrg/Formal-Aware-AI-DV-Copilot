@@ -30,16 +30,21 @@ class DesignConfig:
     reset_cmd: str
     properties_header: str
     harness: str
+    native_properties: str = ""
+    native_harness: str = ""
+    native_run_tcl: str = ""
+    property_module: str = "generated_sva_properties"
+    property_instance: str = "generated_properties_i"
 
 
 DESIGNS = {
     "arbiter_rr2": DesignConfig(
         rtl="benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
         assumptions="benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
-        top="arbiter_rr2_generated_harness",
+        top="arbiter_rr2_harness",
         clock="clk",
         reset_cmd="reset rst",
-        properties_header="""module generated_sva_properties (
+        properties_header="""module arbiter_rr2_properties (
   input logic clk,
   input logic rst,
   input logic req0,
@@ -48,7 +53,7 @@ DESIGNS = {
   input logic gnt1,
   input logic turn
 );""",
-        harness="""module arbiter_rr2_generated_harness;
+        harness="""module arbiter_rr2_harness;
   logic clk;
   logic rst;
   logic req0;
@@ -68,17 +73,22 @@ DESIGNS = {
   );
 
   arbiter_rr2_assumptions assumptions_i (.*);
-  generated_sva_properties generated_properties_i (.*);
+  arbiter_rr2_properties properties_i (.*);
 endmodule
 """,
+        native_properties="benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+        native_harness="benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+        native_run_tcl="benchmarks/arbiter_rr2/formal/run_jg.tcl",
+        property_module="arbiter_rr2_properties",
+        property_instance="properties_i",
     ),
     "rv_buffer": DesignConfig(
         rtl="benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
         assumptions="benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
-        top="rv_buffer_generated_harness",
+        top="rv_buffer_harness",
         clock="clk",
         reset_cmd="reset rst",
-        properties_header="""module generated_sva_properties #(
+        properties_header="""module rv_buffer_properties #(
   parameter int WIDTH = 8
 ) (
   input logic             clk,
@@ -91,7 +101,7 @@ endmodule
   input logic [WIDTH-1:0] out_data,
   input logic             full
 );""",
-        harness="""module rv_buffer_generated_harness;
+        harness="""module rv_buffer_harness;
   localparam int WIDTH = 8;
 
   logic clk;
@@ -107,17 +117,22 @@ endmodule
   rv_buffer #(.WIDTH(WIDTH)) dut (.*);
 
   rv_buffer_assumptions #(.WIDTH(WIDTH)) assumptions_i (.*);
-  generated_sva_properties #(.WIDTH(WIDTH)) generated_properties_i (.*);
+  rv_buffer_properties #(.WIDTH(WIDTH)) properties_i (.*);
 endmodule
 """,
+        native_properties="benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+        native_harness="benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+        native_run_tcl="benchmarks/rv_buffer/formal/run_jg.tcl",
+        property_module="rv_buffer_properties",
+        property_instance="properties_i",
     ),
     "apb_regblock": DesignConfig(
         rtl="benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
         assumptions="benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
-        top="apb_regblock_generated_harness",
+        top="apb_regblock_harness",
         clock="pclk",
         reset_cmd="reset -expression {!presetn}",
-        properties_header="""module generated_sva_properties (
+        properties_header="""module apb_regblock_properties (
   input logic        pclk,
   input logic        presetn,
   input logic        psel,
@@ -131,7 +146,7 @@ endmodule
   input logic [31:0] reg0,
   input logic [31:0] reg1
 );""",
-        harness="""module apb_regblock_generated_harness;
+        harness="""module apb_regblock_harness;
   logic pclk;
   logic presetn;
   logic psel;
@@ -148,17 +163,22 @@ endmodule
   apb_regblock dut (.*);
 
   apb_regblock_assumptions assumptions_i (.*);
-  generated_sva_properties generated_properties_i (.*);
+  apb_regblock_properties properties_i (.*);
 endmodule
 """,
+        native_properties="benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+        native_harness="benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+        native_run_tcl="benchmarks/apb_regblock/formal/run_jg.tcl",
+        property_module="apb_regblock_properties",
+        property_instance="properties_i",
     ),
     "fifo_1r1w": DesignConfig(
         rtl="benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
         assumptions="benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
-        top="fifo_1r1w_generated_harness",
+        top="fifo_1r1w_harness",
         clock="clk",
         reset_cmd="reset rst",
-        properties_header="""module generated_sva_properties #(
+        properties_header="""module fifo_1r1w_properties #(
   parameter int WIDTH = 8,
   parameter int DEPTH = 4,
   parameter int COUNT_W = $clog2(DEPTH + 1)
@@ -177,7 +197,7 @@ endmodule
   input logic               push_fire,
   input logic               pop_fire
 );""",
-        harness="""module fifo_1r1w_generated_harness;
+        harness="""module fifo_1r1w_harness;
   localparam int WIDTH = 8;
   localparam int DEPTH = 4;
   localparam int COUNT_W = $clog2(DEPTH + 1);
@@ -199,9 +219,14 @@ endmodule
   fifo_1r1w #(.WIDTH(WIDTH), .DEPTH(DEPTH)) dut (.*);
 
   fifo_1r1w_assumptions #(.WIDTH(WIDTH), .DEPTH(DEPTH)) assumptions_i (.*);
-  generated_sva_properties #(.WIDTH(WIDTH), .DEPTH(DEPTH)) generated_properties_i (.*);
+  fifo_1r1w_properties #(.WIDTH(WIDTH), .DEPTH(DEPTH)) properties_i (.*);
 endmodule
 """,
+        native_properties="benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+        native_harness="benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+        native_run_tcl="benchmarks/fifo_1r1w/formal/run_jg.tcl",
+        property_module="fifo_1r1w_properties",
+        property_instance="properties_i",
     ),
 }
 
@@ -231,8 +256,9 @@ def check_generated_sva(
     generated_harness = report_dir / "generated_harness.sv"
     candidate_json = report_dir / "candidate_sva.json"
     generated_properties.write_text(render_generated_properties(config, sva), encoding="utf-8")
-    generated_harness.write_text(config.harness, encoding="utf-8")
+    generated_harness.write_text(render_generated_harness(config), encoding="utf-8")
     candidate_json.write_text(json.dumps(prediction, indent=2) + "\n", encoding="utf-8")
+    formal_mode = infer_formal_mode(prediction)
 
     env = os.environ.copy()
     env["JASPERLOOP_ROOT"] = str(ROOT)
@@ -243,6 +269,12 @@ def check_generated_sva(
     env["JASPERLOOP_TOP"] = config.top
     env["JASPERLOOP_CLOCK"] = config.clock
     env["JASPERLOOP_RESET_CMD"] = config.reset_cmd
+    env["JASPERLOOP_FORMAL_MODE"] = formal_mode
+    env["JASPERLOOP_NATIVE_PROPERTIES"] = str(ROOT / config.native_properties)
+    env["JASPERLOOP_NATIVE_HARNESS"] = str(ROOT / config.native_harness)
+    env["JASPERLOOP_NATIVE_RUN_TCL"] = str(ROOT / config.native_run_tcl)
+    env["JASPERLOOP_PROPERTY_MODULE"] = config.property_module
+    env["JASPERLOOP_PROPERTY_INSTANCE"] = config.property_instance
     env["JASPERLOOP_REPORT_DIR"] = str(report_dir)
 
     tcl = ROOT / "jasper" / "common" / "check_generated_sva.tcl"
@@ -302,6 +334,8 @@ def check_generated_sva(
         )
         return attach_artifacts(result, artifact_paths, embedding_audit)
 
+    clear_stale_reports(report_dir)
+
     if shutil.which(jasper_bin) is None:
         raise RuntimeError(
             f"Cannot find JasperGold executable '{jasper_bin}'. "
@@ -317,7 +351,11 @@ def check_generated_sva(
             stderr=subprocess.STDOUT,
             check=False,
         )
-    syntax_pass = completed.returncode == 0 and (report_dir / "properties.rpt").exists()
+    expected_report = {
+        "cover": report_dir / "cover.rpt",
+        "vacuity": report_dir / "vacuity.rpt",
+    }.get(formal_mode, report_dir / "properties.rpt")
+    syntax_pass = completed.returncode == 0 and expected_report.exists()
     result = summarize_check(
         report_dir,
         property_id,
@@ -331,6 +369,41 @@ def render_generated_properties(config: DesignConfig, sva: str) -> str:
     return config.properties_header + "\n\n  " + sva.strip() + "\n\nendmodule\n"
 
 
+def render_generated_harness(config: DesignConfig) -> str:
+    if config.native_harness:
+        return (ROOT / config.native_harness).read_text(encoding="utf-8")
+    return config.harness
+
+
+def infer_formal_mode(prediction: dict[str, object]) -> str:
+    explicit = str(
+        prediction.get("formal_mode") or prediction.get("check_kind") or ""
+    ).strip().lower()
+    if explicit in {"cover", "vacuity", "prove"}:
+        return explicit
+    sva = str(prediction.get("sva") or "")
+    if re.search(r"\bcover\s+property\b", sva, flags=re.IGNORECASE) and not re.search(
+        r"\bassert\s+property\b",
+        sva,
+        flags=re.IGNORECASE,
+    ):
+        return "cover"
+    return "prove"
+
+
+def clear_stale_reports(report_dir: Path) -> None:
+    for name in (
+        "properties.rpt",
+        "cover.rpt",
+        "vacuity.rpt",
+        "vacuity_error.txt",
+        "jg.log",
+    ):
+        path = report_dir / name
+        if path.exists():
+            path.unlink()
+
+
 def summarize_check(
     report_dir: Path,
     property_id: str,
@@ -338,11 +411,14 @@ def summarize_check(
     returncode: int | None,
     ignore_reports: bool = False,
 ) -> dict[str, object]:
+    properties_path = report_dir / "properties.rpt"
+    cover_path = report_dir / "cover.rpt"
+    proof_path = properties_path if properties_path.exists() else cover_path
     properties = (
         []
         if ignore_reports
-        else parse_report(report_dir / "properties.rpt")
-        if (report_dir / "properties.rpt").exists()
+        else parse_report(proof_path)
+        if proof_path.exists()
         else []
     )
     vacuity = (
@@ -361,7 +437,8 @@ def summarize_check(
         "vacuity_status": vacuity_status,
         "feedback": summarize_feedback(report_dir, properties, vacuity, syntax_pass),
         "report_dir": str(report_dir),
-        "properties_report": str(report_dir / "properties.rpt"),
+        "properties_report": str(properties_path) if properties_path.exists() else None,
+        "cover_report": str(cover_path) if cover_path.exists() else None,
         "vacuity_report": str(report_dir / "vacuity.rpt")
         if (report_dir / "vacuity.rpt").exists()
         else None,
@@ -407,6 +484,7 @@ def build_artifact_paths(
         "run_command": str(run_command),
         "tcl_path": str(tcl),
         "properties_report": str(report_dir / "properties.rpt"),
+        "cover_report": str(report_dir / "cover.rpt"),
         "vacuity_report": str(report_dir / "vacuity.rpt"),
         "log": str(report_dir / "jg.log"),
         "debug_artifact_dir": str(debug_dir),
@@ -533,6 +611,7 @@ def build_embedding_audit(
         ),
         "missing_bind_or_instantiation": audit_missing_bind_or_instantiation(
             design_id=str(case.get("design_id") or ""),
+            property_module=config.property_module,
             generated_harness_text=generated_harness_text,
         ),
         "wrong_include_or_path_metadata": audit_path_metadata(
@@ -571,8 +650,22 @@ def build_embedding_audit(
         for name, check in checks.items()
         if isinstance(check, dict)
     }
+    native_flow = native_flow_metadata(config)
+    wrapper_flow = wrapper_flow_metadata(
+        config=config,
+        generated_properties=generated_properties,
+        generated_harness=generated_harness,
+        tcl=tcl,
+        env=env,
+    )
+    parity = wrapper_parity_checks(
+        native_flow=native_flow,
+        wrapper_flow=wrapper_flow,
+        generated_properties_text=generated_properties_text,
+        generated_harness_text=generated_harness_text,
+    )
     return {
-        "schema_version": "stage11_candidate_embedding_audit_v1",
+        "schema_version": "stage12_wrapper_parity_audit_v1",
         "case_id": str(case.get("case_id") or ""),
         "design_id": str(case.get("design_id") or ""),
         "property_id": property_id,
@@ -600,10 +693,15 @@ def build_embedding_audit(
             "command_text": " ".join(cmd),
             "tcl_path": str(tcl),
         },
+        "native_flow": native_flow,
+        "wrapper_flow": wrapper_flow,
+        "wrapper_parity": parity,
         "expected_clock_reset": expected_clock_reset,
         "checks": checks,
         "issue_flags": issue_flags,
         "issues": [name for name, flagged in issue_flags.items() if flagged],
+        "root_cause_candidate": "unknown" if parity["parity_pass"] else "design2sva_embedding_bug",
+        "root_cause_detail": embedding_root_cause_detail(checks, parity),
         "artifact_paths": artifact_paths,
     }
 
@@ -630,6 +728,24 @@ def render_embedding_audit_markdown(audit: dict[str, object]) -> str:
             lines.append(f"- `{name}`: {'issue' if flagged else 'ok'}")
     else:
         lines.append("- No audit flags were produced.")
+    lines.extend(
+        [
+            "",
+            "## Wrapper Parity",
+            "",
+            f"- Parity pass: `{wrapper_parity_value(audit, 'parity_pass')}`",
+            f"- Root-cause candidate: `{audit.get('root_cause_candidate')}`",
+            f"- Root-cause detail: `{audit.get('root_cause_detail')}`",
+            "",
+        ]
+    )
+    for section in ("native_flow", "wrapper_flow"):
+        value = audit.get(section)
+        lines.extend([f"### {section}", ""])
+        if isinstance(value, dict):
+            lines.extend(["```json", json.dumps(value, indent=2), "```", ""])
+        else:
+            lines.extend(["not available", ""])
     lines.extend(["", "## Compared SVA", ""])
     for key in (
         "original_native_property_expression",
@@ -657,6 +773,136 @@ def render_embedding_audit_markdown(audit: dict[str, object]) -> str:
         if key in artifact_paths:
             lines.append(f"- `{key}`: `{artifact_paths[key]}`")
     return "\n".join(lines) + "\n"
+
+
+def wrapper_parity_value(audit: dict[str, object], key: str) -> object:
+    parity = audit.get("wrapper_parity")
+    if isinstance(parity, dict):
+        return parity.get(key)
+    return None
+
+
+def native_flow_metadata(config: DesignConfig) -> dict[str, object]:
+    return {
+        "rtl": config.rtl,
+        "assumptions": config.assumptions,
+        "properties": config.native_properties,
+        "harness": config.native_harness,
+        "run_tcl": config.native_run_tcl,
+        "file_order": [
+            config.rtl,
+            config.assumptions,
+            config.native_properties,
+            config.native_harness,
+        ],
+        "top_module": config.top,
+        "property_module": config.property_module,
+        "property_instance": config.property_instance,
+        "clock": config.clock,
+        "reset_cmd": config.reset_cmd,
+        "formal_modes": ["prove", "cover", "vacuity"],
+        "include_paths": [],
+    }
+
+
+def wrapper_flow_metadata(
+    config: DesignConfig,
+    generated_properties: Path,
+    generated_harness: Path,
+    tcl: Path,
+    env: dict[str, str],
+) -> dict[str, object]:
+    formal_mode = env.get("JASPERLOOP_FORMAL_MODE", "prove")
+    return {
+        "rtl": config.rtl,
+        "assumptions": config.assumptions,
+        "generated_properties": str(generated_properties),
+        "generated_harness": str(generated_harness),
+        "generated_harness_source": config.native_harness or "inline_generated_harness",
+        "tcl": str(tcl),
+        "file_order": [
+            config.rtl,
+            config.assumptions,
+            str(generated_properties),
+            str(generated_harness),
+        ],
+        "top_module": env.get("JASPERLOOP_TOP", ""),
+        "property_module": config.property_module,
+        "property_instance": config.property_instance,
+        "clock": env.get("JASPERLOOP_CLOCK", ""),
+        "reset_cmd": env.get("JASPERLOOP_RESET_CMD", ""),
+        "formal_mode": formal_mode,
+        "include_paths": [],
+        "binding_style": "native_harness_instantiation",
+    }
+
+
+def wrapper_parity_checks(
+    native_flow: dict[str, object],
+    wrapper_flow: dict[str, object],
+    generated_properties_text: str,
+    generated_harness_text: str,
+) -> dict[str, object]:
+    property_module = str(native_flow.get("property_module") or "")
+    top_module = str(native_flow.get("top_module") or "")
+    assumption_path_match = native_flow.get("assumptions") == wrapper_flow.get("assumptions")
+    rtl_path_match = native_flow.get("rtl") == wrapper_flow.get("rtl")
+    top_match = native_flow.get("top_module") == wrapper_flow.get("top_module")
+    clock_match = native_flow.get("clock") == wrapper_flow.get("clock")
+    reset_match = native_flow.get("reset_cmd") == wrapper_flow.get("reset_cmd")
+    property_module_match = property_module in extract_module_names(generated_properties_text)
+    harness_reused = wrapper_flow.get("generated_harness_source") == native_flow.get("harness")
+    property_instance_connected = bool(
+        property_module
+        and re.search(
+            rf"\b{re.escape(property_module)}\b(?:\s*#\s*\([^;]*?\))?\s+"
+            rf"{re.escape(str(native_flow.get('property_instance') or ''))}\s*\(",
+            generated_harness_text,
+            flags=re.DOTALL,
+        )
+    )
+    top_declared = top_module in extract_module_names(generated_harness_text)
+    critical = {
+        "rtl_path_match": rtl_path_match,
+        "assumptions_path_match": assumption_path_match,
+        "top_module_match": top_match,
+        "top_declared_in_harness": top_declared,
+        "property_module_replaces_native": property_module_match,
+        "property_instance_connected": property_instance_connected,
+        "native_harness_reused": harness_reused,
+        "clock_match": clock_match,
+        "reset_command_match": reset_match,
+    }
+    return {
+        "parity_pass": all(critical.values()),
+        "critical_checks": critical,
+        "file_order_relation": "native_property_module_replaced_in_native_harness_order",
+        "assumptions_applied": assumption_path_match and "assumptions_i" in generated_harness_text,
+        "reset_polarity_source": "native_reset_command",
+        "formal_mode": wrapper_flow.get("formal_mode"),
+    }
+
+
+def embedding_root_cause_detail(
+    checks: dict[str, object],
+    parity: dict[str, object],
+) -> str:
+    if parity.get("parity_pass"):
+        mode = str(parity.get("formal_mode") or "prove")
+        return f"wrapper_reuses_native_harness_with_{mode}_mode"
+    critical = parity.get("critical_checks")
+    if isinstance(critical, dict):
+        missing = [name for name, ok in critical.items() if not ok]
+        if missing:
+            return "wrapper_parity_mismatch:" + ",".join(sorted(missing))
+    issue_names = [
+        name
+        for name, check in checks.items()
+        if isinstance(check, dict) and bool(check.get("has_issue"))
+    ]
+    if issue_names:
+        return "embedding_audit_issue:" + ",".join(sorted(issue_names))
+    return "wrapper_parity_unknown"
 
 
 def audit_label_collisions(
@@ -718,18 +964,22 @@ def audit_wrong_top_module(
 
 def audit_missing_bind_or_instantiation(
     design_id: str,
+    property_module: str,
     generated_harness_text: str,
 ) -> dict[str, object]:
     properties_instantiated = bool(
         re.search(
-            r"\bgenerated_sva_properties\b(?:\s*#\s*\([^;]*?\))?\s+"
+            rf"\b{re.escape(property_module)}\b(?:\s*#\s*\([^;]*?\))?\s+"
             r"[A-Za-z_][A-Za-z0-9_$]*\s*\(",
             generated_harness_text,
             flags=re.DOTALL,
         )
     )
     properties_bound = bool(
-        re.search(r"\bbind\b[^\n;]*\bgenerated_sva_properties\b", generated_harness_text)
+        re.search(
+            rf"\bbind\b[^\n;]*\b{re.escape(property_module)}\b",
+            generated_harness_text,
+        )
     )
     dut_instantiated = bool(
         design_id
@@ -742,6 +992,7 @@ def audit_missing_bind_or_instantiation(
     )
     return {
         "has_issue": not (properties_instantiated or properties_bound),
+        "property_module": property_module,
         "generated_properties_instantiated": properties_instantiated,
         "generated_properties_bound": properties_bound,
         "dut_instantiated": dut_instantiated,

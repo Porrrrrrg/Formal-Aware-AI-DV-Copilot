@@ -122,7 +122,9 @@ def test_design2sva_reference_oracle_dry_run_audits_reference(tmp_path, monkeypa
     assert summary["reference_proven@1"] == 0.0
     assert summary["reference_non_vacuous@1"] == 0.0
     assert summary["reference_antecedent_reachable@1"] == 0.0
+    assert summary["wrapper_parity_pass_rate"] == 0.0
     assert summary["harness_reachability_status"] == "not_run"
+    assert summary["root_cause_details"] == {"formal_check_not_run": 3}
 
     for result in payload["results"]:
         audit = result["harness_reachability_audit"]
@@ -137,6 +139,8 @@ def test_design2sva_reference_oracle_dry_run_audits_reference(tmp_path, monkeypa
             assert audit["cover_sva"]
         assert audit["harness_reachability_status"] == "not_run"
         assert metrics["root_cause_candidate"] == "unknown"
+        assert metrics["root_cause_detail"] == "formal_check_not_run"
+        assert metrics["wrapper_parity_pass"] is False
         assert metrics["reset_release_reachable"] in {"unknown", "not_run"}
         assert "embedding_audit" in metrics
         assert candidate["source"] == "reference_oracle"
@@ -172,19 +176,60 @@ def test_design2sva_reference_oracle_replay_metrics(tmp_path, monkeypatch) -> No
     assert summary["reference_proven@1"] == 1.0
     assert summary["reference_non_vacuous@1"] == 1.0
     assert summary["reference_antecedent_reachable@1"] == 1.0
+    assert summary["wrapper_parity_pass_rate"] == 1.0
     assert summary["harness_reachability_status"] == "mixed"
     assert summary["harness_reachability_status_counts"] == {"not_run": 1, "reachable": 2}
     assert summary["proven@1"] == 1.0
     assert summary["source_counts"] == {"reference_oracle": 3}
+    assert summary["root_cause_details"] == {
+        "reference_oracle_matches_native_formal_behavior": 3
+    }
     for result in payload["results"]:
         audit = result["harness_reachability_audit"]
+        metrics = result["candidate_paths"][0]["rounds"][0]["metrics"]
         assert audit["reference_proven"] is True
         assert audit["reference_non_vacuous"] is True
         assert audit["reference_antecedent_reachable"] is True
+        assert metrics["wrapper_parity_pass"] is True
+        assert metrics["root_cause_detail"] == "reference_oracle_matches_native_formal_behavior"
         if audit["reference_antecedent_metadata"]["trigger_kind"] == "invariant":
             assert audit["cover_status"] == "not_run"
         else:
             assert audit["cover_status"] == "covered"
+
+
+def test_design2sva_reference_oracle_replay_covers_all_fixtures(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    out = tmp_path / "design2sva_reference_oracle_replay_all.json"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "run_design2sva_eval.py",
+            "--k",
+            "1",
+            "--reference-oracle",
+            "--jasper-replay",
+            REFERENCE_ORACLE_REPLAY,
+            "--out",
+            str(out),
+            "--markdown",
+            str(tmp_path / "design2sva_reference_oracle_replay_all.md"),
+        ],
+    )
+
+    assert main() == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    summary = payload["summary"]
+
+    assert summary["num_cases"] == 4
+    assert summary["reference_proven@1"] == 1.0
+    assert summary["reference_non_vacuous@1"] == 1.0
+    assert summary["wrapper_parity_pass_rate"] == 1.0
+    assert summary["root_cause_details"] == {
+        "reference_oracle_matches_native_formal_behavior": 4
+    }
 
 
 def test_unreachable_formal_result_is_not_counted_as_passed() -> None:
@@ -242,10 +287,16 @@ def test_design2sva_anti_vacuity_replay_repairs_nonvacuously(tmp_path, monkeypat
     assert main() == 0
     payload = json.loads(out.read_text(encoding="utf-8"))
     summary = payload["summary"]
-    rows = summary["rows"]
+    rows = [
+        round_record["metrics"]
+        for result in payload["results"]
+        for path in result["candidate_paths"]
+        for round_record in path["rounds"]
+    ]
 
     assert payload["mode"] == "replay"
     assert payload["formal_check_mode"] == "replay"
+    assert "rows" not in summary
     assert summary["formal_metrics_status"] == "replayed"
     assert summary["syntax@1"] == 1.0
     assert summary["proven@1"] == 0.0
