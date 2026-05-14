@@ -82,6 +82,33 @@ def test_design2sva_replay_source_counts(tmp_path, monkeypatch) -> None:
     assert summary["fallback_rate"] == 0.0
 
 
+def test_design2sva_replay_accepts_result_json_source(tmp_path, monkeypatch) -> None:
+    out = tmp_path / "design2sva_committed_result_replay.json"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "run_design2sva_eval.py",
+            "--limit",
+            "1",
+            "--k",
+            "3",
+            "--replay",
+            "evaluation/results/design2sva_eval_codex_subset.json",
+            "--out",
+            str(out),
+            "--markdown",
+            str(tmp_path / "design2sva_committed_result_replay.md"),
+        ],
+    )
+
+    assert main() == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    summary = payload["summary"]
+    assert payload["mode"] == "replay"
+    assert summary["source_counts"] == {"llm": 3}
+    assert summary["fallback_rate"] == 0.0
+
+
 def test_design2sva_reference_oracle_dry_run_audits_reference(tmp_path, monkeypatch) -> None:
     out = tmp_path / "design2sva_reference_oracle.json"
 

@@ -205,6 +205,23 @@ class LightweightBackendResult:
         }
         self.metadata = metadata
 
+    @classmethod
+    def blocked(cls, report_dir: Path, message: str) -> "LightweightBackendResult":
+        result = cls.__new__(cls)
+        result.status = LightweightStatus("blocked")
+        result.syntax_result = LightweightCheckResult("error")
+        result.proof_result = LightweightCheckResult("not_run")
+        result.vacuity_result = LightweightCheckResult("not_run")
+        result.report_dir = str(report_dir)
+        result.raw_report_paths = {
+            "properties": None,
+            "cover": None,
+            "vacuity": None,
+        }
+        result.metadata = {"backend_blocked": {"message": message}}
+        result.feedback = message
+        return result
+
     def to_legacy_check_dict(self) -> dict[str, Any]:
         return {
             "proof_status": self.proof_result.status.value,
@@ -223,13 +240,20 @@ class LightweightJasperBackend:
     ) -> LightweightBackendResult:
         from tools.check_generated_sva import check_generated_sva
 
-        legacy = check_generated_sva(
-            case=case,
-            prediction=prediction,
-            system=system,
-            out_root=out_root,
-            dry_run=dry_run,
-        )
+        try:
+            legacy = check_generated_sva(
+                case=case,
+                prediction=prediction,
+                system=system,
+                out_root=out_root,
+                dry_run=dry_run,
+            )
+        except RuntimeError as exc:
+            root = resolve_repo_path(out_root or Path("jasper/reports/sva_generation"))
+            return LightweightBackendResult.blocked(
+                report_dir=root / system / str(case.get("case_id", "unknown_case")),
+                message=str(exc),
+            )
         metadata: dict[str, Any] = {}
         if isinstance(legacy.get("artifact_paths"), dict):
             metadata["artifact_paths"] = legacy["artifact_paths"]
@@ -798,6 +822,18 @@ def summarize(
             ).items()
         )
     )
+    backend_status_counts = dict(
+        sorted(
+            collections.Counter(
+                str((row.get("proof_metadata") or {}).get("status") or "unknown")
+                for row in all_rows
+            ).items()
+        )
+    )
+    backend_blocked = bool(all_rows) and all(
+        str((row.get("proof_metadata") or {}).get("status") or "").lower() == "blocked"
+        for row in all_rows
+    )
     wrapper_parity_rows = [
         row for row in all_rows if str(row.get("source") or "") == "reference_oracle"
     ]
@@ -834,7 +870,12 @@ def summarize(
             harness_status_counts
         ),
         "harness_reachability_status_counts": harness_status_counts,
-        "formal_metrics_status": formal_metrics_status(formal_mode, jasper_replay),
+        "formal_metrics_status": formal_metrics_status(
+            formal_mode,
+            jasper_replay,
+            backend_blocked=backend_blocked,
+        ),
+        "backend_status_counts": backend_status_counts,
         "hallucinated_signal_rate": rate(
             all_initial_rows,
             lambda row: row["has_hallucinated_signal"],
@@ -869,6 +910,8 @@ def summarize(
         ),
         "root_cause_candidates": root_cause_counts,
         "root_cause_details": root_cause_detail_counts,
+        "root_cause_candidate_counts": root_cause_counts,
+        "root_cause_detail_counts": root_cause_detail_counts,
         "failure_taxonomy": sorted(DESIGN2SVA_FAILURE_TAXONOMY),
         "root_cause_taxonomy": sorted(ROOT_CAUSE_LABELS),
         "rows": all_rows,
@@ -936,9 +979,16 @@ def rate(rows: list[Any], predicate) -> float:
     return sum(1 for row in rows if predicate(row)) / len(rows)
 
 
-def formal_metrics_status(formal_mode: bool, jasper_replay: bool) -> str:
+def formal_metrics_status(
+    formal_mode: bool,
+    jasper_replay: bool,
+    *,
+    backend_blocked: bool = False,
+) -> str:
     if jasper_replay:
         return "replayed"
+    if backend_blocked:
+        return "blocked"
     return "measured" if formal_mode else "not_run"
 
 
@@ -1023,6 +1073,8 @@ def classify_root_cause_detail(
 
     if source == "reference_oracle" and wrapper_parity_pass(metrics, native_oracle):
         return "reference_oracle_matches_native_formal_behavior"
+    if failure == "backend_blocked":
+        return "formal_backend_blocked"
     if metrics.get("reset_clock_mismatch") or reset_clock_diagnostic_mismatch(metrics):
         return "clock_or_reset_contract_differs_from_native"
     if failure == "not_run":

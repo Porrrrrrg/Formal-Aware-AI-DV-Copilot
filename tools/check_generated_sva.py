@@ -255,7 +255,10 @@ def check_generated_sva(
     generated_properties = report_dir / "generated_properties.sv"
     generated_harness = report_dir / "generated_harness.sv"
     candidate_json = report_dir / "candidate_sva.json"
-    generated_properties.write_text(render_generated_properties(config, sva), encoding="utf-8")
+    generated_properties.write_text(
+        render_generated_properties(config, sva, property_id),
+        encoding="utf-8",
+    )
     generated_harness.write_text(render_generated_harness(config), encoding="utf-8")
     candidate_json.write_text(json.dumps(prediction, indent=2) + "\n", encoding="utf-8")
     formal_mode = infer_formal_mode(prediction)
@@ -365,8 +368,29 @@ def check_generated_sva(
     return attach_artifacts(result, artifact_paths, embedding_audit)
 
 
-def render_generated_properties(config: DesignConfig, sva: str) -> str:
-    return config.properties_header + "\n\n  " + sva.strip() + "\n\nendmodule\n"
+def render_generated_properties(config: DesignConfig, sva: str, property_id: str) -> str:
+    return config.properties_header + "\n\n  " + ensure_labeled_property(sva, property_id) + "\n\nendmodule\n"
+
+
+def ensure_labeled_property(sva: str, property_id: str) -> str:
+    stripped = sva.strip()
+    if re.match(
+        r"^[A-Za-z_][A-Za-z0-9_$]*\s*:\s*(?:assert|cover)\s+property\b",
+        stripped,
+        flags=re.IGNORECASE,
+    ):
+        return stripped
+    if re.match(r"^(?:assert|cover)\s+property\b", stripped, flags=re.IGNORECASE):
+        label = sanitize_property_label(property_id)
+        return f"{label}: {stripped}"
+    return stripped
+
+
+def sanitize_property_label(property_id: str) -> str:
+    label = re.sub(r"[^A-Za-z0-9_$]", "_", property_id.strip())
+    if not label or not re.match(r"^[A-Za-z_]", label):
+        label = f"p_{label or 'generated_property'}"
+    return label
 
 
 def render_generated_harness(config: DesignConfig) -> str:

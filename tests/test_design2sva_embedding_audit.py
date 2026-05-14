@@ -119,6 +119,42 @@ def test_design2sva_dry_run_preserves_embedding_artifacts_and_paths(tmp_path: Pa
     assert "Wrapper Parity" in markdown
 
 
+def test_design2sva_wrapper_labels_unlabeled_candidate_with_property_id(
+    tmp_path: Path,
+) -> None:
+    case = {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "clock_reset": {
+            "clock": "clk",
+            "reset": "rst",
+            "clock_edge": "posedge",
+            "reset_polarity": "active_high",
+        },
+        "helper_code_policy": {"allowed": False},
+    }
+    prediction = {
+        "property_id": "p_mutex",
+        "sva": "assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+        "helper_code": "",
+    }
+
+    result = check_generated_sva(
+        case=case,
+        prediction=prediction,
+        system="unlabeled_candidate",
+        out_root=tmp_path,
+        dry_run=True,
+    )
+
+    generated_properties = Path(str(result["artifact_paths"]["generated_properties"]))
+    assert (
+        "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));"
+        in generated_properties.read_text(encoding="utf-8")
+    )
+
+
 def test_design2sva_embedding_audit_flags_string_level_issues(tmp_path: Path) -> None:
     reference = (
         "p_in_ready_when_full_and_out_ready: assert property "

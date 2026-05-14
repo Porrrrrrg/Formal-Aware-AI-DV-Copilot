@@ -75,6 +75,8 @@ def classify_root_cause_candidate(
     metrics = _metrics_from(row)
     native = _native_from(row, native_oracle)
 
+    if _backend_blocked(metrics):
+        return UNKNOWN
     if native and _native_harness_unreachable(native):
         return NATIVE_HARNESS_UNREACHABLE
     if native and _native_reference_invalid(native):
@@ -272,6 +274,8 @@ def _is_reference_embedding_row(metrics: Mapping[str, Any]) -> bool:
 
 
 def _row_failed_or_unreachable(metrics: Mapping[str, Any]) -> bool:
+    if _backend_blocked(metrics):
+        return False
     if _row_proves_non_vacuously(metrics):
         return False
     if _row_unreachable(metrics):
@@ -392,6 +396,8 @@ def _ordinary_candidate_failed_after_harness_proves(
     metrics: Mapping[str, Any],
     native: Mapping[str, Any] | None,
 ) -> bool:
+    if _backend_blocked(metrics):
+        return False
     if _is_reference_embedding_row(metrics):
         return False
     harness_proves = (
@@ -410,6 +416,13 @@ def _proof_metadata(mapping: Mapping[str, Any]) -> Mapping[str, Any]:
         if isinstance(value, Mapping):
             return value
     return mapping
+
+
+def _backend_blocked(metrics: Mapping[str, Any]) -> bool:
+    proof = _proof_metadata(metrics)
+    return _status(metrics.get("failure_category")) == "backend_blocked" or _status(
+        proof.get("status") or metrics.get("status")
+    ) == "blocked"
 
 
 def _mapping(value: Any) -> Mapping[str, Any] | None:
