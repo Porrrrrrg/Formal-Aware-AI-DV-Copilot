@@ -466,7 +466,7 @@ def build_expanded_native_payload(
     payload = build_payload(cases, cases_path=cases_path, variant=variant, dry_run=dry_run)
     summary = payload["summary"]
     metrics = stage15_native_metrics(summary)
-    output_mode = f"{artifact_kind}_dry_run" if dry_run else f"{artifact_kind}_jasper"
+    output_mode = stage15_output_mode(artifact_kind=artifact_kind, dry_run=dry_run)
     payload.update(
         {
             "schema_version": "stage15_native_oracle_expanded_v1",
@@ -499,6 +499,14 @@ def build_expanded_native_payload(
         }
     )
     return payload
+
+
+def stage15_output_mode(*, artifact_kind: str, dry_run: bool) -> str:
+    if dry_run:
+        return f"{artifact_kind}_dry_run"
+    if artifact_kind == "jasper":
+        return "jasper_measured"
+    return f"{artifact_kind}_jasper"
 
 
 def stage15_native_metrics(summary: dict[str, Any]) -> dict[str, Any]:
@@ -1489,7 +1497,10 @@ def build_expanded_reference_payload(
                 "This artifact does not measure generated-candidate quality or production signoff."
             ),
         },
-        "output_mode": f"{artifact_kind}_dry_run" if dry_run else f"{artifact_kind}_jasper",
+        "output_mode": stage15_output_mode(
+            artifact_kind=artifact_kind,
+            dry_run=dry_run,
+        ),
         "prompt_safety": {
             "llm_prompts_sent": False,
             "reference_sva_in_prompts": False,

@@ -2,8 +2,8 @@
   "schema_version": "stage14_reference_oracle_expanded_v1",
   "mode": "design2sva_reference_oracle_expanded",
   "backend": "jaspergold",
-  "dry_run": true,
-  "formal_check_mode": "dry_run",
+  "dry_run": false,
+  "formal_check_mode": "jasper",
   "variant": "correct",
   "cases_path": "benchmarks/design2sva_cases.json",
   "llm_prompts_sent": false,
@@ -14,8 +14,8 @@
   "summary": {
     "num_cases": 12,
     "k": 1,
-    "dry_run": true,
-    "formal_metrics_status": "not_run",
+    "dry_run": false,
+    "formal_metrics_status": "measured",
     "source_counts": {
       "reference_oracle": 12
     },
@@ -24,15 +24,15 @@
     "native_mapped_cases": 12,
     "native_all_cases_mapped": true,
     "wrapper_cases": 12,
-    "wrapper_formal_metrics_status": "not_run",
+    "wrapper_formal_metrics_status": "measured",
     "wrapper_source_counts": {
       "reference_oracle": 12
     },
     "wrapper_failure_categories": {
-      "not_run": 12
+      "proven_non_vacuous": 12
     },
     "wrapper_root_cause_details": {
-      "formal_check_not_run": 12
+      "reference_oracle_matches_native_formal_behavior": 12
     },
     "clock_reset_metadata_checked": 12,
     "reset_clock_mismatch_count": 0,
@@ -41,7 +41,7 @@
     "cover_required_count": 9,
     "cover_generated_count": 9,
     "native_proof_status_counts": {
-      "not_run": 12
+      "proven": 12
     },
     "native_vacuity_status_counts": {
       "not_run": 12
@@ -50,39 +50,39 @@
       "unknown": 12
     },
     "root_cause_summaries": [],
-    "reference_proven@1": 0.0,
-    "reference_non_vacuous@1": 0.0,
-    "reference_antecedent_reachable@1": 0.0,
-    "wrapper_parity_pass_rate": 0.0,
+    "reference_proven@1": 1.0,
+    "reference_non_vacuous@1": 1.0,
+    "reference_antecedent_reachable@1": 1.0,
+    "wrapper_parity_pass_rate": 1.0,
     "root_cause_candidate_counts": {
       "unknown": 12
     },
     "root_cause_detail_counts": {
-      "formal_check_not_run": 12
+      "reference_oracle_matches_native_formal_behavior": 12
     }
   },
   "metrics": {
-    "reference_proven@1": 0.0,
-    "reference_non_vacuous@1": 0.0,
-    "reference_antecedent_reachable@1": 0.0,
-    "wrapper_parity_pass_rate": 0.0,
+    "reference_proven@1": 1.0,
+    "reference_non_vacuous@1": 1.0,
+    "reference_antecedent_reachable@1": 1.0,
+    "wrapper_parity_pass_rate": 1.0,
     "root_cause_candidate_counts": {
       "unknown": 12
     },
     "root_cause_detail_counts": {
-      "formal_check_not_run": 12
+      "reference_oracle_matches_native_formal_behavior": 12
     }
   },
   "native_oracle": {
     "schema_version": "v1",
     "mode": "native_reference_oracle",
     "backend": "jaspergold",
-    "dry_run": true,
+    "dry_run": false,
     "variant": "correct",
     "cases_path": "benchmarks/design2sva_cases.json",
     "summary": {
       "num_cases": 12,
-      "dry_run": true,
+      "dry_run": false,
       "mapped_cases": 12,
       "all_cases_mapped": true,
       "candidate_embedding": false,
@@ -92,26 +92,21 @@
         "fifo_1r1w": 3,
         "rv_buffer": 3
       },
-      "native_reference_proves_count": 0,
+      "native_reference_proves_count": 12,
       "native_reference_does_not_prove_count": 0,
-      "native_reference_unknown_count": 12,
-      "native_reference_proven_rate": null,
-      "native_reference_non_vacuous_rate": null,
+      "native_reference_unknown_count": 0,
+      "native_reference_proven_rate": 1.0,
+      "native_reference_non_vacuous_rate": 0.0,
       "native_failures_by_design": {},
-      "native_unmeasured_by_design": {
-        "apb_regblock": 3,
-        "arbiter_rr2": 3,
-        "fifo_1r1w": 3,
-        "rv_buffer": 3
-      },
+      "native_unmeasured_by_design": {},
       "native_root_cause_counts": {
         "unknown": 12
       },
-      "native_measurement_status": "dry_run_not_measured",
-      "native_measured_cases": 0,
-      "native_unmeasured_cases": 12,
+      "native_measurement_status": "measured",
+      "native_measured_cases": 12,
+      "native_unmeasured_cases": 0,
       "native_proof_status_counts": {
-        "not_run": 12
+        "proven": 12
       },
       "native_vacuity_status_counts": {
         "not_run": 12
@@ -138,18 +133,24 @@
         "native_property_id": "p_mutex",
         "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/arbiter_rr2_correct_prove",
           "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_rv_buffer_ready_full",
@@ -168,18 +169,24 @@
         "native_property_id": "p_in_ready_when_full_and_out_ready",
         "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/rv_buffer_correct_prove",
           "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_apb_setup_enable",
@@ -198,18 +205,24 @@
         "native_property_id": "p_setup_then_enable",
         "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/apb_regblock_correct_prove",
           "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_fifo_no_underflow",
@@ -228,18 +241,24 @@
         "native_property_id": "p_no_underflow",
         "native_property_path": "fifo_1r1w_harness.properties_i.p_no_underflow",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/fifo_1r1w_correct_prove",
           "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_push_data_stable_when_blocked:precondition1: covered; a_pop_ready_eventually:precondition1: covered; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_level_bounds: proven; p_flags_match_level: proven; p_no_underflow: proven",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/fifo_1r1w_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_arbiter_no_spurious_gnt0",
@@ -258,18 +277,24 @@
         "native_property_id": "p_no_spurious_gnt0",
         "native_property_path": "arbiter_rr2_harness.properties_i.p_no_spurious_gnt0",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/arbiter_rr2_correct_prove",
           "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_arbiter_single_req0_grant",
@@ -288,18 +313,24 @@
         "native_property_id": "p_single_req0_grant",
         "native_property_path": "arbiter_rr2_harness.properties_i.p_single_req0_grant",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/arbiter_rr2_correct_prove",
           "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_rv_buffer_out_valid_equals_full",
@@ -318,18 +349,24 @@
         "native_property_id": "p_out_valid_equals_full",
         "native_property_path": "rv_buffer_harness.properties_i.p_out_valid_equals_full",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/rv_buffer_correct_prove",
           "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_rv_buffer_stable_while_stalled",
@@ -348,18 +385,24 @@
         "native_property_id": "p_data_stable_while_stalled",
         "native_property_path": "rv_buffer_harness.properties_i.p_data_stable_while_stalled",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/rv_buffer_correct_prove",
           "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_apb_pready_response_valid",
@@ -378,18 +421,24 @@
         "native_property_id": "p_pready_response_valid",
         "native_property_path": "apb_regblock_harness.properties_i.p_pready_response_valid",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/apb_regblock_correct_prove",
           "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_apb_invalid_address_behavior",
@@ -408,18 +457,24 @@
         "native_property_id": "p_invalid_address_behavior",
         "native_property_path": "apb_regblock_harness.properties_i.p_invalid_address_behavior",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/apb_regblock_correct_prove",
           "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_fifo_no_overflow",
@@ -438,18 +493,24 @@
         "native_property_id": "p_no_overflow",
         "native_property_path": "fifo_1r1w_harness.properties_i.p_no_overflow",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/fifo_1r1w_correct_prove",
           "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_push_data_stable_when_blocked:precondition1: covered; a_pop_ready_eventually:precondition1: covered; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_level_bounds: proven; p_flags_match_level: proven; p_no_underflow: proven",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/fifo_1r1w_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       {
         "case_id": "design2sva_fifo_pop_data_stable",
@@ -468,18 +529,24 @@
         "native_property_id": "p_pop_data_stable_when_stalled",
         "native_property_path": "fifo_1r1w_harness.properties_i.p_pop_data_stable_when_stalled",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/fifo_1r1w_correct_prove",
           "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_push_data_stable_when_blocked:precondition1: covered; a_pop_ready_eventually:precondition1: covered; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_level_bounds: proven; p_flags_match_level: proven; p_no_underflow: proven",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/fifo_1r1w_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       }
     ]
   },
@@ -494,24 +561,25 @@
     },
     "syntax@1": 1.0,
     "syntax@k": 1.0,
-    "proven@1": 0.0,
-    "proven@k": 0.0,
-    "non_vacuous@k": 0.0,
-    "antecedent_reachable@1": 0.0,
-    "antecedent_reachable@k": 0.0,
-    "cover_reachable@k": 0.0,
-    "proven_non_vacuous@k": 0.0,
-    "reference_proven@1": 0.0,
-    "reference_non_vacuous@1": 0.0,
-    "reference_antecedent_reachable@1": 0.0,
-    "wrapper_parity_pass_rate": 0.0,
-    "harness_reachability_status": "not_run",
+    "proven@1": 1.0,
+    "proven@k": 1.0,
+    "non_vacuous@k": 1.0,
+    "antecedent_reachable@1": 1.0,
+    "antecedent_reachable@k": 1.0,
+    "cover_reachable@k": 0.75,
+    "proven_non_vacuous@k": 1.0,
+    "reference_proven@1": 1.0,
+    "reference_non_vacuous@1": 1.0,
+    "reference_antecedent_reachable@1": 1.0,
+    "wrapper_parity_pass_rate": 1.0,
+    "harness_reachability_status": "mixed",
     "harness_reachability_status_counts": {
-      "not_run": 12
+      "not_run": 3,
+      "reachable": 9
     },
-    "formal_metrics_status": "not_run",
+    "formal_metrics_status": "measured",
     "backend_status_counts": {
-      "dry_run": 12
+      "passed": 12
     },
     "hallucinated_signal_rate": 0.0,
     "fallback_rate": 0.0,
@@ -523,19 +591,19 @@
       "reference_oracle": 12
     },
     "failure_categories": {
-      "not_run": 12
+      "proven_non_vacuous": 12
     },
     "root_cause_candidates": {
       "unknown": 12
     },
     "root_cause_details": {
-      "formal_check_not_run": 12
+      "reference_oracle_matches_native_formal_behavior": 12
     },
     "root_cause_candidate_counts": {
       "unknown": 12
     },
     "root_cause_detail_counts": {
-      "formal_check_not_run": 12
+      "reference_oracle_matches_native_formal_behavior": 12
     },
     "failure_taxonomy": [
       "overstrong_assertion",
@@ -582,31 +650,37 @@
         "native_property_id": "p_mutex",
         "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/arbiter_rr2_correct_prove",
           "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_arbiter_mutex",
         "design_id": "arbiter_rr2",
         "property_id": "p_mutex",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -629,11 +703,11 @@
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_arbiter_mutex"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_arbiter_mutex"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_arbiter_mutex",
@@ -669,31 +743,37 @@
         "native_property_id": "p_in_ready_when_full_and_out_ready",
         "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/rv_buffer_correct_prove",
           "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_rv_buffer_ready_full",
         "design_id": "rv_buffer",
         "property_id": "p_in_ready_when_full_and_out_ready",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -711,16 +791,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
           "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_rv_buffer_ready_full"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_rv_buffer_ready_full",
@@ -729,9 +809,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -756,31 +836,37 @@
         "native_property_id": "p_setup_then_enable",
         "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/apb_regblock_correct_prove",
           "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_apb_setup_enable",
         "design_id": "apb_regblock",
         "property_id": "p_setup_then_enable",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "pclk",
           "clock_edge": "posedge",
@@ -798,16 +884,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_setup_then_enable_antecedent",
           "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_apb_setup_enable"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_apb_setup_enable"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_apb_setup_enable",
@@ -816,9 +902,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_setup_then_enable_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -843,31 +929,37 @@
         "native_property_id": "p_no_underflow",
         "native_property_path": "fifo_1r1w_harness.properties_i.p_no_underflow",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/fifo_1r1w_correct_prove",
           "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_push_data_stable_when_blocked:precondition1: covered; a_pop_ready_eventually:precondition1: covered; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_level_bounds: proven; p_flags_match_level: proven; p_no_underflow: proven",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/fifo_1r1w_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_fifo_no_underflow",
         "design_id": "fifo_1r1w",
         "property_id": "p_no_underflow",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -890,11 +982,11 @@
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_fifo_no_underflow"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_fifo_no_underflow"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_fifo_no_underflow",
@@ -930,31 +1022,37 @@
         "native_property_id": "p_no_spurious_gnt0",
         "native_property_path": "arbiter_rr2_harness.properties_i.p_no_spurious_gnt0",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/arbiter_rr2_correct_prove",
           "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_arbiter_no_spurious_gnt0",
         "design_id": "arbiter_rr2",
         "property_id": "p_no_spurious_gnt0",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -972,16 +1070,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
           "cover_sva": "cov_p_no_spurious_gnt0_antecedent: cover property (@(posedge clk) disable iff (rst) (gnt0));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_arbiter_no_spurious_gnt0"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_arbiter_no_spurious_gnt0"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_arbiter_no_spurious_gnt0",
@@ -990,9 +1088,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -1017,31 +1115,37 @@
         "native_property_id": "p_single_req0_grant",
         "native_property_path": "arbiter_rr2_harness.properties_i.p_single_req0_grant",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/arbiter_rr2_correct_prove",
           "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_mutex: proven; p_no_spurious_gnt0: proven; p_no_spurious_gnt0:precondition1: covered; p_no_spurious_gnt1: proven; p_no_spurious_gnt1:precondition1: covered; p_single_req0_grant: proven; p_single_req0_grant:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/arbiter_rr2_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_arbiter_single_req0_grant",
         "design_id": "arbiter_rr2",
         "property_id": "p_single_req0_grant",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -1059,16 +1163,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_single_req0_grant_antecedent",
           "cover_sva": "cov_p_single_req0_grant_antecedent: cover property (@(posedge clk) disable iff (rst) (req0 && !req1));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_arbiter_single_req0_grant"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_arbiter_single_req0_grant"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_arbiter_single_req0_grant",
@@ -1077,9 +1181,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_single_req0_grant_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -1104,31 +1208,37 @@
         "native_property_id": "p_out_valid_equals_full",
         "native_property_path": "rv_buffer_harness.properties_i.p_out_valid_equals_full",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/rv_buffer_correct_prove",
           "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_rv_buffer_out_valid_equals_full",
         "design_id": "rv_buffer",
         "property_id": "p_out_valid_equals_full",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -1151,11 +1261,11 @@
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_rv_buffer_out_valid_equals_full"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_rv_buffer_out_valid_equals_full"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_rv_buffer_out_valid_equals_full",
@@ -1191,31 +1301,37 @@
         "native_property_id": "p_data_stable_while_stalled",
         "native_property_path": "rv_buffer_harness.properties_i.p_data_stable_while_stalled",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/rv_buffer_correct_prove",
           "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_out_valid_equals_full: proven; p_in_ready_when_empty: proven; p_in_ready_when_empty:precondition1: covered; p_in_ready_when_full_and_out_ready: proven; p_in_ready_when_full_and_out_ready:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/rv_buffer_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_rv_buffer_stable_while_stalled",
         "design_id": "rv_buffer",
         "property_id": "p_data_stable_while_stalled",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -1233,16 +1349,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
           "cover_sva": "cov_p_data_stable_while_stalled_antecedent: cover property (@(posedge clk) disable iff (rst) (out_valid && !out_ready));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_rv_buffer_stable_while_stalled"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_rv_buffer_stable_while_stalled"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_rv_buffer_stable_while_stalled",
@@ -1251,9 +1367,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -1278,31 +1394,37 @@
         "native_property_id": "p_pready_response_valid",
         "native_property_path": "apb_regblock_harness.properties_i.p_pready_response_valid",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/apb_regblock_correct_prove",
           "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_apb_pready_response_valid",
         "design_id": "apb_regblock",
         "property_id": "p_pready_response_valid",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "pclk",
           "clock_edge": "posedge",
@@ -1320,16 +1442,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_pready_response_valid_antecedent",
           "cover_sva": "cov_p_pready_response_valid_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_apb_pready_response_valid"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_apb_pready_response_valid"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_apb_pready_response_valid",
@@ -1338,9 +1460,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_pready_response_valid_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -1365,31 +1487,37 @@
         "native_property_id": "p_invalid_address_behavior",
         "native_property_path": "apb_regblock_harness.properties_i.p_invalid_address_behavior",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/apb_regblock_correct_prove",
           "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_apb_enable_follows_setup:precondition1: covered; p_setup_then_enable: proven; p_setup_then_enable:precondition1: covered; p_write_updates_reg0: proven; p_write_updates_reg0:precondition1: covered; p_write_updates_reg1: proven; p_write_updates_reg1:precondition1: covered",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/apb_regblock_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_apb_invalid_address_behavior",
         "design_id": "apb_regblock",
         "property_id": "p_invalid_address_behavior",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "pclk",
           "clock_edge": "posedge",
@@ -1407,16 +1535,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
           "cover_sva": "cov_p_invalid_address_behavior_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable && !(paddr inside {8'h00, 8'h04})));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_apb_invalid_address_behavior"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_apb_invalid_address_behavior"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_apb_invalid_address_behavior",
@@ -1425,9 +1553,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -1452,31 +1580,37 @@
         "native_property_id": "p_no_overflow",
         "native_property_path": "fifo_1r1w_harness.properties_i.p_no_overflow",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/fifo_1r1w_correct_prove",
           "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_push_data_stable_when_blocked:precondition1: covered; a_pop_ready_eventually:precondition1: covered; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_level_bounds: proven; p_flags_match_level: proven; p_no_underflow: proven",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/fifo_1r1w_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_fifo_no_overflow",
         "design_id": "fifo_1r1w",
         "property_id": "p_no_overflow",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -1494,16 +1628,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_no_overflow_antecedent",
           "cover_sva": "cov_p_no_overflow_antecedent: cover property (@(posedge clk) disable iff (rst) (full && push_valid && !pop_ready));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_fifo_no_overflow"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_fifo_no_overflow"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_fifo_no_overflow",
@@ -1512,9 +1646,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_no_overflow_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     },
@@ -1539,31 +1673,37 @@
         "native_property_id": "p_pop_data_stable_when_stalled",
         "native_property_path": "fifo_1r1w_harness.properties_i.p_pop_data_stable_when_stalled",
         "candidate_embedding": false,
-        "native_proof_status": "not_run",
+        "native_proof_status": "proven",
         "native_vacuity_status": "not_run",
         "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
         "native_report_dirs": {
           "prove": "jasper/reports/fifo_1r1w_correct_prove",
           "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
         },
-        "native_reference_proves": null,
+        "native_reference_proves": true,
         "root_cause_candidate": "unknown",
-        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
-        "backend_status": "dry_run",
-        "backend_feedback": "Dry run only; JasperGold was not invoked."
+        "root_cause_summary": "Native benchmark reference property proved without a fixture-level failure.",
+        "backend_status": "passed",
+        "backend_feedback": "Property results: a_reset_deasserts:precondition1: unreachable; a_push_data_stable_when_blocked:precondition1: covered; a_pop_ready_eventually:precondition1: covered; p_reset_empty: proven; p_reset_empty:precondition1: unreachable; p_level_bounds: proven; p_flags_match_level: proven; p_no_underflow: proven",
+        "raw_report_paths": {
+          "prove": {
+            "properties": "jasper/reports/fifo_1r1w_correct_prove/properties.rpt"
+          },
+          "vacuity": {}
+        }
       },
       "wrapper_reference": {
         "case_id": "design2sva_fifo_pop_data_stable",
         "design_id": "fifo_1r1w",
         "property_id": "p_pop_data_stable_when_stalled",
-        "failure_category": "not_run",
+        "failure_category": "proven_non_vacuous",
         "root_cause_candidate": "unknown",
-        "root_cause_detail": "formal_check_not_run",
+        "root_cause_detail": "reference_oracle_matches_native_formal_behavior",
         "reset_clock_mismatch": false,
         "unsupported_helper_code_issue": false,
         "has_hallucinated_signal": false,
         "syntax_ok": true,
-        "wrapper_parity_pass": false,
+        "wrapper_parity_pass": true,
         "clock_reset_metadata": {
           "clock": "clk",
           "clock_edge": "posedge",
@@ -1581,16 +1721,16 @@
           "requires_antecedent_cover": true,
           "cover_property_id": "cov_p_pop_data_stable_when_stalled_antecedent",
           "cover_sva": "cov_p_pop_data_stable_when_stalled_antecedent: cover property (@(posedge clk) disable iff (rst) (pop_valid && !pop_ready));",
-          "cover_status": "dry_run",
-          "antecedent_reachability": "unknown"
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable"
         },
         "proof_metadata": {
           "backend": "jaspergold",
-          "status": "dry_run",
-          "syntax_status": "not_run",
-          "proof_status": null,
-          "vacuity_status": null,
-          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-expanded-oracle-v1\\jasper\\reports\\design2sva_reference_oracle_expanded\\design2sva_c0_r0\\design2sva_fifo_pop_data_stable"
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-expanded-oracle-v1/jasper/reports/design2sva_reference_oracle_expanded_jasper/design2sva_c0_r0/design2sva_fifo_pop_data_stable"
         },
         "harness_reachability_audit": {
           "case_id": "design2sva_fifo_pop_data_stable",
@@ -1599,9 +1739,9 @@
           "reference_available": true,
           "reference_syntax_ok": true,
           "reference_reset_clock_mismatch": false,
-          "harness_reachability_status": "not_run",
+          "harness_reachability_status": "reachable",
           "cover_property_id": "cov_p_pop_data_stable_when_stalled_antecedent",
-          "cover_status": "dry_run"
+          "cover_status": "covered"
         }
       }
     }
@@ -1610,20 +1750,20 @@
     "supported": "Expanded local reference/native oracle and wrapper metadata validation ran without sending prompts.",
     "unsupported": "This artifact does not measure generated-candidate quality or production signoff."
   },
-  "output_mode": "jasper_dry_run",
+  "output_mode": "jasper_measured",
   "prompt_safety": {
     "llm_prompts_sent": false,
     "reference_sva_in_prompts": false,
     "reference_sva_prompt_omission_policy": "copilot.agents.design2sva_agent.PROMPT_OMIT_KEYS removes reference_sva and expected_proof_status recursively."
   },
   "command_metadata": {
-    "artifact_generation_command": "JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg python3.11 evaluation/run_design2sva_native_oracle.py --expanded-jasper --jasper-out-root jasper/reports/design2sva_reference_oracle_expanded --dry-run",
+    "artifact_generation_command": "JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg python3.11 evaluation/run_design2sva_native_oracle.py --expanded-jasper --jasper-out-root jasper/reports/design2sva_reference_oracle_expanded_jasper --dry-run",
     "local_generation_command": "python evaluation/run_design2sva_native_oracle.py --expanded-local",
-    "jasper_dry_run_generation_command": "JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg python3.11 evaluation/run_design2sva_native_oracle.py --expanded-jasper --jasper-out-root jasper/reports/design2sva_reference_oracle_expanded --dry-run",
-    "moore_real_jasper_command": "JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg python3.11 evaluation/run_design2sva_native_oracle.py --expanded-jasper --jasper-out-root jasper/reports/design2sva_reference_oracle_expanded",
+    "jasper_dry_run_generation_command": "JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg python3.11 evaluation/run_design2sva_native_oracle.py --expanded-jasper --jasper-out-root jasper/reports/design2sva_reference_oracle_expanded_jasper --dry-run",
+    "moore_real_jasper_command": "JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg python3.11 evaluation/run_design2sva_native_oracle.py --expanded-jasper --jasper-out-root jasper/reports/design2sva_reference_oracle_expanded_jasper",
     "jasper_bin": "/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg",
     "real_jasper_output_path": "evaluation/results/design2sva_reference_oracle_expanded_jasper.json",
     "external_llms_used": false,
-    "dry_run_reason": "JasperGold was not invoked for this artifact."
+    "dry_run_reason": "JasperGold execution requested through the Design2SVA wrapper."
   }
 }

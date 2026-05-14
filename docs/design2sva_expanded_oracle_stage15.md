@@ -88,6 +88,25 @@ If the native/reference oracle pass rate is low or mixed, first repair or
 filter the oracle set. A real LLM run would otherwise mix candidate-generation
 signal with oracle, wrapper, and harness validity failures.
 
+## Moore/JasperGold Outcome
+
+The Stage 15 Moore run validates the expanded 12-case fixture set as an oracle
+control, not as an LLM-generation result.
+
+- Expanded native oracle: 12/12 references are proven in the native benchmark
+  flow (`native_reference_proven_rate = 1.0`). The native path does not currently
+  report a native non-vacuity proof, so `native_reference_non_vacuous_rate = 0.0`
+  means native vacuity was not measured there, not that the references were
+  shown vacuous.
+- Expanded wrapper reference oracle: 12/12 references are proven non-vacuously
+  through the repaired Design2SVA wrapper (`reference_proven@1 = 1.0`,
+  `reference_non_vacuous@1 = 1.0`, `wrapper_parity_pass_rate = 1.0`).
+- No external LLM prompts were sent. These rows validate the fixture and wrapper
+  path before an expanded real LLM benchmark.
+
+This supports using the expanded 12-case set for the next controlled real LLM
+Design2SVA run, with generated-candidate quality still to be measured.
+
 ## Claim Boundary
 
 Supported:

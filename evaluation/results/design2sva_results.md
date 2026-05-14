@@ -31,9 +31,9 @@ Stage 15 expanded native and wrapper reference-oracle controls are rendered sepa
 | Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
 | design2sva_native_oracle_expanded_local.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=12 | local_dry_run | root causes: unknown=12; native proof: not_run=12; native vacuity: not_run=12 |
-| design2sva_native_oracle_expanded_jasper.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=12 | jasper_dry_run | root causes: unknown=12; native proof: not_run=12; native vacuity: not_run=12 |
+| design2sva_native_oracle_expanded_jasper.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | 1.000 | 1.000 | 0.000 | N/A | N/A | native_reference_oracle=12 | jasper_measured | root causes: unknown=12; native proof: proven=12; native vacuity: not_run=12 |
 | design2sva_reference_oracle_expanded_local.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=12 | local_dry_run | root causes: unknown=12; root details: formal_check_not_run=12; native proof: not_run=12; native vacuity: not_run=12 |
-| design2sva_reference_oracle_expanded_jasper.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=12 | jasper_dry_run | root causes: unknown=12; root details: formal_check_not_run=12; native proof: not_run=12; native vacuity: not_run=12 |
+| design2sva_reference_oracle_expanded_jasper.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=12 | jasper_measured | root causes: unknown=12; root details: reference_oracle_matches_native_formal_behavior=12; native proof: proven=12; native vacuity: not_run=12 |
 
 ## Real LLM Subset
 
