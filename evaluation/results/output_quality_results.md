@@ -6,7 +6,7 @@ The evaluation runners track output provenance and hallucinated suspect signals.
 
 | System | Cases | Source | LLM Success | Fallback | LLM Error | Hallucinated Signal |
 | --- | ---: | --- | ---: | ---: | ---: | ---: |
-| Heuristic | 53 | heuristic=53 | 0.000 | 0.000 | 0.000 | 0.000 |
+| Heuristic | 53 | heuristic=53 | 0.000 | 1.000 | 0.000 | 0.000 |
 | Raw-log fallback | 53 | raw_log_fallback=53 | 0.000 | 1.000 | 0.000 | 0.000 |
 | Structured fallback | 53 | structured_fallback=53 | 0.000 | 1.000 | 0.000 | 0.000 |
 
