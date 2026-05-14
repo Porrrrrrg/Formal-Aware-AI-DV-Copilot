@@ -23,7 +23,7 @@
     "intent_summary": { "type": "string" },
     "source": {
       "type": "string",
-      "enum": ["structured_fallback", "replay", "llm", "repair", "unknown"]
+      "enum": ["structured_fallback", "replay", "llm", "repair", "reference_oracle", "unknown"]
     },
     "repair_metadata": {
       "type": "object",

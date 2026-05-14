@@ -101,8 +101,10 @@ class JasperBackend(FormalBackend):
         log_path = report_dir / "jg.log"
         proof_path = properties_path if properties_path.exists() else cover_path
 
-        proof_properties = parse_report(proof_path) if proof_path.exists() else []
-        vacuity_properties = parse_report(vacuity_path) if vacuity_path.exists() else []
+        proof_properties = [] if dry_run else parse_report(proof_path) if proof_path.exists() else []
+        vacuity_properties = (
+            [] if dry_run else parse_report(vacuity_path) if vacuity_path.exists() else []
+        )
         proof_summary = summarize_properties(proof_properties)
         vacuity_summary = summarize_properties(vacuity_properties)
         focused_proof = focus_property(proof_properties, property_id)

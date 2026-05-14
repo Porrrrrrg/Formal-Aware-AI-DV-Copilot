@@ -254,7 +254,13 @@ def check_generated_sva(
     (report_dir / "run_command.txt").write_text(" ".join(cmd) + "\n")
 
     if dry_run:
-        return summarize_check(report_dir, property_id, syntax_pass=None, returncode=None)
+        return summarize_check(
+            report_dir,
+            property_id,
+            syntax_pass=None,
+            returncode=None,
+            ignore_reports=True,
+        )
 
     if shutil.which(jasper_bin) is None:
         raise RuntimeError(
@@ -284,9 +290,22 @@ def summarize_check(
     property_id: str,
     syntax_pass: bool | None,
     returncode: int | None,
+    ignore_reports: bool = False,
 ) -> dict[str, object]:
-    properties = parse_report(report_dir / "properties.rpt") if (report_dir / "properties.rpt").exists() else []
-    vacuity = parse_report(report_dir / "vacuity.rpt") if (report_dir / "vacuity.rpt").exists() else []
+    properties = (
+        []
+        if ignore_reports
+        else parse_report(report_dir / "properties.rpt")
+        if (report_dir / "properties.rpt").exists()
+        else []
+    )
+    vacuity = (
+        []
+        if ignore_reports
+        else parse_report(report_dir / "vacuity.rpt")
+        if (report_dir / "vacuity.rpt").exists()
+        else []
+    )
     proof_status = find_status(properties, property_id)
     vacuity_status = find_status(vacuity, property_id)
     return {

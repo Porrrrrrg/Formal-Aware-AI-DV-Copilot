@@ -103,6 +103,7 @@ def run_case(
     case: dict[str, Any],
     k: int,
     max_repair_rounds: int,
+    reference_oracle: bool,
     use_llm: bool,
     llm_command: str | None,
     replay_records: list[dict[str, Any]] | None,
@@ -113,19 +114,24 @@ def run_case(
     context_budget: int,
 ) -> dict[str, Any]:
     context = build_context(case, context_budget=context_budget)
-    initial_candidates = generate_candidates(
-        case,
-        context,
-        k=k,
-        use_llm=use_llm,
-        llm_command=llm_command,
-        replay_records=replay_records,
-    )
+    if reference_oracle:
+        initial_candidates = [reference_oracle_candidate(case, context)]
+        effective_max_repair_rounds = 0
+    else:
+        initial_candidates = generate_candidates(
+            case,
+            context,
+            k=k,
+            use_llm=use_llm,
+            llm_command=llm_command,
+            replay_records=replay_records,
+        )
+        effective_max_repair_rounds = max_repair_rounds
     candidate_paths = []
     for candidate_index, candidate in enumerate(initial_candidates):
         rounds = []
         current = candidate
-        for round_index in range(max_repair_rounds + 1):
+        for round_index in range(effective_max_repair_rounds + 1):
             evaluated = evaluate_candidate(
                 case=case,
                 context=context,
@@ -141,7 +147,7 @@ def run_case(
             formal_mode = jasper_check and (jasper_replay_records is not None or not jasper_dry_run)
             if row_success(evaluated["metrics"], formal_mode=formal_mode):
                 break
-            if round_index == max_repair_rounds:
+            if round_index == effective_max_repair_rounds:
                 break
             current = repair_candidate(
                 case,
@@ -160,11 +166,19 @@ def run_case(
             }
         )
 
+    audit_metrics = None
+    if reference_oracle and candidate_paths and candidate_paths[0]["rounds"]:
+        audit_metrics = candidate_paths[0]["rounds"][0]["metrics"]
+
     return {
         "case_id": case["case_id"],
         "design_id": case["design_id"],
         "property_id": case["property_id"],
         "context": context,
+        "harness_reachability_audit": build_reference_harness_reachability_audit(
+            case,
+            metrics=audit_metrics,
+        ),
         "candidate_paths": candidate_paths,
     }
 
@@ -200,14 +214,7 @@ def evaluate_candidate(
         str(candidate.get("property_id") or case["property_id"]),
     )
     backend_result = None
-    proof_metadata = {
-        "backend": "jaspergold",
-        "status": "not_run",
-        "syntax_status": "not_run",
-        "proof_status": None,
-        "vacuity_status": None,
-        "report_dir": None,
-    }
+    proof_metadata = default_proof_metadata()
     if jasper_replay_records is not None:
         proof_metadata = replay_proof_metadata(
             jasper_replay_records,
@@ -272,6 +279,8 @@ def evaluate_candidate(
         "antecedent_metadata": antecedent_metadata,
         "antecedent_reachable": antecedent_reachable(antecedent_metadata),
         "cover_reachable": antecedent_reachable(antecedent_metadata),
+        "clock_reset_metadata": clock_reset_metadata(case),
+        "harness_reachability_status": harness_reachability_status(antecedent_metadata),
     }
     metrics["failure_category"] = classify_failure(metrics)
     candidate = dict(candidate)
@@ -285,6 +294,80 @@ def evaluate_candidate(
     if valid_json:
         validate_candidate(candidate)
     return {"candidate": candidate, "metrics": metrics}
+
+
+def reference_oracle_candidate(case: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    reference = reference_sva(case).strip()
+    if not reference:
+        raise ValueError(f"{case['case_id']} has no evaluation_metadata.reference_sva")
+    raw = {
+        "property_id": str(case["property_id"]),
+        "sva": reference,
+        "helper_code": "",
+        "intent_summary": "Reference oracle assertion from local fixture metadata.",
+        "source": "reference_oracle",
+    }
+    return normalize_candidate(
+        case,
+        context,
+        raw,
+        source="reference_oracle",
+        round_index=0,
+    )
+
+
+def build_reference_harness_reachability_audit(
+    case: dict[str, Any],
+    metrics: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    reference = reference_sva(case).strip()
+    if metrics is not None:
+        antecedent_metadata = dict(metrics.get("antecedent_metadata") or {})
+        proof_metadata = dict(metrics.get("proof_metadata") or default_proof_metadata())
+        syntax_ok = bool(metrics.get("syntax_ok"))
+        reset_clock_issue = bool(metrics.get("reset_clock_mismatch"))
+    else:
+        antecedent_metadata = (
+            build_antecedent_metadata(reference, str(case["property_id"]))
+            if reference
+            else {
+                "extraction_status": "unknown",
+                "reason": "missing_reference_sva",
+                "antecedent": None,
+                "event_control": None,
+                "disable_iff": None,
+                "cover_property_id": "",
+                "cover_sva": "",
+                "cover_status": "unknown",
+                "antecedent_reachability": "unknown",
+            }
+        )
+        proof_metadata = default_proof_metadata()
+        syntax_ok = syntax_scaffold_ok(reference) if reference else False
+        reset_clock_issue = reset_clock_mismatch(case, reference) if reference else True
+
+    reachable = antecedent_reachable(antecedent_metadata)
+    proven = proof_status_is_proven(proof_metadata)
+    non_vacuous = proven and proof_not_vacuous(proof_metadata) and reachable
+    return {
+        "case_id": case["case_id"],
+        "design_id": case["design_id"],
+        "property_id": case["property_id"],
+        "reference_available": bool(reference),
+        "reference_sva": reference,
+        "clock_reset_metadata": clock_reset_metadata(case),
+        "reference_reset_clock_mismatch": reset_clock_issue,
+        "reference_syntax_ok": syntax_ok,
+        "reference_proof_metadata": proof_metadata,
+        "reference_antecedent_metadata": antecedent_metadata,
+        "reference_antecedent_reachable": reachable,
+        "reference_proven": proven,
+        "reference_non_vacuous": non_vacuous,
+        "harness_reachability_status": harness_reachability_status(antecedent_metadata),
+        "cover_property_id": antecedent_metadata.get("cover_property_id"),
+        "cover_sva": antecedent_metadata.get("cover_sva"),
+        "cover_status": antecedent_metadata.get("cover_status"),
+    }
 
 
 def repair_candidate(
@@ -407,7 +490,11 @@ def summarize(
     all_rows = []
     repair_rows = []
     final_rows = []
+    reference_audits = []
     for result in results:
+        audit = result.get("harness_reachability_audit")
+        if isinstance(audit, dict):
+            reference_audits.append(audit)
         for path in result["candidate_paths"]:
             rounds = path["rounds"]
             if not rounds:
@@ -474,6 +561,29 @@ def summarize(
         if formal_mode
         else 0.0
     )
+    reference_proven_at_1 = (
+        rate(reference_audits, lambda audit: bool(audit.get("reference_proven")))
+        if formal_mode
+        else 0.0
+    )
+    reference_non_vacuous_at_1 = (
+        rate(reference_audits, lambda audit: bool(audit.get("reference_non_vacuous")))
+        if formal_mode
+        else 0.0
+    )
+    reference_antecedent_reachable_at_1 = (
+        rate(reference_audits, lambda audit: bool(audit.get("reference_antecedent_reachable")))
+        if formal_mode
+        else 0.0
+    )
+    harness_status_counts = dict(
+        sorted(
+            collections.Counter(
+                str(audit.get("harness_reachability_status") or "unknown")
+                for audit in reference_audits
+            ).items()
+        )
+    )
     successes_after_feedback = [
         row_success(row, formal_mode=formal_mode)
         for row in repair_rows
@@ -494,6 +604,13 @@ def summarize(
         "antecedent_reachable@k": antecedent_reachable_at_k,
         "cover_reachable@k": cover_reachable_at_k,
         "proven_non_vacuous@k": proven_non_vacuous_at_k,
+        "reference_proven@1": reference_proven_at_1,
+        "reference_non_vacuous@1": reference_non_vacuous_at_1,
+        "reference_antecedent_reachable@1": reference_antecedent_reachable_at_1,
+        "harness_reachability_status": aggregate_harness_reachability_status(
+            harness_status_counts
+        ),
+        "harness_reachability_status_counts": harness_status_counts,
         "formal_metrics_status": formal_metrics_status(formal_mode, jasper_replay),
         "hallucinated_signal_rate": rate(
             all_initial_rows,
@@ -552,6 +669,10 @@ Mode: `{mode}`
 | antecedent_reachable@k | {summary["antecedent_reachable@k"]:.3f} |
 | cover_reachable@k | {summary["cover_reachable@k"]:.3f} |
 | proven_non_vacuous@k | {summary["proven_non_vacuous@k"]:.3f} |
+| reference_proven@1 | {summary["reference_proven@1"]:.3f} |
+| reference_non_vacuous@1 | {summary["reference_non_vacuous@1"]:.3f} |
+| reference_antecedent_reachable@1 | {summary["reference_antecedent_reachable@1"]:.3f} |
+| harness_reachability_status | {summary["harness_reachability_status"]} |
 | Hallucinated signal rate | {summary["hallucinated_signal_rate"]:.3f} |
 | Fallback rate | {summary["fallback_rate"]:.3f} |
 | Valid JSON rate | {summary["valid_json_rate"]:.3f} |
@@ -590,6 +711,23 @@ def formal_metrics_status(formal_mode: bool, jasper_replay: bool) -> str:
     return "measured" if formal_mode else "not_run"
 
 
+def aggregate_harness_reachability_status(counts: dict[str, int]) -> str:
+    if not counts:
+        return "not_run"
+    nonzero = {status for status, count in counts.items() if count > 0}
+    if not nonzero:
+        return "not_run"
+    if len(nonzero) == 1:
+        return next(iter(nonzero))
+    if "unreachable" in nonzero:
+        return "unreachable"
+    if "syntax_error" in nonzero:
+        return "syntax_error"
+    if nonzero <= {"not_run", "unknown"}:
+        return "not_run" if "not_run" in nonzero else "unknown"
+    return "mixed"
+
+
 def formal_success(row: dict[str, Any]) -> bool:
     proof = row.get("proof_metadata", {})
     proof_status = str(proof.get("proof_status") or "").lower()
@@ -613,6 +751,17 @@ def cover_reachable_row(row: dict[str, Any]) -> bool:
     return str(metadata.get("cover_status") or "").lower() in {"covered", "proven", "reachable"}
 
 
+def default_proof_metadata(backend: str = "jaspergold") -> dict[str, Any]:
+    return {
+        "backend": backend,
+        "status": "not_run",
+        "syntax_status": "not_run",
+        "proof_status": None,
+        "vacuity_status": None,
+        "report_dir": None,
+    }
+
+
 def proof_metadata_from_backend(backend_result: Any) -> dict[str, Any]:
     legacy = backend_result.to_legacy_check_dict()
     return {
@@ -622,6 +771,43 @@ def proof_metadata_from_backend(backend_result: Any) -> dict[str, Any]:
         "proof_status": legacy.get("proof_status"),
         "vacuity_status": legacy.get("vacuity_status"),
         "report_dir": backend_result.report_dir,
+    }
+
+
+def proof_status_is_proven(proof_metadata: dict[str, Any]) -> bool:
+    return str(proof_metadata.get("proof_status") or "").lower() == "proven"
+
+
+def proof_not_vacuous(proof_metadata: dict[str, Any]) -> bool:
+    return str(proof_metadata.get("vacuity_status") or "").lower() != "vacuous"
+
+
+def harness_reachability_status(antecedent_metadata: dict[str, Any]) -> str:
+    reachability = str(antecedent_metadata.get("antecedent_reachability") or "").lower()
+    if reachability in {"reachable", "unreachable"}:
+        return reachability
+    cover_status = str(antecedent_metadata.get("cover_status") or "").lower()
+    if cover_status in {"not_run", "dry_run", "none", ""}:
+        return "not_run"
+    if cover_status in {"uncovered", "not_covered", "bounded_uncovered"}:
+        return "bounded_uncovered"
+    if cover_status in {"syntax_error", "syntax_failed", "parse_error", "elaboration_error"}:
+        return "syntax_error"
+    return "unknown"
+
+
+def clock_reset_metadata(case: dict[str, Any]) -> dict[str, Any]:
+    clock_reset = case.get("clock_reset", {})
+    if not isinstance(clock_reset, dict):
+        clock_reset = {}
+    return {
+        "clock": str(clock_reset.get("clock") or ""),
+        "clock_edge": str(clock_reset.get("clock_edge") or ""),
+        "reset": str(clock_reset.get("reset") or ""),
+        "reset_polarity": str(clock_reset.get("reset_polarity") or ""),
+        "module_name": str(case.get("module_name") or case.get("design_id") or ""),
+        "harness_header_path": str(case.get("harness_header_path") or ""),
+        "design_rtl_path": str(case.get("design_rtl_path") or ""),
     }
 
 
@@ -764,6 +950,8 @@ def legacy_case_shape(case: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_mode(args: argparse.Namespace) -> str:
+    if args.reference_oracle:
+        return "reference_oracle"
     if args.replay:
         return "replay"
     if args.llm:
@@ -789,6 +977,11 @@ def main() -> int:
     parser.add_argument("--k", type=int, default=1)
     parser.add_argument("--max-repair-rounds", type=int, default=1)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--reference-oracle",
+        action="store_true",
+        help="Evaluate local evaluation_metadata.reference_sva without invoking generation.",
+    )
     parser.add_argument("--replay", nargs="?", const=DEFAULT_REPLAY_PATH, type=Path)
     parser.add_argument("--llm", action="store_true")
     parser.add_argument("--llm-command")
@@ -814,9 +1007,10 @@ def main() -> int:
             case=case,
             k=args.k,
             max_repair_rounds=args.max_repair_rounds,
-            use_llm=args.llm,
+            reference_oracle=args.reference_oracle,
+            use_llm=bool(args.llm and not args.reference_oracle),
             llm_command=args.llm_command,
-            replay_records=replay_records,
+            replay_records=None if args.reference_oracle else replay_records,
             jasper_check=jasper_check,
             jasper_dry_run=jasper_dry_run,
             jasper_replay_records=jasper_replay_records,
