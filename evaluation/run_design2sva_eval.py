@@ -23,25 +23,39 @@ from copilot.agents.design2sva_agent import (  # noqa: E402
     structured_candidate,
     validate_candidate,
 )
-from copilot.backends.jasper_backend import JasperBackend  # noqa: E402
+from copilot.agents.design2sva_reachability import (  # noqa: E402
+    antecedent_reachable,
+    antecedent_unreachable,
+    apply_cover_status,
+    build_antecedent_metadata,
+)
 from copilot.retrieval import Design2SVAContextOptions, build_design2sva_context  # noqa: E402
-from copilot.sva_library import hallucinated_identifiers, normalize_sva, syntax_scaffold_ok  # noqa: E402
+from copilot.sva_library import (  # noqa: E402
+    hallucinated_identifiers,
+    normalize_sva,
+    syntax_scaffold_ok,
+)
 
 DEFAULT_CASES = Path("benchmarks/design2sva_cases.json")
 DEFAULT_OUT = Path("evaluation/results/design2sva_eval_local.json")
 DEFAULT_MARKDOWN = Path("evaluation/results/design2sva_results.md")
+DEFAULT_JASPER_REPLAY_PATH = Path("evaluation/fixtures/design2sva_anti_vacuity_replay.jsonl")
 TASK_SCHEMA = ROOT / "copilot" / "schemas" / "design2sva_task.schema.json"
 
-FAILURE_CATEGORIES = {
-    "passed",
+DESIGN2SVA_FAILURE_TAXONOMY = {
     "syntax_error",
     "unknown_signal",
     "reset_clock_mismatch",
+    "unsupported_helper_code",
     "overstrong_assertion",
     "weak_vacuous_assertion",
+    "unreachable_antecedent",
+    "unreachable_cover_goal",
     "temporal_mismatch",
-    "unsupported_helper_code_issue",
-    "invalid_json",
+    "proven_non_vacuous",
+}
+
+FAILURE_CATEGORIES = DESIGN2SVA_FAILURE_TAXONOMY | {
     "backend_blocked",
     "not_run",
 }
@@ -79,6 +93,12 @@ def build_context(case: dict[str, Any], context_budget: int) -> dict[str, Any]:
     )
 
 
+def jasper_backend() -> Any:
+    from copilot.backends.jasper_backend import JasperBackend
+
+    return JasperBackend()
+
+
 def run_case(
     case: dict[str, Any],
     k: int,
@@ -88,6 +108,7 @@ def run_case(
     replay_records: list[dict[str, Any]] | None,
     jasper_check: bool,
     jasper_dry_run: bool,
+    jasper_replay_records: list[dict[str, Any]] | None,
     jasper_out_root: Path,
     context_budget: int,
 ) -> dict[str, Any]:
@@ -113,14 +134,24 @@ def run_case(
                 round_index=round_index,
                 jasper_check=jasper_check,
                 jasper_dry_run=jasper_dry_run,
+                jasper_replay_records=jasper_replay_records,
                 jasper_out_root=jasper_out_root,
             )
             rounds.append(evaluated)
-            if row_success(evaluated["metrics"], formal_mode=jasper_check and not jasper_dry_run):
+            formal_mode = jasper_check and (jasper_replay_records is not None or not jasper_dry_run)
+            if row_success(evaluated["metrics"], formal_mode=formal_mode):
                 break
             if round_index == max_repair_rounds:
                 break
-            current = repair_candidate(case, context, current, evaluated["metrics"], round_index + 1)
+            current = repair_candidate(
+                case,
+                context,
+                current,
+                evaluated["metrics"],
+                candidate_index,
+                round_index + 1,
+                replay_records=replay_records,
+            )
         candidate_paths.append(
             {
                 "candidate_index": candidate_index,
@@ -146,6 +177,7 @@ def evaluate_candidate(
     round_index: int,
     jasper_check: bool,
     jasper_dry_run: bool,
+    jasper_replay_records: list[dict[str, Any]] | None,
     jasper_out_root: Path,
 ) -> dict[str, Any]:
     validation_error = ""
@@ -163,6 +195,10 @@ def evaluate_candidate(
     reset_clock_issue = reset_clock_mismatch(case, sva)
     reference = reference_sva(case)
     exact_match = normalize_sva(sva) == normalize_sva(reference) if reference else None
+    antecedent_metadata = build_antecedent_metadata(
+        sva,
+        str(candidate.get("property_id") or case["property_id"]),
+    )
     backend_result = None
     proof_metadata = {
         "backend": "jaspergold",
@@ -172,22 +208,50 @@ def evaluate_candidate(
         "vacuity_status": None,
         "report_dir": None,
     }
-    if jasper_check:
-        backend_result = JasperBackend().check_generated_sva(
+    if jasper_replay_records is not None:
+        proof_metadata = replay_proof_metadata(
+            jasper_replay_records,
+            case,
+            candidate_index,
+            round_index,
+            check_kind="assertion",
+            default_backend="jaspergold_replay",
+        )
+        cover_metadata = replay_proof_metadata(
+            jasper_replay_records,
+            case,
+            candidate_index,
+            round_index,
+            check_kind="cover",
+            default_backend="jaspergold_replay",
+        )
+        antecedent_metadata = apply_cover_status(antecedent_metadata, cover_metadata)
+    elif jasper_check:
+        backend_result = jasper_backend().check_generated_sva(
             case=legacy_case_shape(case),
             prediction=candidate,
             system=f"design2sva_c{candidate_index}_r{round_index}",
             out_root=jasper_out_root,
             dry_run=jasper_dry_run,
         )
-        proof_metadata = {
-            "backend": backend_result.backend,
-            "status": backend_result.status.value,
-            "syntax_status": backend_result.syntax_result.status.value,
-            "proof_status": backend_result.to_legacy_check_dict().get("proof_status"),
-            "vacuity_status": backend_result.to_legacy_check_dict().get("vacuity_status"),
-            "report_dir": backend_result.report_dir,
-        }
+        proof_metadata = proof_metadata_from_backend(backend_result)
+        if antecedent_metadata.get("cover_sva"):
+            cover_prediction = {
+                "property_id": antecedent_metadata["cover_property_id"],
+                "sva": antecedent_metadata["cover_sva"],
+                "helper_code": "",
+            }
+            cover_result = jasper_backend().check_generated_sva(
+                case=legacy_case_shape(case),
+                prediction=cover_prediction,
+                system=f"design2sva_c{candidate_index}_r{round_index}_antecedent_cover",
+                out_root=jasper_out_root,
+                dry_run=jasper_dry_run,
+            )
+            antecedent_metadata = apply_cover_status(
+                antecedent_metadata,
+                proof_metadata_from_backend(cover_result),
+            )
 
     metrics = {
         "case_id": case["case_id"],
@@ -205,6 +269,9 @@ def evaluate_candidate(
         "unsupported_helper_code_issue": helper_issue,
         "source": candidate.get("source", "unknown"),
         "proof_metadata": proof_metadata,
+        "antecedent_metadata": antecedent_metadata,
+        "antecedent_reachable": antecedent_reachable(antecedent_metadata),
+        "cover_reachable": antecedent_reachable(antecedent_metadata),
     }
     metrics["failure_category"] = classify_failure(metrics)
     candidate = dict(candidate)
@@ -225,9 +292,17 @@ def repair_candidate(
     context: dict[str, Any],
     candidate: dict[str, Any],
     metrics: dict[str, Any],
+    candidate_index: int,
     round_index: int,
+    replay_records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    repaired = structured_candidate(case)
+    repaired = (
+        replay_candidate_for_round(case, replay_records, candidate_index, round_index)
+        if replay_records is not None
+        else None
+    )
+    if repaired is None:
+        repaired = structured_candidate(case)
     repaired["source"] = "repair"
     repaired["failure_category"] = metrics["failure_category"]
     repaired["feedback"] = failure_feedback(metrics)
@@ -239,9 +314,9 @@ def repair_candidate(
 
 def classify_failure(metrics: dict[str, Any]) -> str:
     if not metrics["valid_json"]:
-        return "invalid_json"
+        return "syntax_error"
     if metrics["unsupported_helper_code_issue"]:
-        return "unsupported_helper_code_issue"
+        return "unsupported_helper_code"
     if metrics["has_hallucinated_signal"]:
         return "unknown_signal"
     if not metrics["syntax_ok"]:
@@ -253,45 +328,85 @@ def classify_failure(metrics: dict[str, Any]) -> str:
         return "syntax_error"
     if metrics["reset_clock_mismatch"]:
         return "reset_clock_mismatch"
-    if proof.get("vacuity_status") == "vacuous" or proof.get("status") == "vacuous":
-        return "weak_vacuous_assertion"
-    if proof.get("proof_status") == "falsified":
+    proof_status = str(proof.get("proof_status") or "").lower()
+    vacuity_status = str(proof.get("vacuity_status") or "").lower()
+    backend_status = str(proof.get("status") or "").lower()
+    antecedent = metrics.get("antecedent_metadata", {})
+    if proof_status == "falsified":
         return "overstrong_assertion"
-    if proof.get("proof_status") in {"unreachable", "uncovered"}:
+    if vacuity_status == "vacuous" or backend_status == "vacuous":
         return "weak_vacuous_assertion"
-    if proof.get("proof_status") in {"undetermined", "unknown"}:
+    if antecedent_unreachable(antecedent):
+        if str(antecedent.get("extraction_status")) == "extracted":
+            return "unreachable_antecedent"
+        return "unreachable_cover_goal"
+    if proof_status == "uncovered":
+        return "unreachable_cover_goal"
+    if proof_status == "unreachable":
+        if str(antecedent.get("extraction_status")) == "extracted":
+            return "unreachable_antecedent"
+        return "unreachable_cover_goal"
+    if proof_status in {"undetermined", "unknown"}:
         return "temporal_mismatch"
+    if formal_success(metrics):
+        return "proven_non_vacuous"
     if metrics["exact_match"] is False:
         return "temporal_mismatch"
-    if proof.get("status") == "dry_run":
+    if backend_status == "dry_run" or proof_status in {"", "not_run"}:
         return "not_run"
-    return "passed"
+    return "temporal_mismatch"
 
 
 def failure_feedback(metrics: dict[str, Any]) -> str:
     category = str(metrics.get("failure_category", "not_run"))
     if category == "unknown_signal":
-        return "Candidate references unknown signals: " + ", ".join(metrics["hallucinated_identifiers"])
-    if category == "unsupported_helper_code_issue":
+        return "Candidate references unknown signals: " + ", ".join(
+            metrics["hallucinated_identifiers"]
+        )
+    if category == "unsupported_helper_code":
         return "Candidate uses helper code when the task policy disallows helper code."
     if category == "reset_clock_mismatch":
         return "Candidate clock/reset event does not match the task clock/reset contract."
     if category == "syntax_error":
         return "Candidate failed local or Jasper SVA syntax checks."
+    if category == "unreachable_antecedent":
+        return (
+            "Candidate trigger is unreachable. Weaken or correct the antecedent, remove "
+            "impossible state assumptions, align reset polarity, or use a simpler "
+            "interface-level safety invariant."
+        )
+    if category == "unreachable_cover_goal":
+        return (
+            "Candidate cover goal is unreachable or uncovered. Replace impossible cover "
+            "conditions with a reachable trigger or fall back to a simpler invariant."
+        )
     if category == "weak_vacuous_assertion":
-        return "Candidate appears weak or vacuous under available feedback."
+        return (
+            "Candidate appears weak or vacuous. Repair should target reachable trigger "
+            "conditions before preserving assertion shape."
+        )
     if category == "overstrong_assertion":
         return "Candidate was falsified; it may be overstrong for the design and harness."
     if category == "temporal_mismatch":
-        return "Candidate syntax is valid but temporal behavior does not match available reference feedback."
+        return (
+            "Candidate syntax is valid but temporal behavior does not match "
+            "available reference feedback."
+        )
     return "No repair feedback was required."
 
 
-def summarize(results: list[dict[str, Any]], k: int, jasper_check: bool, jasper_dry_run: bool) -> dict[str, Any]:
+def summarize(
+    results: list[dict[str, Any]],
+    k: int,
+    jasper_check: bool,
+    jasper_dry_run: bool,
+    jasper_replay: bool = False,
+) -> dict[str, Any]:
     first_round_rows = []
     all_initial_rows = []
     all_rows = []
     repair_rows = []
+    final_rows = []
     for result in results:
         for path in result["candidate_paths"]:
             rounds = path["rounds"]
@@ -299,12 +414,14 @@ def summarize(results: list[dict[str, Any]], k: int, jasper_check: bool, jasper_
                 continue
             all_initial_rows.append(rounds[0]["metrics"])
             all_rows.extend(round_record["metrics"] for round_record in rounds)
+            final_rows.append(path["final_metrics"])
             if path["candidate_index"] == 0:
                 first_round_rows.append(rounds[0]["metrics"])
             repair_rows.extend(round_record["metrics"] for round_record in rounds[1:])
 
-    formal_mode = jasper_check and not jasper_dry_run
+    formal_mode = jasper_check and (jasper_replay or not jasper_dry_run)
     first_by_case = group_initial_by_case(all_initial_rows)
+    final_by_case = group_initial_by_case(final_rows)
     syntax_at_1 = rate(first_round_rows, lambda row: row["syntax_ok"])
     syntax_at_k = rate(
         list(first_by_case.values()),
@@ -312,7 +429,10 @@ def summarize(results: list[dict[str, Any]], k: int, jasper_check: bool, jasper_
     )
     proven_at_1 = rate(first_round_rows, formal_success) if formal_mode else 0.0
     proven_at_k = (
-        rate(list(first_by_case.values()), lambda rows: any(formal_success(row) for row in rows[:k]))
+        rate(
+            list(first_by_case.values()),
+            lambda rows: any(formal_success(row) for row in rows[:k]),
+        )
         if formal_mode
         else 0.0
     )
@@ -327,8 +447,37 @@ def summarize(results: list[dict[str, Any]], k: int, jasper_check: bool, jasper_
         if formal_mode
         else 0.0
     )
+    antecedent_reachable_at_1 = (
+        rate(first_round_rows, antecedent_reachable_row) if formal_mode else 0.0
+    )
+    antecedent_reachable_at_k = (
+        rate(
+            list(first_by_case.values()),
+            lambda rows: any(antecedent_reachable_row(row) for row in rows[:k]),
+        )
+        if formal_mode
+        else 0.0
+    )
+    cover_reachable_at_k = (
+        rate(
+            list(first_by_case.values()),
+            lambda rows: any(cover_reachable_row(row) for row in rows[:k]),
+        )
+        if formal_mode
+        else 0.0
+    )
+    proven_non_vacuous_at_k = (
+        rate(
+            list(final_by_case.values()),
+            lambda rows: any(formal_success(row) for row in rows[:k]),
+        )
+        if formal_mode
+        else 0.0
+    )
     successes_after_feedback = [
-        row_success(row, formal_mode=formal_mode) for row in repair_rows if int(row["round"]) > 0
+        row_success(row, formal_mode=formal_mode)
+        for row in repair_rows
+        if int(row["round"]) > 0
     ]
     return {
         "num_cases": len(results),
@@ -341,23 +490,44 @@ def summarize(results: list[dict[str, Any]], k: int, jasper_check: bool, jasper_
         "proven@1": proven_at_1,
         "proven@k": proven_at_k,
         "non_vacuous@k": non_vacuous_at_k,
-        "formal_metrics_status": "measured" if formal_mode else "not_run",
-        "hallucinated_signal_rate": rate(all_initial_rows, lambda row: row["has_hallucinated_signal"]),
-        "fallback_rate": rate(all_initial_rows, lambda row: row["source"] == "structured_fallback"),
+        "antecedent_reachable@1": antecedent_reachable_at_1,
+        "antecedent_reachable@k": antecedent_reachable_at_k,
+        "cover_reachable@k": cover_reachable_at_k,
+        "proven_non_vacuous@k": proven_non_vacuous_at_k,
+        "formal_metrics_status": formal_metrics_status(formal_mode, jasper_replay),
+        "hallucinated_signal_rate": rate(
+            all_initial_rows,
+            lambda row: row["has_hallucinated_signal"],
+        ),
+        "fallback_rate": rate(
+            all_initial_rows,
+            lambda row: row["source"] == "structured_fallback",
+        ),
         "valid_json_rate": rate(all_initial_rows, lambda row: row["valid_json"]),
         "average_rounds": (
-            sum(int(path["final_metrics"]["round"]) for result in results for path in result["candidate_paths"])
+            sum(
+                int(path["final_metrics"]["round"])
+                for result in results
+                for path in result["candidate_paths"]
+            )
             / max(1, sum(len(result["candidate_paths"]) for result in results))
         ),
         "repair_success_after_feedback": (
-            sum(1 for success in successes_after_feedback if success) / len(successes_after_feedback)
+            sum(1 for success in successes_after_feedback if success)
+            / len(successes_after_feedback)
             if successes_after_feedback
             else 0.0
         ),
-        "source_counts": dict(sorted(collections.Counter(row["source"] for row in all_initial_rows).items())),
+        "repaired_non_vacuous_success_after_feedback": (
+            rate(repair_rows, formal_success) if formal_mode and repair_rows else 0.0
+        ),
+        "source_counts": dict(
+            sorted(collections.Counter(row["source"] for row in all_initial_rows).items())
+        ),
         "failure_categories": dict(
             sorted(collections.Counter(row["failure_category"] for row in all_rows).items())
         ),
+        "failure_taxonomy": sorted(DESIGN2SVA_FAILURE_TAXONOMY),
         "rows": all_rows,
     }
 
@@ -378,19 +548,26 @@ Mode: `{mode}`
 | proven@1 | {summary["proven@1"]:.3f} |
 | proven@k | {summary["proven@k"]:.3f} |
 | non_vacuous@k | {summary["non_vacuous@k"]:.3f} |
+| antecedent_reachable@1 | {summary["antecedent_reachable@1"]:.3f} |
+| antecedent_reachable@k | {summary["antecedent_reachable@k"]:.3f} |
+| cover_reachable@k | {summary["cover_reachable@k"]:.3f} |
+| proven_non_vacuous@k | {summary["proven_non_vacuous@k"]:.3f} |
 | Hallucinated signal rate | {summary["hallucinated_signal_rate"]:.3f} |
 | Fallback rate | {summary["fallback_rate"]:.3f} |
 | Valid JSON rate | {summary["valid_json_rate"]:.3f} |
 | Average rounds | {summary["average_rounds"]:.3f} |
 | Repair success after feedback | {summary["repair_success_after_feedback"]:.3f} |
+| Repaired proven_non_vacuous | {summary["repaired_non_vacuous_success_after_feedback"]:.3f} |
 
 Formal metrics status: `{summary["formal_metrics_status"]}`.
 
 ## Boundaries
 
-- Dry-run and replay rows validate local infrastructure and JSON contracts; they are not production signoff.
-- `proven@*` and `non_vacuous@k` remain `0.000` with status `not_run` unless real JasperGold checks are explicitly enabled and available.
-- Exact/reference agreement is a local scaffold signal for these fixtures, not a semantic equivalence result.
+- Dry-run and replay rows validate local infrastructure and JSON contracts.
+- They are not production signoff.
+- `proven@*` and `non_vacuous@k` remain `0.000` with status `not_run`
+  unless real JasperGold checks are explicitly enabled and available.
+- Exact/reference agreement is a local scaffold signal, not semantic equivalence.
 """
 
 
@@ -407,16 +584,127 @@ def rate(rows: list[Any], predicate) -> float:
     return sum(1 for row in rows if predicate(row)) / len(rows)
 
 
+def formal_metrics_status(formal_mode: bool, jasper_replay: bool) -> str:
+    if jasper_replay:
+        return "replayed"
+    return "measured" if formal_mode else "not_run"
+
+
 def formal_success(row: dict[str, Any]) -> bool:
     proof = row.get("proof_metadata", {})
-    return proof.get("proof_status") == "proven" and proof.get("vacuity_status") != "vacuous"
+    proof_status = str(proof.get("proof_status") or "").lower()
+    vacuity_status = str(proof.get("vacuity_status") or "").lower()
+    return (
+        proof_status == "proven"
+        and vacuity_status != "vacuous"
+        and antecedent_reachable_row(row)
+    )
+
+
+def antecedent_reachable_row(row: dict[str, Any]) -> bool:
+    metadata = row.get("antecedent_metadata")
+    return isinstance(metadata, dict) and antecedent_reachable(metadata)
+
+
+def cover_reachable_row(row: dict[str, Any]) -> bool:
+    metadata = row.get("antecedent_metadata")
+    if not isinstance(metadata, dict):
+        return False
+    return str(metadata.get("cover_status") or "").lower() in {"covered", "proven", "reachable"}
+
+
+def proof_metadata_from_backend(backend_result: Any) -> dict[str, Any]:
+    legacy = backend_result.to_legacy_check_dict()
+    return {
+        "backend": backend_result.backend,
+        "status": backend_result.status.value,
+        "syntax_status": backend_result.syntax_result.status.value,
+        "proof_status": legacy.get("proof_status"),
+        "vacuity_status": legacy.get("vacuity_status"),
+        "report_dir": backend_result.report_dir,
+    }
+
+
+def replay_proof_metadata(
+    records: list[dict[str, Any]],
+    case: dict[str, Any],
+    candidate_index: int,
+    round_index: int,
+    check_kind: str,
+    default_backend: str,
+) -> dict[str, Any]:
+    record = replay_check_record(records, case, candidate_index, round_index, check_kind)
+    proof = record.get("proof_metadata", {}) if isinstance(record, dict) else {}
+    if isinstance(record, dict) and isinstance(record.get("check"), dict):
+        proof = record["check"].get("proof_metadata", proof)
+    if not isinstance(proof, dict):
+        proof = {}
+    return {
+        "backend": str(proof.get("backend") or default_backend),
+        "status": str(proof.get("status") or "not_run"),
+        "syntax_status": str(proof.get("syntax_status") or "not_run"),
+        "proof_status": proof.get("proof_status"),
+        "vacuity_status": proof.get("vacuity_status"),
+        "report_dir": proof.get("report_dir"),
+    }
+
+
+def replay_check_record(
+    records: list[dict[str, Any]],
+    case: dict[str, Any],
+    candidate_index: int,
+    round_index: int,
+    check_kind: str,
+) -> dict[str, Any]:
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if not replay_case_matches(record, case):
+            continue
+        if str(record.get("check_kind") or "assertion") != check_kind:
+            continue
+        if int(record.get("candidate_index", candidate_index)) != candidate_index:
+            continue
+        if int(record.get("round", 0)) != round_index:
+            continue
+        if "proof_metadata" in record or isinstance(record.get("check"), dict):
+            return record
+    return {}
+
+
+def replay_candidate_for_round(
+    case: dict[str, Any],
+    records: list[dict[str, Any]] | None,
+    candidate_index: int,
+    round_index: int,
+) -> dict[str, Any] | None:
+    if records is None:
+        return None
+    for record in records:
+        if not isinstance(record, dict) or not replay_case_matches(record, case):
+            continue
+        if int(record.get("candidate_index", candidate_index)) != candidate_index:
+            continue
+        if int(record.get("round", 0)) != round_index:
+            continue
+        response = record.get("response")
+        if isinstance(response, dict):
+            return dict(response)
+    return None
+
+
+def replay_case_matches(record: dict[str, Any], case: dict[str, Any]) -> bool:
+    return str(record.get("case_id", "")) == str(case["case_id"]) and str(
+        record.get("property_id", case["property_id"])
+    ) == str(case["property_id"])
 
 
 def row_success(row: dict[str, Any], formal_mode: bool) -> bool:
-    if row["failure_category"] in FAILURE_CATEGORIES - {"passed", "not_run"}:
-        return False
     if formal_mode:
         return formal_success(row)
+    proof = row.get("proof_metadata", {})
+    if str(proof.get("proof_status") or "").lower() in {"unreachable", "uncovered"}:
+        return False
     return (
         row["valid_json"]
         and row["syntax_ok"]
@@ -476,11 +764,22 @@ def legacy_case_shape(case: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_mode(args: argparse.Namespace) -> str:
-    if args.llm:
-        return "real_llm"
     if args.replay:
         return "replay"
+    if args.llm:
+        return "real_llm"
     return "deterministic_scaffold"
+
+
+def formal_check_mode(
+    args: argparse.Namespace,
+    jasper_replay_records: list[dict[str, Any]] | None,
+) -> str:
+    if jasper_replay_records is not None:
+        return "replay"
+    if args.jasper_check:
+        return "jasper"
+    return "not_run"
 
 
 def main() -> int:
@@ -494,6 +793,7 @@ def main() -> int:
     parser.add_argument("--llm", action="store_true")
     parser.add_argument("--llm-command")
     parser.add_argument("--jasper-check", action="store_true")
+    parser.add_argument("--jasper-replay", nargs="?", const=DEFAULT_JASPER_REPLAY_PATH, type=Path)
     parser.add_argument("--jasper-out-root", type=Path, default=Path("jasper/reports/design2sva"))
     parser.add_argument("--context-budget", type=int, default=24)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
@@ -504,7 +804,11 @@ def main() -> int:
     if args.limit is not None:
         cases = cases[: args.limit]
     replay_records = load_replay_records(resolve_repo_path(args.replay)) if args.replay else None
+    jasper_replay_records = (
+        load_replay_records(resolve_repo_path(args.jasper_replay)) if args.jasper_replay else None
+    )
     jasper_dry_run = bool(args.dry_run)
+    jasper_check = bool(args.jasper_check or jasper_replay_records is not None)
     results = [
         run_case(
             case=case,
@@ -513,15 +817,27 @@ def main() -> int:
             use_llm=args.llm,
             llm_command=args.llm_command,
             replay_records=replay_records,
-            jasper_check=args.jasper_check,
+            jasper_check=jasper_check,
             jasper_dry_run=jasper_dry_run,
+            jasper_replay_records=jasper_replay_records,
             jasper_out_root=resolve_repo_path(args.jasper_out_root),
             context_budget=args.context_budget,
         )
         for case in cases
     ]
-    summary = summarize(results, k=args.k, jasper_check=args.jasper_check, jasper_dry_run=jasper_dry_run)
-    payload = {"summary": summary, "mode": run_mode(args), "results": results}
+    summary = summarize(
+        results,
+        k=args.k,
+        jasper_check=jasper_check,
+        jasper_dry_run=jasper_dry_run,
+        jasper_replay=jasper_replay_records is not None,
+    )
+    payload = {
+        "summary": summary,
+        "mode": run_mode(args),
+        "formal_check_mode": formal_check_mode(args, jasper_replay_records),
+        "results": results,
+    }
     if args.out:
         out_path = resolve_repo_path(args.out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
