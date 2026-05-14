@@ -62,3 +62,20 @@ bottleneck is candidate generation or repair selection rather than the harness.
 
 Dry-run rows only verify file generation and JSON plumbing. Use real JasperGold
 or a replay fixture before interpreting proof and reachability metrics.
+
+## Stage 10 Subset Result
+
+The initial Moore/JasperGold reference-oracle subset checked three local
+Design2SVA fixture references with `k=1`.
+
+- `reference_proven@1 = 0.000`
+- `reference_non_vacuous@1 = 0.000`
+- `reference_antecedent_reachable@1 = 0.000`
+- `harness_reachability_status = unreachable`
+- Failure split: `unreachable_antecedent=2`, `unreachable_cover_goal=1`
+
+This means the immediate bottleneck is not only Codex candidate generation.
+The current local reference assertions also fail the reachability audit under
+the JasperGold wrapper, so the next debugging target is harness setup,
+assertion embedding, reset/clock handling, or invalid Design2SVA task
+definitions.
