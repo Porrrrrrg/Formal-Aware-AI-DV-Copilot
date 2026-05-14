@@ -18,6 +18,27 @@ def test_parse_report_dir_proven_nonvacuous(tmp_path: Path) -> None:
     assert result.vacuity_result.status.value == "not_flagged_vacuous"
 
 
+def test_legacy_status_uses_focused_property_not_first_report_row(tmp_path: Path) -> None:
+    report_dir = tmp_path / "run"
+    report_dir.mkdir()
+    (report_dir / "properties.rpt").write_text(
+        "\n".join(
+            [
+                "[1] harness.assumptions_i.a_reset_deasserts:precondition1 unreachable PRE Infinite 0.000 s",
+                "[2] harness.properties_i.p_mutex proven N Infinite 0.001 s",
+            ]
+        )
+        + "\n"
+    )
+
+    result = JasperBackend().parse_report_dir(report_dir, property_id="p_mutex")
+    legacy = result.to_legacy_check_dict()
+
+    assert result.status == BackendStatus.PASSED
+    assert result.proof_result.status.value == "proven"
+    assert legacy["proof_status"] == "proven"
+
+
 def test_parse_report_dir_vacuous_overrides_pass(tmp_path: Path) -> None:
     report_dir = tmp_path / "run"
     report_dir.mkdir()
