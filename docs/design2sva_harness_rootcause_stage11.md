@@ -101,3 +101,29 @@ point under its clock and `disable iff`.
 - The Stage 10 reference oracle uses local fixture `reference_sva` values. Those
   references are not added to generation prompts and do not prove semantic
   equivalence for generated candidates.
+
+## Stage 11 Subset Result
+
+The initial Moore/JasperGold root-cause subset used three Design2SVA fixture
+cases.
+
+Native benchmark oracle:
+
+- `native_reference_proves_count = 3`
+- `native_proof_status_counts = proven=3`
+- `candidate_embedding = false`
+
+Design2SVA reference embedding with native oracle context:
+
+- `reference_proven@1 = 0.000`
+- `reference_non_vacuous@1 = 0.000`
+- `reference_antecedent_reachable@1 = 0.333`
+- `harness_reachability_status = unreachable`
+- Failure split: `unreachable_antecedent=2`, `unreachable_cover_goal=1`
+- Root-cause candidates: `design2sva_embedding_bug=3`
+
+This isolates the next debugging target: the native benchmark references prove,
+but the same fixture references fail when embedded through the Design2SVA
+wrapper. The immediate work should inspect wrapper file order, generated harness
+semantics, assumption binding, reset handling, and the generated property module
+path before changing prompts or generating more candidates.
