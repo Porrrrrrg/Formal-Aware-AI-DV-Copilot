@@ -68,6 +68,7 @@ See [docs/architecture_agentic_refactor.md](docs/architecture_agentic_refactor.m
 - Static/offline intent-alignment evaluator for SVA review support.
 - Local Qwen endpoint plumbing for a bounded 3+3+3 workflow subset.
 - FVEval-compatible local subset runner, kept separate from official FVEval reproduction claims.
+- Retrieval-assisted Design2SVA scaffold with pass@k dry-run/replay evaluation and optional JasperGold checks.
 - DV playbooks and YAML rule libraries for repair, counterexample debugging, assumptions/vacuity, triage, and coverage closure guidance.
 
 ## Key Results
@@ -125,6 +126,18 @@ python scripts/refresh_eval_results.py
 python scripts/run_codex_llm_eval.py --task healthcheck
 ```
 
+Retrieval-assisted Design2SVA local smoke:
+
+```bash
+python evaluation/run_design2sva_eval.py --limit 3 --k 3 --dry-run --out evaluation/results/design2sva_eval_local.json
+python evaluation/run_design2sva_eval.py --limit 3 --k 3 --replay --out evaluation/results/design2sva_eval_local.json
+python tools/import_fveval_subset.py --source-dir /path/to/local/fveval-fixture --out benchmarks/fveval_subset/local_import_cases.json
+```
+
+The Design2SVA commands above are local scaffold/replay paths unless `--llm` or
+`--jasper-check` is explicitly enabled. They do not claim ProofLoop-level
+performance or production signoff capability.
+
 Prompt audit before any external benchmark submission:
 
 ```bash
@@ -181,6 +194,12 @@ Raw JasperGold logs, generated trace trees, local scratch artifacts, and license
 
 Primary ledgers are under `reports/release/`. The Stage 6 final report is [reports/final/jasperloop_dv_final_report.md](reports/final/jasperloop_dv_final_report.md).
 
+The post-v0.4 Design2SVA scaffold is documented in
+[docs/design2sva_proofloop_stage5.md](docs/design2sva_proofloop_stage5.md) and
+[docs/stage5_summary.md](docs/stage5_summary.md). Those artifacts are local
+infrastructure evidence unless a run explicitly records real LLM and
+JasperGold execution.
+
 ## Claim Boundaries
 
 - JasperLoop-DV is a research prototype and workflow scaffold, not production-ready signoff automation.
@@ -199,4 +218,5 @@ Primary ledgers are under `reports/release/`. The Stage 6 final report is [repor
 - [Result tables](reports/final/jasperloop_dv_result_tables.md)
 - [Demo script](docs/demo_script.md)
 - [Workflow usage](docs/workflow_usage.md)
+- [Design2SVA Stage 5](docs/design2sva_proofloop_stage5.md)
 - [Artifact policy](docs/artifact_policy.md)

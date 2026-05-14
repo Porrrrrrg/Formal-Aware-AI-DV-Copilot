@@ -65,6 +65,66 @@ class Task(AgentModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class ClockResetSpec(AgentModel):
+    clock: str = Field(min_length=1)
+    reset: str | None = None
+    clock_edge: Literal["posedge", "negedge"] = "posedge"
+    reset_polarity: Literal["active_high", "active_low", "unknown"] = "unknown"
+
+
+class HelperCodePolicy(AgentModel):
+    allowed: bool = False
+    allowed_kinds: list[str] = Field(default_factory=list)
+    max_lines: int = Field(default=0, ge=0)
+    rationale: str = ""
+
+
+class Design2SVAEvaluationMetadata(AgentModel):
+    benchmark: str = "local_design2sva"
+    split: str = "local"
+    expected_result: str = "syntax_or_proof_check"
+    reference_available: bool = False
+    reference_sva: str | None = None
+    expected_proof_status: str = "not_run"
+    notes: str = ""
+
+
+class Design2SVATask(Task):
+    task_type: Literal["design2sva"] = "design2sva"
+    design_id: str = Field(min_length=1)
+    case_id: str = Field(min_length=1)
+    property_id: str = Field(min_length=1)
+    intent: str = Field(min_length=1)
+    module_name: str | None = None
+    design_rtl_path: str = Field(min_length=1)
+    harness_header_path: str = Field(min_length=1)
+    visible_signals: list[str] = Field(min_length=1)
+    clock_reset: ClockResetSpec
+    helper_code_policy: HelperCodePolicy = Field(default_factory=HelperCodePolicy)
+    evaluation_metadata: Design2SVAEvaluationMetadata = Field(
+        default_factory=Design2SVAEvaluationMetadata
+    )
+
+    @field_validator("visible_signals")
+    @classmethod
+    def require_nonempty_visible_signals(cls, value: list[str]) -> list[str]:
+        if not value:
+            raise ValueError("visible_signals must not be empty")
+        return value
+
+
+class Design2SVACandidate(AgentModel):
+    schema_version: Literal["v1"] = AGENT_SCHEMA_VERSION
+    property_id: str = Field(min_length=1)
+    sva: str = Field(min_length=1)
+    helper_code: str = ""
+    referenced_signals: list[str] = Field(default_factory=list)
+    intent_summary: str = ""
+    source: str = "unknown"
+    repair_metadata: dict[str, Any] = Field(default_factory=dict)
+    proof_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
 class BackendError(AgentModel):
     kind: str = Field(min_length=1)
     message: str = Field(min_length=1)

@@ -1,5 +1,9 @@
 """ProofLoop-style RTL retrieval helpers for copilot agents."""
 
+from copilot.retrieval.design2sva_context import (
+    Design2SVAContextOptions,
+    build_design2sva_context,
+)
 from copilot.retrieval.rtl_index import (
     build_rtl_index,
     get_clock_reset_candidates,
@@ -10,7 +14,9 @@ from copilot.retrieval.rtl_index import (
 )
 
 __all__ = [
+    "Design2SVAContextOptions",
     "build_rtl_index",
+    "build_design2sva_context",
     "get_clock_reset_candidates",
     "get_hierarchy",
     "get_module_interface",
