@@ -1,0 +1,2363 @@
+{
+  "schema_version": "v1",
+  "stage": "stage14_expanded_codex_replay",
+  "mode": "committed_codex_expanded_replay",
+  "formal_check_mode": "jasper_dry_run",
+  "llm_prompts_sent": false,
+  "summary": {
+    "num_cases": 3,
+    "k": 3,
+    "cases_by_design": {
+      "apb_regblock": 1,
+      "arbiter_rr2": 1,
+      "rv_buffer": 1
+    },
+    "syntax@1": 1.0,
+    "syntax@k": 1.0,
+    "proven@1": 0.0,
+    "proven@k": 0.0,
+    "non_vacuous@k": 0.0,
+    "antecedent_reachable@1": 0.0,
+    "antecedent_reachable@k": 0.0,
+    "cover_reachable@k": 0.0,
+    "proven_non_vacuous@k": 0.0,
+    "reference_proven@1": 0.0,
+    "reference_non_vacuous@1": 0.0,
+    "reference_antecedent_reachable@1": 0.0,
+    "wrapper_parity_pass_rate": 0.0,
+    "harness_reachability_status": "not_run",
+    "harness_reachability_status_counts": {
+      "not_run": 3
+    },
+    "formal_metrics_status": "not_run",
+    "backend_status_counts": {
+      "dry_run": 18
+    },
+    "hallucinated_signal_rate": 0.0,
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "average_rounds": 1.0,
+    "repair_success_after_feedback": 1.0,
+    "repaired_non_vacuous_success_after_feedback": 0.0,
+    "source_counts": {
+      "llm": 9
+    },
+    "failure_categories": {
+      "not_run": 9,
+      "temporal_mismatch": 9
+    },
+    "root_cause_candidates": {
+      "unknown": 18
+    },
+    "root_cause_details": {
+      "formal_check_not_run": 9,
+      "temporal_mismatch": 9
+    },
+    "root_cause_candidate_counts": {
+      "unknown": 18
+    },
+    "root_cause_detail_counts": {
+      "formal_check_not_run": 9,
+      "temporal_mismatch": 9
+    },
+    "failure_taxonomy": [
+      "overstrong_assertion",
+      "proven_non_vacuous",
+      "reset_clock_mismatch",
+      "syntax_error",
+      "temporal_mismatch",
+      "unknown_signal",
+      "unreachable_antecedent",
+      "unreachable_cover_goal",
+      "unsupported_helper_code",
+      "weak_vacuous_assertion"
+    ],
+    "root_cause_taxonomy": [
+      "candidate_generation_failure",
+      "cover_generation_bug",
+      "design2sva_embedding_bug",
+      "jasper_parser_misclassification",
+      "native_harness_unreachable",
+      "reference_task_invalid",
+      "reset_clock_mismatch",
+      "unknown"
+    ]
+  },
+  "results": [
+    {
+      "case_id": "design2sva_arbiter_mutex",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "The arbiter must never assert both client grant outputs in the same cycle.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "Generate an assertion that the two-client round-robin arbiter never grants both clients in the same cycle.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 0,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_arbiter_mutex",
+            "design_id": "arbiter_rr2",
+            "property_id": "p_mutex",
+            "candidate_index": 0,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "no_antecedent",
+              "reason": "no_top_level_implication",
+              "antecedent": null,
+              "antecedent_kind": "invariant",
+              "trigger_kind": "invariant",
+              "trigger_status": "no_antecedent",
+              "requires_antecedent_cover": false,
+              "cover_property_id": "",
+              "cover_sva": "",
+              "cover_status": "not_run",
+              "antecedent_reachability": "no_antecedent"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "arbiter_rr2",
+              "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+              "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+            }
+          }
+        },
+        {
+          "candidate_index": 1,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "The arbiter must never assert both grant outputs in the same clock cycle outside reset.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 1,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "Generate an assertion that the two-client round-robin arbiter never grants both clients in the same cycle.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 1,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_arbiter_mutex",
+            "design_id": "arbiter_rr2",
+            "property_id": "p_mutex",
+            "candidate_index": 1,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "no_antecedent",
+              "reason": "no_top_level_implication",
+              "antecedent": null,
+              "antecedent_kind": "invariant",
+              "trigger_kind": "invariant",
+              "trigger_status": "no_antecedent",
+              "requires_antecedent_cover": false,
+              "cover_property_id": "",
+              "cover_sva": "",
+              "cover_status": "not_run",
+              "antecedent_reachability": "no_antecedent"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "arbiter_rr2",
+              "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+              "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+            }
+          }
+        },
+        {
+          "candidate_index": 2,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "The arbiter must never assert both grant outputs in the same clock cycle outside reset.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 2,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "Generate an assertion that the two-client round-robin arbiter never grants both clients in the same cycle.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 2,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_arbiter_mutex",
+            "design_id": "arbiter_rr2",
+            "property_id": "p_mutex",
+            "candidate_index": 2,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_arbiter_mutex\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "no_antecedent",
+              "reason": "no_top_level_implication",
+              "antecedent": null,
+              "antecedent_kind": "invariant",
+              "trigger_kind": "invariant",
+              "trigger_status": "no_antecedent",
+              "requires_antecedent_cover": false,
+              "cover_property_id": "",
+              "cover_sva": "",
+              "cover_status": "not_run",
+              "antecedent_reachability": "no_antecedent"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "arbiter_rr2",
+              "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+              "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": true,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_ready_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "assert property (@(posedge clk) disable iff (rst) (full && out_ready) |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "A full one-entry ready/valid buffer must assert input ready when the output side is ready in the same cycle, allowing simultaneous dequeue and enqueue.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "Generate an assertion that a full one-entry ready/valid buffer can accept input when the output side is ready in the same cycle.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 0,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_ready_full",
+            "design_id": "rv_buffer",
+            "property_id": "p_in_ready_when_full_and_out_ready",
+            "candidate_index": 0,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "full && out_ready",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+              "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "rv_buffer",
+              "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+              "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+            }
+          }
+        },
+        {
+          "candidate_index": 1,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "assert property (@(posedge clk) disable iff (rst) (full && out_ready) |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "When the one-entry buffer is full, an asserted output ready must make input ready high in the same cycle so the buffer can accept a new input while draining.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 1,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "Generate an assertion that a full one-entry ready/valid buffer can accept input when the output side is ready in the same cycle.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 1,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_ready_full",
+            "design_id": "rv_buffer",
+            "property_id": "p_in_ready_when_full_and_out_ready",
+            "candidate_index": 1,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "full && out_ready",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+              "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "rv_buffer",
+              "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+              "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+            }
+          }
+        },
+        {
+          "candidate_index": 2,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "assert property (@(posedge clk) disable iff (rst) (full && out_ready) |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "When the one-entry buffer is full, asserting out_ready in the same cycle must make in_ready high so the buffer can accept new input.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 2,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "Generate an assertion that a full one-entry ready/valid buffer can accept input when the output side is ready in the same cycle.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 2,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_ready_full",
+            "design_id": "rv_buffer",
+            "property_id": "p_in_ready_when_full_and_out_ready",
+            "candidate_index": 2,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_rv_buffer_ready_full\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "full && out_ready",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+              "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "rv_buffer",
+              "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+              "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_apb_setup_enable",
+      "design_id": "apb_regblock",
+      "property_id": "p_setup_then_enable",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "An APB setup phase with psel asserted and penable deasserted must be followed on the next clock by an access phase with both psel and penable asserted.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "Generate an assertion that an APB setup phase with psel high and penable low is followed by an access phase.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 0,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_apb_setup_enable",
+            "design_id": "apb_regblock",
+            "property_id": "p_setup_then_enable",
+            "candidate_index": 0,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c0_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "psel && !penable",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_setup_then_enable_antecedent",
+              "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "pclk",
+              "clock_edge": "posedge",
+              "reset": "presetn",
+              "reset_polarity": "active_low",
+              "module_name": "apb_regblock",
+              "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+              "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+            }
+          }
+        },
+        {
+          "candidate_index": 1,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "An APB setup phase, indicated by psel high and penable low, must be followed on the next clock by an access phase with psel and penable both high.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 1,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r0\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "Generate an assertion that an APB setup phase with psel high and penable low is followed by an access phase.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 1,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_apb_setup_enable",
+            "design_id": "apb_regblock",
+            "property_id": "p_setup_then_enable",
+            "candidate_index": 1,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c1_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "psel && !penable",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_setup_then_enable_antecedent",
+              "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "pclk",
+              "clock_edge": "posedge",
+              "reset": "presetn",
+              "reset_polarity": "active_low",
+              "module_name": "apb_regblock",
+              "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+              "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+            }
+          }
+        },
+        {
+          "candidate_index": 2,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "An APB setup phase with psel asserted and penable deasserted must be followed on the next cycle by an access phase with both psel and penable asserted.",
+                "source": "llm",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 2,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "llm",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "temporal_mismatch",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "temporal_mismatch",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r0\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "Generate an assertion that an APB setup phase with psel high and penable low is followed by an access phase.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "changed_by_repair": true
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 2,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "dry_run",
+                  "syntax_status": "not_run",
+                  "proof_status": "not_run",
+                  "vacuity_status": "not_run",
+                  "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable",
+                  "artifact_paths": {
+                    "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable",
+                    "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\generated_properties.sv",
+                    "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\generated_harness.sv",
+                    "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\candidate_sva.json",
+                    "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\properties.rpt",
+                    "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\cover.rpt",
+                    "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\vacuity.rpt",
+                    "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\jg.log",
+                    "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                    "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+                  }
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_apb_setup_enable",
+            "design_id": "apb_regblock",
+            "property_id": "p_setup_then_enable",
+            "candidate_index": 2,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "dry_run",
+              "syntax_status": "not_run",
+              "proof_status": "not_run",
+              "vacuity_status": "not_run",
+              "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable",
+              "artifact_paths": {
+                "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable",
+                "generated_properties": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\generated_properties.sv",
+                "generated_harness": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\generated_harness.sv",
+                "candidate_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\candidate_sva.json",
+                "properties_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\properties.rpt",
+                "cover_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\cover.rpt",
+                "vacuity_report": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\vacuity.rpt",
+                "log": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\jg.log",
+                "embedding_audit_json": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.json",
+                "embedding_audit_markdown": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_stage13_fixed_wrapper_rerun\\codex_expanded_jasper\\design2sva_c2_r1\\design2sva_apb_setup_enable\\embedding_audit\\embedding_audit.md"
+              }
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "psel && !penable",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_setup_then_enable_antecedent",
+              "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "pclk",
+              "clock_edge": "posedge",
+              "reset": "presetn",
+              "reset_polarity": "active_low",
+              "module_name": "apb_regblock",
+              "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+              "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_apb_setup_enable",
+        "design_id": "apb_regblock",
+        "property_id": "p_setup_then_enable",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_setup_then_enable_antecedent",
+        "cover_status": "not_run"
+      }
+    }
+  ],
+  "claim_boundary": {
+    "supported": "The repaired wrapper and replay path can fairly rerun prior committed Codex Design2SVA candidates without sending new prompts.",
+    "unsupported_unless_measured": "Broad Design2SVA success and production signoff remain unsupported."
+  },
+  "source_result": "evaluation\\results\\design2sva_eval_codex_subset.json",
+  "source_result_summary": {
+    "num_cases": 3,
+    "k": 3,
+    "cases_by_design": {
+      "apb_regblock": 1,
+      "arbiter_rr2": 1,
+      "rv_buffer": 1
+    },
+    "syntax@1": 1.0,
+    "syntax@k": 1.0,
+    "proven@1": 0.0,
+    "proven@k": 0.0,
+    "non_vacuous@k": 0.0,
+    "formal_metrics_status": "not_run",
+    "hallucinated_signal_rate": 0.0,
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "average_rounds": 1.0,
+    "repair_success_after_feedback": 1.0,
+    "source_counts": {
+      "llm": 9
+    },
+    "failure_categories": {
+      "passed": 9,
+      "temporal_mismatch": 9
+    }
+  },
+  "native_oracle_results": "evaluation\\results\\design2sva_native_reference_oracle_jasper.json",
+  "replay_coverage": {
+    "expanded_case_count": 12,
+    "evaluated_case_count": 3,
+    "missing_case_count": 9,
+    "missing_candidates": [
+      {
+        "case_id": "design2sva_fifo_no_underflow",
+        "property_id": "p_no_underflow",
+        "design_id": "fifo_1r1w"
+      },
+      {
+        "case_id": "design2sva_arbiter_no_spurious_gnt0",
+        "property_id": "p_no_spurious_gnt0",
+        "design_id": "arbiter_rr2"
+      },
+      {
+        "case_id": "design2sva_arbiter_single_req0_grant",
+        "property_id": "p_single_req0_grant",
+        "design_id": "arbiter_rr2"
+      },
+      {
+        "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+        "property_id": "p_out_valid_equals_full",
+        "design_id": "rv_buffer"
+      },
+      {
+        "case_id": "design2sva_rv_buffer_stable_while_stalled",
+        "property_id": "p_data_stable_while_stalled",
+        "design_id": "rv_buffer"
+      },
+      {
+        "case_id": "design2sva_apb_pready_response_valid",
+        "property_id": "p_pready_response_valid",
+        "design_id": "apb_regblock"
+      },
+      {
+        "case_id": "design2sva_apb_invalid_address_behavior",
+        "property_id": "p_invalid_address_behavior",
+        "design_id": "apb_regblock"
+      },
+      {
+        "case_id": "design2sva_fifo_no_overflow",
+        "property_id": "p_no_overflow",
+        "design_id": "fifo_1r1w"
+      },
+      {
+        "case_id": "design2sva_fifo_pop_data_stable",
+        "property_id": "p_pop_data_stable_when_stalled",
+        "design_id": "fifo_1r1w"
+      }
+    ],
+    "strict_candidates_required": false,
+    "fallback_used_for_missing_cases": false
+  },
+  "result_artifact_paths": {
+    "local": "evaluation\\results\\design2sva_codex_replay_expanded_local.json",
+    "jasper": "evaluation\\results\\design2sva_codex_replay_expanded_jasper.json"
+  }
+}

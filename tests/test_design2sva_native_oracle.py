@@ -22,12 +22,13 @@ def test_design2sva_cases_map_to_native_benchmark_flow() -> None:
         "fifo_1r1w",
         "rv_buffer",
     }
-    assert {mapping.property_id for mapping in mappings} == {
+    assert len(mappings) >= 10
+    assert {
         "p_in_ready_when_full_and_out_ready",
         "p_mutex",
         "p_no_underflow",
         "p_setup_then_enable",
-    }
+    } <= {mapping.property_id for mapping in mappings}
     for mapping in mappings:
         assert mapping.design_rtl.exists()
         assert mapping.formal_harness.exists()

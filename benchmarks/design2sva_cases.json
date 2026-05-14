@@ -134,5 +134,277 @@
       "expected_proof_status": "proven",
       "notes": "Reference assertion is evaluation-only and is omitted from prompts."
     }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_arbiter_no_spurious_gnt0",
+    "task_type": "design2sva",
+    "case_id": "design2sva_arbiter_no_spurious_gnt0",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_no_spurious_gnt0",
+    "module_name": "arbiter_rr2",
+    "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+    "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+    "intent": "Generate an assertion that the arbiter never grants client 0 unless client 0 is requesting service.",
+    "visible_signals": ["clk", "rst", "req0", "gnt0"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The no-spurious-grant property is direct over request and grant signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) gnt0 |-> req0);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_arbiter_single_req0_grant",
+    "task_type": "design2sva",
+    "case_id": "design2sva_arbiter_single_req0_grant",
+    "design_id": "arbiter_rr2",
+    "property_id": "p_single_req0_grant",
+    "module_name": "arbiter_rr2",
+    "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+    "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+    "intent": "Generate an assertion that a sole request from client 0 produces only the client 0 grant.",
+    "visible_signals": ["clk", "rst", "req0", "req1", "gnt0", "gnt1"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The single-request behavior is expressible over the arbiter interface."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_single_req0_grant: assert property (@(posedge clk) disable iff (rst) req0 && !req1 |-> gnt0 && !gnt1);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_rv_buffer_out_valid_equals_full",
+    "task_type": "design2sva",
+    "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+    "design_id": "rv_buffer",
+    "property_id": "p_out_valid_equals_full",
+    "module_name": "rv_buffer",
+    "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+    "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+    "intent": "Generate an assertion that the ready/valid buffer drives out_valid exactly when its storage entry is full.",
+    "visible_signals": ["clk", "rst", "out_valid", "full"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The validity relationship is a direct invariant over existing state and interface signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == full);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_rv_buffer_stable_while_stalled",
+    "task_type": "design2sva",
+    "case_id": "design2sva_rv_buffer_stable_while_stalled",
+    "design_id": "rv_buffer",
+    "property_id": "p_data_stable_while_stalled",
+    "module_name": "rv_buffer",
+    "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+    "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+    "intent": "Generate an assertion that output data and validity remain stable while the output channel is stalled.",
+    "visible_signals": ["clk", "rst", "out_valid", "out_ready", "out_data"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The stall stability rule can use the existing ready/valid and data signals directly."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_apb_pready_response_valid",
+    "task_type": "design2sva",
+    "case_id": "design2sva_apb_pready_response_valid",
+    "design_id": "apb_regblock",
+    "property_id": "p_pready_response_valid",
+    "module_name": "apb_regblock",
+    "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+    "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+    "intent": "Generate an assertion that every APB access phase receives a ready response.",
+    "visible_signals": ["pclk", "presetn", "psel", "penable", "pready"],
+    "clock_reset": {
+      "clock": "pclk",
+      "reset": "presetn",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_low"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The ready-response property is direct over APB control signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) psel && penable |-> pready);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_apb_invalid_address_behavior",
+    "task_type": "design2sva",
+    "case_id": "design2sva_apb_invalid_address_behavior",
+    "design_id": "apb_regblock",
+    "property_id": "p_invalid_address_behavior",
+    "module_name": "apb_regblock",
+    "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+    "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+    "intent": "Generate an assertion that an APB access to an unmapped address raises the slave error response.",
+    "visible_signals": ["pclk", "presetn", "psel", "penable", "paddr", "pslverr"],
+    "clock_reset": {
+      "clock": "pclk",
+      "reset": "presetn",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_low"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The invalid-address behavior is directly expressible over APB address and response signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_fifo_no_overflow",
+    "task_type": "design2sva",
+    "case_id": "design2sva_fifo_no_overflow",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_no_overflow",
+    "module_name": "fifo_1r1w",
+    "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+    "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+    "intent": "Generate an assertion that the FIFO does not accept a push when it is full and the read side is not making space.",
+    "visible_signals": ["clk", "rst", "full", "push_valid", "push_ready", "pop_ready"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The overflow guard uses only FIFO status and handshake signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid && !pop_ready |-> !push_ready);",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
+  },
+  {
+    "schema_version": "v1",
+    "task_id": "design2sva_fifo_pop_data_stable",
+    "task_type": "design2sva",
+    "case_id": "design2sva_fifo_pop_data_stable",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_pop_data_stable_when_stalled",
+    "module_name": "fifo_1r1w",
+    "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+    "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+    "intent": "Generate an assertion that FIFO pop data remains valid and stable while a pop transaction is stalled.",
+    "visible_signals": ["clk", "rst", "pop_valid", "pop_ready", "pop_data"],
+    "clock_reset": {
+      "clock": "clk",
+      "reset": "rst",
+      "clock_edge": "posedge",
+      "reset_polarity": "active_high"
+    },
+    "helper_code_policy": {
+      "allowed": false,
+      "allowed_kinds": [],
+      "max_lines": 0,
+      "rationale": "The pop-data stability rule is direct over the pop channel signals."
+    },
+    "evaluation_metadata": {
+      "benchmark": "local_design2sva",
+      "split": "local_smoke",
+      "expected_result": "syntax_or_proof_check",
+      "reference_available": true,
+      "reference_sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(pop_data));",
+      "expected_proof_status": "proven",
+      "notes": "Reference assertion is evaluation-only and is omitted from prompts."
+    }
   }
 ]

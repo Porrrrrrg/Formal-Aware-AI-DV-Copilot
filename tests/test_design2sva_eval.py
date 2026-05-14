@@ -250,12 +250,12 @@ def test_design2sva_reference_oracle_replay_covers_all_fixtures(
     payload = json.loads(out.read_text(encoding="utf-8"))
     summary = payload["summary"]
 
-    assert summary["num_cases"] == 4
+    assert summary["num_cases"] >= 10
     assert summary["reference_proven@1"] == 1.0
     assert summary["reference_non_vacuous@1"] == 1.0
     assert summary["wrapper_parity_pass_rate"] == 1.0
     assert summary["root_cause_details"] == {
-        "reference_oracle_matches_native_formal_behavior": 4
+        "reference_oracle_matches_native_formal_behavior": summary["num_cases"]
     }
 
 

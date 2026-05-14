@@ -1,0 +1,1569 @@
+{
+  "schema_version": "stage14_reference_oracle_expanded_v1",
+  "mode": "design2sva_reference_oracle_expanded",
+  "backend": "jaspergold",
+  "dry_run": true,
+  "variant": "correct",
+  "cases_path": "benchmarks/design2sva_cases.json",
+  "llm_prompts_sent": false,
+  "result_artifact_paths": {
+    "local": "evaluation/results/design2sva_reference_oracle_expanded_local.json",
+    "jasper": "evaluation/results/design2sva_reference_oracle_expanded_jasper.json"
+  },
+  "summary": {
+    "num_cases": 12,
+    "k": 1,
+    "dry_run": true,
+    "formal_metrics_status": "not_run",
+    "source_counts": {
+      "reference_oracle": 12
+    },
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "native_mapped_cases": 12,
+    "native_all_cases_mapped": true,
+    "wrapper_cases": 12,
+    "wrapper_formal_metrics_status": "not_run",
+    "wrapper_source_counts": {
+      "reference_oracle": 12
+    },
+    "wrapper_failure_categories": {
+      "not_run": 12
+    },
+    "wrapper_root_cause_details": {
+      "formal_check_not_run": 12
+    },
+    "clock_reset_metadata_checked": 12,
+    "reset_clock_mismatch_count": 0,
+    "invariant_reference_count": 3,
+    "implication_reference_count": 9,
+    "cover_required_count": 9,
+    "cover_generated_count": 9,
+    "native_proof_status_counts": {
+      "not_run": 12
+    },
+    "native_vacuity_status_counts": {
+      "not_run": 12
+    },
+    "native_root_cause_candidate_counts": {
+      "unknown": 12
+    },
+    "root_cause_summaries": []
+  },
+  "native_oracle": {
+    "schema_version": "v1",
+    "mode": "native_reference_oracle",
+    "backend": "jaspergold",
+    "dry_run": true,
+    "variant": "correct",
+    "cases_path": "benchmarks/design2sva_cases.json",
+    "summary": {
+      "num_cases": 12,
+      "dry_run": true,
+      "mapped_cases": 12,
+      "all_cases_mapped": true,
+      "candidate_embedding": false,
+      "native_reference_proves_count": 0,
+      "native_reference_does_not_prove_count": 0,
+      "native_reference_unknown_count": 12,
+      "native_proof_status_counts": {
+        "not_run": 12
+      },
+      "native_vacuity_status_counts": {
+        "not_run": 12
+      },
+      "root_cause_candidate_counts": {
+        "unknown": 12
+      }
+    },
+    "results": [
+      {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+        },
+        "native_top_harness": "arbiter_rr2_harness",
+        "native_property_id": "p_mutex",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/arbiter_rr2_correct_prove",
+          "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+          "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+        },
+        "native_top_harness": "rv_buffer_harness",
+        "native_property_id": "p_in_ready_when_full_and_out_ready",
+        "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/rv_buffer_correct_prove",
+          "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_apb_setup_enable",
+        "design_id": "apb_regblock",
+        "property_id": "p_setup_then_enable",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+        },
+        "native_top_harness": "apb_regblock_harness",
+        "native_property_id": "p_setup_then_enable",
+        "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/apb_regblock_correct_prove",
+          "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_fifo_no_underflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_underflow",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+          "formal_harness": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "properties": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+          "assumptions": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+          "run_jg_tcl": "benchmarks/fifo_1r1w/formal/run_jg.tcl"
+        },
+        "native_top_harness": "fifo_1r1w_harness",
+        "native_property_id": "p_no_underflow",
+        "native_property_path": "fifo_1r1w_harness.properties_i.p_no_underflow",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/fifo_1r1w_correct_prove",
+          "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_arbiter_no_spurious_gnt0",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_no_spurious_gnt0",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+        },
+        "native_top_harness": "arbiter_rr2_harness",
+        "native_property_id": "p_no_spurious_gnt0",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_no_spurious_gnt0",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/arbiter_rr2_correct_prove",
+          "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_arbiter_single_req0_grant",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_single_req0_grant",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+        },
+        "native_top_harness": "arbiter_rr2_harness",
+        "native_property_id": "p_single_req0_grant",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_single_req0_grant",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/arbiter_rr2_correct_prove",
+          "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_out_valid_equals_full",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+          "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+        },
+        "native_top_harness": "rv_buffer_harness",
+        "native_property_id": "p_out_valid_equals_full",
+        "native_property_path": "rv_buffer_harness.properties_i.p_out_valid_equals_full",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/rv_buffer_correct_prove",
+          "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_rv_buffer_stable_while_stalled",
+        "design_id": "rv_buffer",
+        "property_id": "p_data_stable_while_stalled",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+          "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+        },
+        "native_top_harness": "rv_buffer_harness",
+        "native_property_id": "p_data_stable_while_stalled",
+        "native_property_path": "rv_buffer_harness.properties_i.p_data_stable_while_stalled",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/rv_buffer_correct_prove",
+          "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_apb_pready_response_valid",
+        "design_id": "apb_regblock",
+        "property_id": "p_pready_response_valid",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+        },
+        "native_top_harness": "apb_regblock_harness",
+        "native_property_id": "p_pready_response_valid",
+        "native_property_path": "apb_regblock_harness.properties_i.p_pready_response_valid",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/apb_regblock_correct_prove",
+          "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_apb_invalid_address_behavior",
+        "design_id": "apb_regblock",
+        "property_id": "p_invalid_address_behavior",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+        },
+        "native_top_harness": "apb_regblock_harness",
+        "native_property_id": "p_invalid_address_behavior",
+        "native_property_path": "apb_regblock_harness.properties_i.p_invalid_address_behavior",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/apb_regblock_correct_prove",
+          "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_fifo_no_overflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_overflow",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+          "formal_harness": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "properties": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+          "assumptions": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+          "run_jg_tcl": "benchmarks/fifo_1r1w/formal/run_jg.tcl"
+        },
+        "native_top_harness": "fifo_1r1w_harness",
+        "native_property_id": "p_no_overflow",
+        "native_property_path": "fifo_1r1w_harness.properties_i.p_no_overflow",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/fifo_1r1w_correct_prove",
+          "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      {
+        "case_id": "design2sva_fifo_pop_data_stable",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_pop_data_stable_when_stalled",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+          "formal_harness": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "properties": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+          "assumptions": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+          "run_jg_tcl": "benchmarks/fifo_1r1w/formal/run_jg.tcl"
+        },
+        "native_top_harness": "fifo_1r1w_harness",
+        "native_property_id": "p_pop_data_stable_when_stalled",
+        "native_property_path": "fifo_1r1w_harness.properties_i.p_pop_data_stable_when_stalled",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/fifo_1r1w_correct_prove",
+          "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      }
+    ]
+  },
+  "wrapper_reference_oracle_summary": {
+    "num_cases": 12,
+    "k": 1,
+    "cases_by_design": {
+      "apb_regblock": 3,
+      "arbiter_rr2": 3,
+      "fifo_1r1w": 3,
+      "rv_buffer": 3
+    },
+    "syntax@1": 1.0,
+    "syntax@k": 1.0,
+    "proven@1": 0.0,
+    "proven@k": 0.0,
+    "non_vacuous@k": 0.0,
+    "antecedent_reachable@1": 0.0,
+    "antecedent_reachable@k": 0.0,
+    "cover_reachable@k": 0.0,
+    "proven_non_vacuous@k": 0.0,
+    "reference_proven@1": 0.0,
+    "reference_non_vacuous@1": 0.0,
+    "reference_antecedent_reachable@1": 0.0,
+    "wrapper_parity_pass_rate": 0.0,
+    "harness_reachability_status": "not_run",
+    "harness_reachability_status_counts": {
+      "not_run": 12
+    },
+    "formal_metrics_status": "not_run",
+    "backend_status_counts": {
+      "dry_run": 12
+    },
+    "hallucinated_signal_rate": 0.0,
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "average_rounds": 0.0,
+    "repair_success_after_feedback": 0.0,
+    "repaired_non_vacuous_success_after_feedback": 0.0,
+    "source_counts": {
+      "reference_oracle": 12
+    },
+    "failure_categories": {
+      "not_run": 12
+    },
+    "root_cause_candidates": {
+      "unknown": 12
+    },
+    "root_cause_details": {
+      "formal_check_not_run": 12
+    },
+    "root_cause_candidate_counts": {
+      "unknown": 12
+    },
+    "root_cause_detail_counts": {
+      "formal_check_not_run": 12
+    },
+    "failure_taxonomy": [
+      "overstrong_assertion",
+      "proven_non_vacuous",
+      "reset_clock_mismatch",
+      "syntax_error",
+      "temporal_mismatch",
+      "unknown_signal",
+      "unreachable_antecedent",
+      "unreachable_cover_goal",
+      "unsupported_helper_code",
+      "weak_vacuous_assertion"
+    ],
+    "root_cause_taxonomy": [
+      "candidate_generation_failure",
+      "cover_generation_bug",
+      "design2sva_embedding_bug",
+      "jasper_parser_misclassification",
+      "native_harness_unreachable",
+      "reference_task_invalid",
+      "reset_clock_mismatch",
+      "unknown"
+    ]
+  },
+  "results": [
+    {
+      "case_id": "design2sva_arbiter_mutex",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "native": {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+        },
+        "native_top_harness": "arbiter_rr2_harness",
+        "native_property_id": "p_mutex",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/arbiter_rr2_correct_prove",
+          "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "arbiter_rr2",
+          "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "no_antecedent",
+          "antecedent": null,
+          "antecedent_kind": "invariant",
+          "trigger_kind": "invariant",
+          "requires_antecedent_cover": false,
+          "cover_property_id": "",
+          "cover_sva": "",
+          "cover_status": "not_run",
+          "antecedent_reachability": "no_antecedent"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_mutex"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_arbiter_mutex",
+          "design_id": "arbiter_rr2",
+          "property_id": "p_mutex",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_ready_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "native": {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+          "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+        },
+        "native_top_harness": "rv_buffer_harness",
+        "native_property_id": "p_in_ready_when_full_and_out_ready",
+        "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/rv_buffer_correct_prove",
+          "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "rv_buffer",
+          "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "full && out_ready",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+          "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_ready_full"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_rv_buffer_ready_full",
+          "design_id": "rv_buffer",
+          "property_id": "p_in_ready_when_full_and_out_ready",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_apb_setup_enable",
+      "design_id": "apb_regblock",
+      "property_id": "p_setup_then_enable",
+      "native": {
+        "case_id": "design2sva_apb_setup_enable",
+        "design_id": "apb_regblock",
+        "property_id": "p_setup_then_enable",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+        },
+        "native_top_harness": "apb_regblock_harness",
+        "native_property_id": "p_setup_then_enable",
+        "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/apb_regblock_correct_prove",
+          "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_apb_setup_enable",
+        "design_id": "apb_regblock",
+        "property_id": "p_setup_then_enable",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "pclk",
+          "clock_edge": "posedge",
+          "reset": "presetn",
+          "reset_polarity": "active_low",
+          "module_name": "apb_regblock",
+          "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "psel && !penable",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_setup_then_enable_antecedent",
+          "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_setup_enable"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_apb_setup_enable",
+          "design_id": "apb_regblock",
+          "property_id": "p_setup_then_enable",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_setup_then_enable_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_fifo_no_underflow",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_no_underflow",
+      "native": {
+        "case_id": "design2sva_fifo_no_underflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_underflow",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+          "formal_harness": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "properties": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+          "assumptions": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+          "run_jg_tcl": "benchmarks/fifo_1r1w/formal/run_jg.tcl"
+        },
+        "native_top_harness": "fifo_1r1w_harness",
+        "native_property_id": "p_no_underflow",
+        "native_property_path": "fifo_1r1w_harness.properties_i.p_no_underflow",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/fifo_1r1w_correct_prove",
+          "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_fifo_no_underflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_underflow",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "fifo_1r1w",
+          "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "no_antecedent",
+          "antecedent": null,
+          "antecedent_kind": "invariant",
+          "trigger_kind": "invariant",
+          "requires_antecedent_cover": false,
+          "cover_property_id": "",
+          "cover_sva": "",
+          "cover_status": "not_run",
+          "antecedent_reachability": "no_antecedent"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_fifo_no_underflow"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_fifo_no_underflow",
+          "design_id": "fifo_1r1w",
+          "property_id": "p_no_underflow",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_arbiter_no_spurious_gnt0",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_no_spurious_gnt0",
+      "native": {
+        "case_id": "design2sva_arbiter_no_spurious_gnt0",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_no_spurious_gnt0",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+        },
+        "native_top_harness": "arbiter_rr2_harness",
+        "native_property_id": "p_no_spurious_gnt0",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_no_spurious_gnt0",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/arbiter_rr2_correct_prove",
+          "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_arbiter_no_spurious_gnt0",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_no_spurious_gnt0",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "arbiter_rr2",
+          "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "gnt0",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
+          "cover_sva": "cov_p_no_spurious_gnt0_antecedent: cover property (@(posedge clk) disable iff (rst) (gnt0));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_no_spurious_gnt0"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_arbiter_no_spurious_gnt0",
+          "design_id": "arbiter_rr2",
+          "property_id": "p_no_spurious_gnt0",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_arbiter_single_req0_grant",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_single_req0_grant",
+      "native": {
+        "case_id": "design2sva_arbiter_single_req0_grant",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_single_req0_grant",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "formal_harness": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "properties": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "assumptions": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "run_jg_tcl": "benchmarks/arbiter_rr2/formal/run_jg.tcl"
+        },
+        "native_top_harness": "arbiter_rr2_harness",
+        "native_property_id": "p_single_req0_grant",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_single_req0_grant",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/arbiter_rr2_correct_prove",
+          "vacuity": "jasper/reports/arbiter_rr2_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_arbiter_single_req0_grant",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_single_req0_grant",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "arbiter_rr2",
+          "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "req0 && !req1",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_single_req0_grant_antecedent",
+          "cover_sva": "cov_p_single_req0_grant_antecedent: cover property (@(posedge clk) disable iff (rst) (req0 && !req1));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_arbiter_single_req0_grant"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_arbiter_single_req0_grant",
+          "design_id": "arbiter_rr2",
+          "property_id": "p_single_req0_grant",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_single_req0_grant_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_out_valid_equals_full",
+      "native": {
+        "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_out_valid_equals_full",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+          "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+        },
+        "native_top_harness": "rv_buffer_harness",
+        "native_property_id": "p_out_valid_equals_full",
+        "native_property_path": "rv_buffer_harness.properties_i.p_out_valid_equals_full",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/rv_buffer_correct_prove",
+          "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_out_valid_equals_full",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "rv_buffer",
+          "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "no_antecedent",
+          "antecedent": null,
+          "antecedent_kind": "invariant",
+          "trigger_kind": "invariant",
+          "requires_antecedent_cover": false,
+          "cover_property_id": "",
+          "cover_sva": "",
+          "cover_status": "not_run",
+          "antecedent_reachability": "no_antecedent"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_out_valid_equals_full"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+          "design_id": "rv_buffer",
+          "property_id": "p_out_valid_equals_full",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_stable_while_stalled",
+      "design_id": "rv_buffer",
+      "property_id": "p_data_stable_while_stalled",
+      "native": {
+        "case_id": "design2sva_rv_buffer_stable_while_stalled",
+        "design_id": "rv_buffer",
+        "property_id": "p_data_stable_while_stalled",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "formal_harness": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "properties": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "assumptions": "benchmarks/rv_buffer/formal/rv_buffer_assumptions.sv",
+          "run_jg_tcl": "benchmarks/rv_buffer/formal/run_jg.tcl"
+        },
+        "native_top_harness": "rv_buffer_harness",
+        "native_property_id": "p_data_stable_while_stalled",
+        "native_property_path": "rv_buffer_harness.properties_i.p_data_stable_while_stalled",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/rv_buffer_correct_prove",
+          "vacuity": "jasper/reports/rv_buffer_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_rv_buffer_stable_while_stalled",
+        "design_id": "rv_buffer",
+        "property_id": "p_data_stable_while_stalled",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "rv_buffer",
+          "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "out_valid && !out_ready",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
+          "cover_sva": "cov_p_data_stable_while_stalled_antecedent: cover property (@(posedge clk) disable iff (rst) (out_valid && !out_ready));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_rv_buffer_stable_while_stalled"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_rv_buffer_stable_while_stalled",
+          "design_id": "rv_buffer",
+          "property_id": "p_data_stable_while_stalled",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_apb_pready_response_valid",
+      "design_id": "apb_regblock",
+      "property_id": "p_pready_response_valid",
+      "native": {
+        "case_id": "design2sva_apb_pready_response_valid",
+        "design_id": "apb_regblock",
+        "property_id": "p_pready_response_valid",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+        },
+        "native_top_harness": "apb_regblock_harness",
+        "native_property_id": "p_pready_response_valid",
+        "native_property_path": "apb_regblock_harness.properties_i.p_pready_response_valid",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/apb_regblock_correct_prove",
+          "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_apb_pready_response_valid",
+        "design_id": "apb_regblock",
+        "property_id": "p_pready_response_valid",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "pclk",
+          "clock_edge": "posedge",
+          "reset": "presetn",
+          "reset_polarity": "active_low",
+          "module_name": "apb_regblock",
+          "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "psel && penable",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_pready_response_valid_antecedent",
+          "cover_sva": "cov_p_pready_response_valid_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_pready_response_valid"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_apb_pready_response_valid",
+          "design_id": "apb_regblock",
+          "property_id": "p_pready_response_valid",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_pready_response_valid_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_apb_invalid_address_behavior",
+      "design_id": "apb_regblock",
+      "property_id": "p_invalid_address_behavior",
+      "native": {
+        "case_id": "design2sva_apb_invalid_address_behavior",
+        "design_id": "apb_regblock",
+        "property_id": "p_invalid_address_behavior",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "formal_harness": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "properties": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "assumptions": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "run_jg_tcl": "benchmarks/apb_regblock/formal/run_jg.tcl"
+        },
+        "native_top_harness": "apb_regblock_harness",
+        "native_property_id": "p_invalid_address_behavior",
+        "native_property_path": "apb_regblock_harness.properties_i.p_invalid_address_behavior",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/apb_regblock_correct_prove",
+          "vacuity": "jasper/reports/apb_regblock_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_apb_invalid_address_behavior",
+        "design_id": "apb_regblock",
+        "property_id": "p_invalid_address_behavior",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "pclk",
+          "clock_edge": "posedge",
+          "reset": "presetn",
+          "reset_polarity": "active_low",
+          "module_name": "apb_regblock",
+          "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "psel && penable && !(paddr inside {8'h00, 8'h04})",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
+          "cover_sva": "cov_p_invalid_address_behavior_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable && !(paddr inside {8'h00, 8'h04})));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_apb_invalid_address_behavior"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_apb_invalid_address_behavior",
+          "design_id": "apb_regblock",
+          "property_id": "p_invalid_address_behavior",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_fifo_no_overflow",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_no_overflow",
+      "native": {
+        "case_id": "design2sva_fifo_no_overflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_overflow",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+          "formal_harness": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "properties": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+          "assumptions": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+          "run_jg_tcl": "benchmarks/fifo_1r1w/formal/run_jg.tcl"
+        },
+        "native_top_harness": "fifo_1r1w_harness",
+        "native_property_id": "p_no_overflow",
+        "native_property_path": "fifo_1r1w_harness.properties_i.p_no_overflow",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/fifo_1r1w_correct_prove",
+          "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_fifo_no_overflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_overflow",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "fifo_1r1w",
+          "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "full && push_valid && !pop_ready",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_no_overflow_antecedent",
+          "cover_sva": "cov_p_no_overflow_antecedent: cover property (@(posedge clk) disable iff (rst) (full && push_valid && !pop_ready));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_fifo_no_overflow"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_fifo_no_overflow",
+          "design_id": "fifo_1r1w",
+          "property_id": "p_no_overflow",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_no_overflow_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    },
+    {
+      "case_id": "design2sva_fifo_pop_data_stable",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_pop_data_stable_when_stalled",
+      "native": {
+        "case_id": "design2sva_fifo_pop_data_stable",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_pop_data_stable_when_stalled",
+        "variant": "correct",
+        "mapping_status": "mapped",
+        "native_paths": {
+          "design_rtl": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv",
+          "formal_harness": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "properties": "benchmarks/fifo_1r1w/formal/fifo_1r1w_properties.sv",
+          "assumptions": "benchmarks/fifo_1r1w/formal/fifo_1r1w_assumptions.sv",
+          "run_jg_tcl": "benchmarks/fifo_1r1w/formal/run_jg.tcl"
+        },
+        "native_top_harness": "fifo_1r1w_harness",
+        "native_property_id": "p_pop_data_stable_when_stalled",
+        "native_property_path": "fifo_1r1w_harness.properties_i.p_pop_data_stable_when_stalled",
+        "candidate_embedding": false,
+        "native_proof_status": "not_run",
+        "native_vacuity_status": "not_run",
+        "native_report_dir": "jasper/reports/fifo_1r1w_correct_prove",
+        "native_report_dirs": {
+          "prove": "jasper/reports/fifo_1r1w_correct_prove",
+          "vacuity": "jasper/reports/fifo_1r1w_correct_vacuity"
+        },
+        "native_reference_proves": null,
+        "root_cause_candidate": "unknown",
+        "root_cause_summary": "Dry run only; native benchmark proof was not executed.",
+        "backend_status": "dry_run",
+        "backend_feedback": "Dry run only; JasperGold was not invoked."
+      },
+      "wrapper_reference": {
+        "case_id": "design2sva_fifo_pop_data_stable",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_pop_data_stable_when_stalled",
+        "failure_category": "not_run",
+        "root_cause_candidate": "unknown",
+        "root_cause_detail": "formal_check_not_run",
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "has_hallucinated_signal": false,
+        "syntax_ok": true,
+        "wrapper_parity_pass": false,
+        "clock_reset_metadata": {
+          "clock": "clk",
+          "clock_edge": "posedge",
+          "reset": "rst",
+          "reset_polarity": "active_high",
+          "module_name": "fifo_1r1w",
+          "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+          "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "antecedent": "pop_valid && !pop_ready",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_pop_data_stable_when_stalled_antecedent",
+          "cover_sva": "cov_p_pop_data_stable_when_stalled_antecedent: cover property (@(posedge clk) disable iff (rst) (pop_valid && !pop_ready));",
+          "cover_status": "not_run",
+          "antecedent_reachability": "unknown"
+        },
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "dry_run",
+          "syntax_status": "not_run",
+          "proof_status": "not_run",
+          "vacuity_status": "not_run",
+          "report_dir": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-research-eval-v1\\jasper\\reports\\design2sva_reference_oracle_expanded_jasper\\design2sva_c0_r0\\design2sva_fifo_pop_data_stable"
+        },
+        "harness_reachability_audit": {
+          "case_id": "design2sva_fifo_pop_data_stable",
+          "design_id": "fifo_1r1w",
+          "property_id": "p_pop_data_stable_when_stalled",
+          "reference_available": true,
+          "reference_syntax_ok": true,
+          "reference_reset_clock_mismatch": false,
+          "harness_reachability_status": "not_run",
+          "cover_property_id": "cov_p_pop_data_stable_when_stalled_antecedent",
+          "cover_status": "not_run"
+        }
+      }
+    }
+  ],
+  "claim_boundary": {
+    "supported": "Expanded local reference/native oracle and wrapper metadata validation ran without sending prompts.",
+    "unsupported": "This artifact does not measure generated-candidate quality or production signoff."
+  }
+}

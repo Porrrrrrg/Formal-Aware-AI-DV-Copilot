@@ -1,0 +1,1602 @@
+{
+  "summary": {
+    "num_cases": 10,
+    "k": 1,
+    "cases_by_design": {
+      "apb_regblock": 3,
+      "arbiter_rr2": 3,
+      "fifo_1r1w": 1,
+      "rv_buffer": 3
+    },
+    "syntax@1": 1.0,
+    "syntax@k": 1.0,
+    "proven@1": 0.0,
+    "proven@k": 0.0,
+    "non_vacuous@k": 0.0,
+    "antecedent_reachable@1": 0.0,
+    "antecedent_reachable@k": 0.0,
+    "cover_reachable@k": 0.0,
+    "proven_non_vacuous@k": 0.0,
+    "reference_proven@1": 0.0,
+    "reference_non_vacuous@1": 0.0,
+    "reference_antecedent_reachable@1": 0.0,
+    "wrapper_parity_pass_rate": 0.0,
+    "harness_reachability_status": "not_run",
+    "harness_reachability_status_counts": {
+      "not_run": 10
+    },
+    "formal_metrics_status": "not_run",
+    "backend_status_counts": {
+      "not_run": 10
+    },
+    "hallucinated_signal_rate": 0.0,
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "average_rounds": 0.0,
+    "repair_success_after_feedback": 0.0,
+    "repaired_non_vacuous_success_after_feedback": 0.0,
+    "source_counts": {
+      "reference_oracle": 10
+    },
+    "failure_categories": {
+      "not_run": 10
+    },
+    "root_cause_candidates": {
+      "unknown": 10
+    },
+    "root_cause_details": {
+      "formal_check_not_run": 10
+    },
+    "root_cause_candidate_counts": {
+      "unknown": 10
+    },
+    "root_cause_detail_counts": {
+      "formal_check_not_run": 10
+    },
+    "failure_taxonomy": [
+      "overstrong_assertion",
+      "proven_non_vacuous",
+      "reset_clock_mismatch",
+      "syntax_error",
+      "temporal_mismatch",
+      "unknown_signal",
+      "unreachable_antecedent",
+      "unreachable_cover_goal",
+      "unsupported_helper_code",
+      "weak_vacuous_assertion"
+    ],
+    "root_cause_taxonomy": [
+      "candidate_generation_failure",
+      "cover_generation_bug",
+      "design2sva_embedding_bug",
+      "jasper_parser_misclassification",
+      "native_harness_unreachable",
+      "reference_task_invalid",
+      "reset_clock_mismatch",
+      "unknown"
+    ]
+  },
+  "mode": "reference_oracle",
+  "formal_check_mode": "not_run",
+  "native_oracle_results": null,
+  "results": [
+    {
+      "case_id": "design2sva_arbiter_mutex",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_arbiter_mutex",
+            "design_id": "arbiter_rr2",
+            "property_id": "p_mutex",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "no_antecedent",
+              "reason": "no_top_level_implication",
+              "antecedent": null,
+              "antecedent_kind": "invariant",
+              "trigger_kind": "invariant",
+              "trigger_status": "no_antecedent",
+              "requires_antecedent_cover": false,
+              "cover_property_id": "",
+              "cover_sva": "",
+              "cover_status": "not_run",
+              "antecedent_reachability": "no_antecedent"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "arbiter_rr2",
+              "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+              "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": true,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_ready_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_ready_full",
+            "design_id": "rv_buffer",
+            "property_id": "p_in_ready_when_full_and_out_ready",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "full && out_ready",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+              "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "rv_buffer",
+              "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+              "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_apb_setup_enable",
+      "design_id": "apb_regblock",
+      "property_id": "p_setup_then_enable",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_apb_setup_enable",
+            "design_id": "apb_regblock",
+            "property_id": "p_setup_then_enable",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "psel && !penable",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_setup_then_enable_antecedent",
+              "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "pclk",
+              "clock_edge": "posedge",
+              "reset": "presetn",
+              "reset_polarity": "active_low",
+              "module_name": "apb_regblock",
+              "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+              "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_apb_setup_enable",
+        "design_id": "apb_regblock",
+        "property_id": "p_setup_then_enable",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_setup_then_enable_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_fifo_no_underflow",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_no_underflow",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_no_underflow",
+                "sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "empty",
+                  "pop_fire",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_fifo_no_underflow",
+                "design_id": "fifo_1r1w",
+                "property_id": "p_no_underflow",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "fifo_1r1w",
+                  "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+                  "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_fifo_no_underflow",
+            "design_id": "fifo_1r1w",
+            "property_id": "p_no_underflow",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "no_antecedent",
+              "reason": "no_top_level_implication",
+              "antecedent": null,
+              "antecedent_kind": "invariant",
+              "trigger_kind": "invariant",
+              "trigger_status": "no_antecedent",
+              "requires_antecedent_cover": false,
+              "cover_property_id": "",
+              "cover_sva": "",
+              "cover_status": "not_run",
+              "antecedent_reachability": "no_antecedent"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "fifo_1r1w",
+              "harness_header_path": "benchmarks/fifo_1r1w/formal/fifo_1r1w_harness.sv",
+              "design_rtl_path": "benchmarks/fifo_1r1w/rtl/fifo_1r1w_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_fifo_no_underflow",
+        "design_id": "fifo_1r1w",
+        "property_id": "p_no_underflow",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": true,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_arbiter_no_spurious_gnt0",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_no_spurious_gnt0",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_no_spurious_gnt0",
+                "sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) gnt0 |-> req0);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "req0",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_no_spurious_gnt0",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_no_spurious_gnt0",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "gnt0",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
+                  "cover_sva": "cov_p_no_spurious_gnt0_antecedent: cover property (@(posedge clk) disable iff (rst) (gnt0));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_arbiter_no_spurious_gnt0",
+            "design_id": "arbiter_rr2",
+            "property_id": "p_no_spurious_gnt0",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "gnt0",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
+              "cover_sva": "cov_p_no_spurious_gnt0_antecedent: cover property (@(posedge clk) disable iff (rst) (gnt0));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "arbiter_rr2",
+              "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+              "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_arbiter_no_spurious_gnt0",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_no_spurious_gnt0",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_no_spurious_gnt0_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_arbiter_single_req0_grant",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_single_req0_grant",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_single_req0_grant",
+                "sva": "p_single_req0_grant: assert property (@(posedge clk) disable iff (rst) req0 && !req1 |-> gnt0 && !gnt1);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "req0",
+                  "req1",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_single_req0_grant",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_single_req0_grant",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "req0 && !req1",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_single_req0_grant_antecedent",
+                  "cover_sva": "cov_p_single_req0_grant_antecedent: cover property (@(posedge clk) disable iff (rst) (req0 && !req1));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "arbiter_rr2",
+                  "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+                  "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_arbiter_single_req0_grant",
+            "design_id": "arbiter_rr2",
+            "property_id": "p_single_req0_grant",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "req0 && !req1",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_single_req0_grant_antecedent",
+              "cover_sva": "cov_p_single_req0_grant_antecedent: cover property (@(posedge clk) disable iff (rst) (req0 && !req1));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "arbiter_rr2",
+              "harness_header_path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+              "design_rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_arbiter_single_req0_grant",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_single_req0_grant",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_single_req0_grant_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_out_valid_equals_full",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_out_valid_equals_full",
+                "sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == full);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "out_valid",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_out_valid_equals_full",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "trigger_status": "no_antecedent",
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+            "design_id": "rv_buffer",
+            "property_id": "p_out_valid_equals_full",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "no_antecedent",
+              "reason": "no_top_level_implication",
+              "antecedent": null,
+              "antecedent_kind": "invariant",
+              "trigger_kind": "invariant",
+              "trigger_status": "no_antecedent",
+              "requires_antecedent_cover": false,
+              "cover_property_id": "",
+              "cover_sva": "",
+              "cover_status": "not_run",
+              "antecedent_reachability": "no_antecedent"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "rv_buffer",
+              "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+              "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_rv_buffer_out_valid_equals_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_out_valid_equals_full",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": true,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_rv_buffer_stable_while_stalled",
+      "design_id": "rv_buffer",
+      "property_id": "p_data_stable_while_stalled",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_data_stable_while_stalled",
+                "sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "out_data",
+                  "out_ready",
+                  "out_valid",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_stable_while_stalled",
+                "design_id": "rv_buffer",
+                "property_id": "p_data_stable_while_stalled",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "out_valid && !out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
+                  "cover_sva": "cov_p_data_stable_while_stalled_antecedent: cover property (@(posedge clk) disable iff (rst) (out_valid && !out_ready));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "clk",
+                  "clock_edge": "posedge",
+                  "reset": "rst",
+                  "reset_polarity": "active_high",
+                  "module_name": "rv_buffer",
+                  "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+                  "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_stable_while_stalled",
+            "design_id": "rv_buffer",
+            "property_id": "p_data_stable_while_stalled",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "out_valid && !out_ready",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
+              "cover_sva": "cov_p_data_stable_while_stalled_antecedent: cover property (@(posedge clk) disable iff (rst) (out_valid && !out_ready));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "clk",
+              "clock_edge": "posedge",
+              "reset": "rst",
+              "reset_polarity": "active_high",
+              "module_name": "rv_buffer",
+              "harness_header_path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+              "design_rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_rv_buffer_stable_while_stalled",
+        "design_id": "rv_buffer",
+        "property_id": "p_data_stable_while_stalled",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_data_stable_while_stalled_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_apb_pready_response_valid",
+      "design_id": "apb_regblock",
+      "property_id": "p_pready_response_valid",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_pready_response_valid",
+                "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) psel && penable |-> pready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "pready",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_pready_response_valid",
+                "design_id": "apb_regblock",
+                "property_id": "p_pready_response_valid",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_pready_response_valid_antecedent",
+                  "cover_sva": "cov_p_pready_response_valid_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_apb_pready_response_valid",
+            "design_id": "apb_regblock",
+            "property_id": "p_pready_response_valid",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "psel && penable",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_pready_response_valid_antecedent",
+              "cover_sva": "cov_p_pready_response_valid_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "pclk",
+              "clock_edge": "posedge",
+              "reset": "presetn",
+              "reset_polarity": "active_low",
+              "module_name": "apb_regblock",
+              "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+              "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_apb_pready_response_valid",
+        "design_id": "apb_regblock",
+        "property_id": "p_pready_response_valid",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_pready_response_valid_antecedent",
+        "cover_status": "not_run"
+      }
+    },
+    {
+      "case_id": "design2sva_apb_invalid_address_behavior",
+      "design_id": "apb_regblock",
+      "property_id": "p_invalid_address_behavior",
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_invalid_address_behavior",
+                "sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "paddr",
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel",
+                  "pslverr"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata.",
+                "source": "reference_oracle",
+                "repair_metadata": {
+                  "round": 0,
+                  "changed_by_repair": false
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_invalid_address_behavior",
+                "design_id": "apb_regblock",
+                "property_id": "p_invalid_address_behavior",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "reference_oracle",
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "not_run",
+                "root_cause_candidate": "unknown",
+                "root_cause_detail": "formal_check_not_run",
+                "wrapper_parity_pass": false,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "not_run",
+                  "syntax_status": "not_run",
+                  "proof_status": null,
+                  "vacuity_status": null,
+                  "report_dir": null,
+                  "artifact_paths": {}
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && penable && !(paddr inside {8'h00, 8'h04})",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "trigger_status": "extracted",
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
+                  "cover_sva": "cov_p_invalid_address_behavior_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable && !(paddr inside {8'h00, 8'h04})));",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "unknown"
+                },
+                "clock_reset_metadata": {
+                  "clock": "pclk",
+                  "clock_edge": "posedge",
+                  "reset": "presetn",
+                  "reset_polarity": "active_low",
+                  "module_name": "apb_regblock",
+                  "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+                  "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+                }
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_apb_invalid_address_behavior",
+            "design_id": "apb_regblock",
+            "property_id": "p_invalid_address_behavior",
+            "candidate_index": 0,
+            "round": 0,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "reference_oracle",
+            "antecedent_reachable": false,
+            "cover_reachable": false,
+            "failure_category": "not_run",
+            "root_cause_candidate": "unknown",
+            "root_cause_detail": "formal_check_not_run",
+            "wrapper_parity_pass": false,
+            "proof_metadata": {
+              "backend": "jaspergold",
+              "status": "not_run",
+              "syntax_status": "not_run",
+              "proof_status": null,
+              "vacuity_status": null,
+              "report_dir": null,
+              "artifact_paths": {}
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "psel && penable && !(paddr inside {8'h00, 8'h04})",
+              "antecedent_kind": "antecedent",
+              "trigger_kind": "antecedent",
+              "trigger_status": "extracted",
+              "requires_antecedent_cover": true,
+              "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
+              "cover_sva": "cov_p_invalid_address_behavior_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && penable && !(paddr inside {8'h00, 8'h04})));",
+              "cover_status": "not_run",
+              "antecedent_reachability": "unknown"
+            },
+            "clock_reset_metadata": {
+              "clock": "pclk",
+              "clock_edge": "posedge",
+              "reset": "presetn",
+              "reset_polarity": "active_low",
+              "module_name": "apb_regblock",
+              "harness_header_path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+              "design_rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv"
+            }
+          }
+        }
+      ],
+      "harness_reachability_audit": {
+        "case_id": "design2sva_apb_invalid_address_behavior",
+        "design_id": "apb_regblock",
+        "property_id": "p_invalid_address_behavior",
+        "reference_available": true,
+        "reference_reset_clock_mismatch": false,
+        "reference_syntax_ok": true,
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_property_id": "cov_p_invalid_address_behavior_antecedent",
+        "cover_status": "not_run"
+      }
+    }
+  ],
+  "artifact_note": "Compacted Stage 14 local evidence: detailed wrapper diagnostics are reproducible by rerunning the command."
+}
