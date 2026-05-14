@@ -359,52 +359,86 @@ def write_output_quality_results(
 
 
 def write_design2sva_results_if_present() -> None:
-    result_path = RESULTS / "design2sva_eval_local.json"
-    if not result_path.exists():
+    result_paths = sorted(RESULTS.glob("design2sva_eval*.json"), key=design2sva_result_sort_key)
+    if not result_paths:
         return
-    payload = json.loads(result_path.read_text())
-    summary = payload.get("summary", {})
-    if not isinstance(summary, dict):
-        return
-    source_counts = summary.get("source_counts", {})
-    failure_categories = summary.get("failure_categories", {})
     lines = [
         "# Design2SVA Results",
         "",
-        "These results are generated from the local retrieval-assisted Design2SVA scaffold. They are infrastructure and replay/dry-run evidence unless the run mode records real LLM and JasperGold execution.",
+        "These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact and provenance so deterministic scaffold, replay, real LLM, and JasperGold-checked runs are not conflated.",
         "",
-        "## Local Summary",
+        "## Summary",
         "",
-        "| Metric | Value |",
-        "| --- | ---: |",
-        f"| Mode | {payload.get('mode', 'unknown')} |",
-        f"| Cases | {fmt(summary.get('num_cases'))} |",
-        f"| k | {fmt(summary.get('k'))} |",
-        f"| syntax@1 | {fmt(summary.get('syntax@1'))} |",
-        f"| syntax@k | {fmt(summary.get('syntax@k'))} |",
-        f"| proven@1 | {fmt(summary.get('proven@1'))} |",
-        f"| proven@k | {fmt(summary.get('proven@k'))} |",
-        f"| non_vacuous@k | {fmt(summary.get('non_vacuous@k'))} |",
-        f"| hallucinated_signal_rate | {fmt(summary.get('hallucinated_signal_rate'))} |",
-        f"| fallback_rate | {fmt(summary.get('fallback_rate'))} |",
-        f"| valid_json_rate | {fmt(summary.get('valid_json_rate'))} |",
-        f"| average_rounds | {fmt(summary.get('average_rounds'))} |",
-        f"| repair_success_after_feedback | {fmt(summary.get('repair_success_after_feedback'))} |",
-        "",
-        "## Provenance",
-        "",
-        f"- Source counts: {source_text({'source_counts': source_counts})}",
-        f"- Failure categories: {source_text({'source_counts': failure_categories})}",
-        f"- Formal metrics status: `{summary.get('formal_metrics_status', 'unknown')}`",
-        "",
-        "## Claim Boundary",
-        "",
-        "- Dry-run, replay, and deterministic scaffold rows do not measure hosted model quality.",
-        "- `proven@*` and `non_vacuous@k` are only meaningful when real JasperGold checks are enabled and available.",
-        "- Exact/reference agreement on local fixtures is a scaffold metric, not functional equivalence or production signoff.",
-        "",
+        "| Artifact | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | hallucinated_signal_rate | fallback_rate | valid_json_rate | avg_rounds | repair_success | Source | Formal |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |",
     ]
+    provenance_lines = ["", "## Provenance", ""]
+    for result_path in result_paths:
+        payload = json.loads(result_path.read_text())
+        summary = payload.get("summary", {})
+        if not isinstance(summary, dict):
+            continue
+        mode = str(payload.get("mode", "unknown"))
+        source_counts = summary.get("source_counts", {})
+        failure_categories = summary.get("failure_categories", {})
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    result_path.name,
+                    mode,
+                    fmt(summary.get("num_cases")),
+                    fmt(summary.get("k")),
+                    fmt(summary.get("syntax@1")),
+                    fmt(summary.get("syntax@k")),
+                    fmt(summary.get("proven@1")),
+                    fmt(summary.get("proven@k")),
+                    fmt(summary.get("non_vacuous@k")),
+                    fmt(summary.get("hallucinated_signal_rate")),
+                    fmt(summary.get("fallback_rate")),
+                    fmt(summary.get("valid_json_rate")),
+                    fmt(summary.get("average_rounds")),
+                    fmt(summary.get("repair_success_after_feedback")),
+                    source_text({"source_counts": source_counts}),
+                    str(summary.get("formal_metrics_status", "unknown")),
+                ]
+            )
+            + " |"
+        )
+        provenance_lines.extend(
+            [
+                f"### {result_path.name}",
+                "",
+                f"- Mode: `{mode}`",
+                f"- Source counts: {source_text({'source_counts': source_counts})}",
+                f"- Failure categories: {source_text({'source_counts': failure_categories})}",
+                f"- Formal metrics status: `{summary.get('formal_metrics_status', 'unknown')}`",
+                "",
+            ]
+        )
+    lines.extend(
+        provenance_lines
+        + [
+            "## Claim Boundary",
+            "",
+            "- Dry-run, replay, and deterministic scaffold rows do not measure hosted model quality.",
+            "- Real LLM rows measure schema-constrained hosted-model behavior only when `source_counts` records `llm` outputs and fallback is low.",
+            "- `proven@*` and `non_vacuous@k` are only meaningful when real JasperGold checks are enabled and available.",
+            "- Exact/reference agreement on local fixtures is a scaffold signal, not functional equivalence or production signoff.",
+            "",
+        ]
+    )
     (RESULTS / "design2sva_results.md").write_text("\n".join(lines))
+
+
+def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
+    priority = {
+        "design2sva_eval_local.json": 0,
+        "design2sva_eval_replay_local.json": 1,
+        "design2sva_eval_codex_subset.json": 2,
+        "design2sva_eval_codex_jasper_subset.json": 3,
+    }
+    return (priority.get(path.name, 100), path.name)
 
 
 def main() -> int:

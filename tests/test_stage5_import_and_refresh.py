@@ -71,6 +71,31 @@ def test_refresh_eval_results_writes_design2sva_markdown_when_json_exists(tmp_pa
         ),
         encoding="utf-8",
     )
+    (tmp_path / "design2sva_eval_codex_subset.json").write_text(
+        json.dumps(
+            {
+                "mode": "llm",
+                "summary": {
+                    "num_cases": 3,
+                    "k": 3,
+                    "syntax@1": 1.0,
+                    "syntax@k": 1.0,
+                    "proven@1": 0.0,
+                    "proven@k": 0.0,
+                    "non_vacuous@k": 0.0,
+                    "hallucinated_signal_rate": 0.0,
+                    "fallback_rate": 0.0,
+                    "valid_json_rate": 1.0,
+                    "average_rounds": 1.0,
+                    "repair_success_after_feedback": 1.0,
+                    "source_counts": {"llm": 9},
+                    "failure_categories": {"passed": 9, "temporal_mismatch": 9},
+                    "formal_metrics_status": "not_run",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
     refresh_eval_results.write_design2sva_results_if_present()
 
@@ -78,4 +103,6 @@ def test_refresh_eval_results_writes_design2sva_markdown_when_json_exists(tmp_pa
     assert "Design2SVA Results" in markdown
     assert "syntax@k" in markdown
     assert "structured_fallback=9" in markdown
+    assert "design2sva_eval_codex_subset.json" in markdown
+    assert "llm=9" in markdown
     assert "production signoff" in markdown
