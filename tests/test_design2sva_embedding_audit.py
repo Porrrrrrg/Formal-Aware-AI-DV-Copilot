@@ -227,9 +227,9 @@ def test_design2sva_cover_prediction_uses_cover_formal_mode(tmp_path: Path) -> N
     assert run_metadata["jasperloop_env"]["JASPERLOOP_FORMAL_MODE"] == "cover"
     assert audit["wrapper_flow"]["formal_mode"] == "cover"
     assert audit["root_cause_detail"] == "wrapper_reuses_native_harness_with_cover_mode"
-    assert "cover -all" in Path(str(artifact_paths["tcl_snapshot"])).read_text(
-        encoding="utf-8"
-    )
+    tcl = Path(str(artifact_paths["tcl_snapshot"])).read_text(encoding="utf-8")
+    assert "prove -all" in tcl
+    assert "cover -all" not in tcl
 
 
 def test_design2sva_dry_run_ignores_stale_jasper_reports(tmp_path: Path) -> None:

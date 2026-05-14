@@ -43,7 +43,9 @@ if {$reset_command != ""} {
 
 file mkdir "$report_dir/traces"
 if {$formal_mode == "cover"} {
-  cover -all
+  # JasperGold 2018 reports cover-property reachability through prove -all;
+  # the older Moore build does not support an all-properties cover switch.
+  prove -all
   report -summary -results -detailed -file "$report_dir/cover.rpt" -force
 } elseif {$formal_mode == "vacuity"} {
   check_vacuity -all
