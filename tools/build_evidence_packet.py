@@ -11,14 +11,14 @@ from pathlib import Path
 try:
     from tools.coverage_utils import build_coverage_evidence, enrich_coverage_context
     from tools.manifest_utils import infer_signal_role_map_path, load_signal_role_map
-    from tools.parse_jg_report import parse_report, summarize_properties
+    from tools.parse_jg_report import parse_report_payload, summarize_properties
     from tools.parse_jg_trace import parse_trace
     from tools.simple_rtl_context import extract_context
     from tools.summarize_counterexample import summarize
 except ModuleNotFoundError:
     from coverage_utils import build_coverage_evidence, enrich_coverage_context
     from manifest_utils import infer_signal_role_map_path, load_signal_role_map
-    from parse_jg_report import parse_report, summarize_properties
+    from parse_jg_report import parse_report_payload, summarize_properties
     from parse_jg_trace import parse_trace
     from simple_rtl_context import extract_context
     from summarize_counterexample import summarize
@@ -62,8 +62,13 @@ def build_packet(
     if signal_role_map_path is None:
         signal_role_map_path = infer_signal_role_map_path(case_path)
     signal_roles = load_signal_role_map(signal_role_map_path)
-    property_results = parse_report(report_path) if report_path and report_path.exists() else []
-    result_summary = summarize_properties(property_results)
+    report_payload = (
+        parse_report_payload(report_path)
+        if report_path and report_path.exists()
+        else {"summary": summarize_properties([]), "properties": [], "parser_errors": []}
+    )
+    property_results = list(report_payload.get("properties", []))
+    result_summary = dict(report_payload.get("summary", summarize_properties(property_results)))
 
     trace_paths: list[Path] = []
     if trace_path and trace_path.exists():
@@ -85,6 +90,8 @@ def build_packet(
             "trace_format": trace.get("trace_format"),
             "property_id": trace.get("property_id"),
             "summary": summarize(trace, case.get("property_id"), signal_roles),
+            "witness_events": render_witness_events(trace),
+            "parser_errors": trace.get("parser_errors", []),
         }
         for trace in parsed_traces
     ]
@@ -109,6 +116,8 @@ def build_packet(
         "jasper_result": {
             "summary": result_summary,
             "properties": property_results,
+            "parser_errors": report_payload.get("parser_errors", []),
+            "focus_property_result": focus_property_result(property_results, case.get("property_id")),
             "source_report": str(report_path) if report_path else None,
             "trace_files": [str(path) for path in trace_paths],
         },
@@ -116,7 +125,12 @@ def build_packet(
         "trace_summaries": trace_summaries,
         "signal_role_map": signal_roles,
         "coverage_context": coverage_context,
-        "coverage_evidence": build_coverage_evidence(coverage_context, trace_summaries),
+        "coverage_evidence": build_coverage_evidence(
+            coverage_context,
+            trace_summaries,
+            property_results,
+            result_summary,
+        ),
         "vacuity_context": build_vacuity_context(case, property_results, result_summary),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),
@@ -133,6 +147,40 @@ def build_packet(
         }
 
     return packet
+
+
+def render_witness_events(trace: dict[str, object], limit: int = 8) -> list[str]:
+    events = trace.get("events")
+    if not isinstance(events, list):
+        return []
+    rendered: list[str] = []
+    for event in events[:limit]:
+        if not isinstance(event, dict):
+            continue
+        cycle = event.get("cycle")
+        changes = event.get("changes") or {
+            signal: value
+            for signal, value in (event.get("signals") or {}).items()
+            if isinstance(event.get("signals"), dict)
+        }
+        if isinstance(changes, dict) and changes:
+            body = ", ".join(f"{key}={value}" for key, value in list(changes.items())[:6])
+            rendered.append(f"cycle {cycle}: {body}")
+    return rendered
+
+
+def focus_property_result(
+    property_results: list[dict[str, object]],
+    property_id: object,
+) -> dict[str, object]:
+    focus = str(property_id or "")
+    if not focus:
+        return {}
+    for result in property_results:
+        name = str(result.get("property_id", ""))
+        if name == focus or name.endswith("." + focus) or focus in name:
+            return result
+    return {}
 
 
 def build_vacuity_context(

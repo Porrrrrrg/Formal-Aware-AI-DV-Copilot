@@ -44,7 +44,7 @@ llm_logs/
 raw_llm_logs/
 reports/local_llm/raw/**
 reports/llm/raw/**
-models/
+/models/
 .cache/
 hf_cache/
 transformers_cache/

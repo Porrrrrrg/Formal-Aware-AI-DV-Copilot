@@ -38,6 +38,24 @@ JasperGold re-check where configured, static intent review, and DV engineer revi
 
 The evidence packet is the central boundary. It records design identity, task type, property or coverage intent, assumptions, JasperGold proof or counterexample context, role-aware signal summaries, and allowed issue/action labels. The model layer consumes this evidence; it does not replace the verifier.
 
+## Agentic Refactor
+
+The current architecture now separates formal-tool evidence, retrieval context,
+agent prompts, and evaluation reporting:
+
+- `app/models/agent.py` defines typed `Task`, `EvidencePacket`,
+  `BackendResult`, `RepairAttempt`, `AgentRunManifest`, and
+  `EvaluationResult` companions for the committed JSON schemas.
+- `copilot/backends` defines the pluggable backend boundary; JasperGold is the
+  first-class backend facade.
+- `copilot/retrieval` adds lightweight RTL indexing for module interfaces,
+  assigns, always blocks, hierarchy, signal logic, and clock/reset candidates.
+- Evaluation outputs report `source_counts`, fallback/error rates,
+  hallucinated-signal rates, and `output_family_counts` so deterministic
+  scaffold rows stay separate from real LLM rows.
+
+See [docs/architecture_agentic_refactor.md](docs/architecture_agentic_refactor.md).
+
 ## Implemented Capabilities
 
 - Local DV benchmark structure for `apb_regblock`, `arbiter_rr2`, `fifo_1r1w`, and `rv_buffer`.
@@ -94,6 +112,28 @@ python -m app.cli workflow repair --dry-run --out-dir artifacts/workflow-smoke
 ```
 
 Dry-run workflow commands write local manifests and reports. They do not call Codex, Qwen, JasperGold, Moore, network services, or cloud models.
+
+Local evaluation refresh:
+
+```bash
+python scripts/build_all_evidence_packets.py
+python evaluation/run_agent_eval.py --all-systems --out evaluation/results/agent_eval_all_local.json
+python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
+python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_local.json
+python evaluation/run_coverage_eval.py --all-systems --out evaluation/results/coverage_eval_local.json
+python scripts/refresh_eval_results.py
+python scripts/run_codex_llm_eval.py --task healthcheck
+```
+
+Prompt audit before any external benchmark submission:
+
+```bash
+python scripts/export_codex_prompts.py --task all --limit 3 --summary-only
+python scripts/export_codex_prompts.py --task triage --limit 2 --redact-evidence --summary-only
+```
+
+Do not run benchmark tasks with `--acknowledge-external-send` unless the
+benchmark content export has been explicitly approved.
 
 ## Demo Command
 

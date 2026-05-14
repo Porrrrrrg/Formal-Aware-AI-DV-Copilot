@@ -288,6 +288,8 @@ def repair_action_rows(results: list[dict[str, object]]) -> list[dict[str, objec
                 rows.append(
                     {
                         "case_id": result.get("case_id"),
+                        "system": "sva_repair",
+                        "feedback_mode": result.get("feedback_mode"),
                         "source": action.get("source", "unknown"),
                         "llm_error": action.get("llm_error"),
                     }

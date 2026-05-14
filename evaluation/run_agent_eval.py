@@ -181,6 +181,7 @@ def main() -> int:
             Path("benchmarks/arbiter_rr2/cases"),
             Path("benchmarks/rv_buffer/cases"),
             Path("benchmarks/apb_regblock/cases"),
+            Path("benchmarks/fifo_1r1w/cases"),
         ],
     )
     parser.add_argument("--packet-root", type=Path, default=Path("jasper/reports/case_packets"))

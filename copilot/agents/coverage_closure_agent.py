@@ -39,13 +39,27 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     evidence_packet = packet.get("coverage_evidence", {})
     if not isinstance(evidence_packet, dict):
         evidence_packet = {}
+    observed_status = str(evidence_packet.get("observed_cover_status") or "").lower()
     cover_status = str(
-        evidence_packet.get("expected_cover_status") or coverage.get("expected_cover_status") or ""
+        observed_status
+        or evidence_packet.get("expected_cover_status")
+        or coverage.get("expected_cover_status")
+        or ""
     ).lower()
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable", True))
-    reachable = cover_status in {"reachable", "covered"}
+    reachable = cover_status in {"reachable", "covered", "uncovered"}
 
-    if reachable and expected:
+    if observed_status == "covered":
+        gap_type = "reachable_coverage_gap"
+        action = "rerun_jaspergold"
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
+        evidence.insert(0, "Observed JasperGold status is already covered; refresh stale coverage accounting before adding stimulus.")
+    elif observed_status in {"syntax_error", "undetermined"}:
+        gap_type = "reachable_coverage_gap"
+        action = "rerun_jaspergold"
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
+        evidence.insert(0, f"Observed JasperGold status is {observed_status}; rerun or fix evidence before closure.")
+    elif reachable and expected:
         gap_type = "reachable_coverage_gap"
         action = "add_directed_test_or_sequence"
         evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
@@ -76,6 +90,9 @@ def collect_structured_evidence(
     status = evidence_packet.get("expected_cover_status") or coverage.get("expected_cover_status")
     if status:
         evidence.append(f"Expected cover status: {status}")
+    observed_status = evidence_packet.get("observed_cover_status")
+    if observed_status:
+        evidence.append(f"Observed cover status: {observed_status}")
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable"))
     if expected is not None:
         evidence.append(f"Expected reachable: {expected}")
@@ -98,6 +115,7 @@ def build_prompt(packet: dict[str, object]) -> str:
     return (
         "You are JasperLoop-DV, a formal-aware coverage closure assistant. "
         "Use cover reachability, coverage intent, assumptions, and related signals. "
+        "When observed JasperGold status exists, prefer it over expected benchmark metadata. "
         "Return JSON with coverage_gap_type, recommended_next_action, directed_sequence, and evidence.\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(

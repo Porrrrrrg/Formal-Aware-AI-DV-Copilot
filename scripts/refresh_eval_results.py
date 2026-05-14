@@ -16,6 +16,7 @@ CASE_DIRS = [
     Path("benchmarks/arbiter_rr2/cases"),
     Path("benchmarks/rv_buffer/cases"),
     Path("benchmarks/apb_regblock/cases"),
+    Path("benchmarks/fifo_1r1w/cases"),
 ]
 
 ABLATIONS = [
@@ -94,6 +95,13 @@ def ensure_actual_packets(packet_root: Path, allow_rebuild_packets: bool) -> Non
     formal = count_formal_packets(packet_root)
     if actual >= expected and formal >= expected:
         return
+    if actual >= expected:
+        sys.stderr.write(
+            "Warning: refreshing scaffold result tables with packets that do not all contain "
+            f"formal report evidence ({formal}/{expected} formal packets). "
+            "Do not cite this refresh as Moore/JasperGold performance.\n"
+        )
+        return
     if allow_rebuild_packets:
         return
     try:
@@ -121,6 +129,13 @@ def fmt(value: object) -> str:
 
 def source_text(summary: dict[str, object]) -> str:
     counts = summary.get("source_counts", {})
+    if not isinstance(counts, dict) or not counts:
+        return "unknown"
+    return ", ".join(f"{key}={value}" for key, value in sorted(counts.items()))
+
+
+def output_family_text(summary: dict[str, object]) -> str:
+    counts = summary.get("output_family_counts", {})
     if not isinstance(counts, dict) or not counts:
         return "unknown"
     return ", ".join(f"{key}={value}" for key, value in sorted(counts.items()))
@@ -226,7 +241,7 @@ def write_coverage_results(coverage_payload: dict[str, object]) -> None:
     lines.extend(
         [
             "",
-            "The coverage-only benchmark has 9 cases across arbiter, ready/valid buffer, and APB-lite: 6 reachable coverage gaps and 3 invalid or unreachable coverage goals. The raw-log fallback intentionally lacks coverage-plan intent and therefore suggests directed tests for all goals, including illegal or invalid targets. The structured agent receives coverage-plan metadata and JasperGold reachability context, so it distinguishes reachable gaps from waiver/prove-unreachable cases in the scaffold evaluation.",
+            "The coverage-only benchmark has 14 cases across arbiter, ready/valid buffer, APB-lite, and FIFO: 9 reachable coverage gaps and 5 invalid or unreachable coverage goals. The raw-log fallback intentionally lacks coverage-plan intent and therefore suggests directed tests for all goals, including illegal or invalid targets. The structured agent receives coverage-plan metadata and available reachability context, so it distinguishes reachable gaps from waiver/prove-unreachable cases in the scaffold evaluation.",
             "",
             "The coverage runner also reports `source_counts`, `llm_success_rate`, `fallback_rate`, and `llm_error_rate`, so Codex-backed coverage experiments can be separated from deterministic fallback behavior.",
             "",
@@ -326,6 +341,17 @@ def write_output_quality_results(
         [
             "",
             "Codex-backed experiments should report `source_counts`, `llm_success_rate`, `fallback_rate`, `llm_error_rate`, and `hallucinated_signal_rate` alongside accuracy. A healthy Codex run should have high `llm_success_rate`, low `fallback_rate`, and zero hallucinated suspect signals.",
+            "",
+            "## Output Families",
+            "",
+            "| Evaluation | Output Families | Caveat |",
+            "| --- | --- | --- |",
+            "| Triage | "
+            + output_family_text(agent_payload["systems"]["structured"])
+            + " | Deterministic fallback rows validate plumbing only and must not be cited as hosted LLM performance. |",
+            "| Coverage | "
+            + output_family_text(coverage_payload["systems"]["structured"])
+            + " | Coverage fallback rows are local scaffold behavior unless `source_counts` records real LLM output. |",
             "",
         ]
     )
