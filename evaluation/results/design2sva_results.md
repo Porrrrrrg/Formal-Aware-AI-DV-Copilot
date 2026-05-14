@@ -12,8 +12,11 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 | design2sva_eval_codex_jasper_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured | unknown |
 | design2sva_eval_anti_vacuity_jasper_subset.json | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured | unknown |
 | design2sva_eval_anti_vacuity_replay.json | replay | 1 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | replay=1 | replayed | unknown |
+| design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json | committed_codex_candidate_replay | 3 | 5 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | llm=15 | measured | unknown=15 |
 | design2sva_eval_antivacuity_codex_new_jasper_subset.json | replay | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=15 | measured | unknown |
 | design2sva_eval_antivacuity_codex_new_subset.json | real_llm | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=15 | not_run | unknown |
+| design2sva_eval_codex_fixed_wrapper_rerun.json | committed_codex_candidate_replay | 3 | 3 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | llm=9 | measured | unknown=9 |
+| design2sva_eval_reference_oracle_fixed_wrapper_sanity.json | reference_oracle_fixed_wrapper_sanity | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown=3 |
 | design2sva_eval_reference_oracle_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown |
 | design2sva_eval_reference_oracle_local.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | not_run | unknown=3 |
 | design2sva_eval_reference_oracle_parity_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured | unknown=3 |
@@ -70,6 +73,14 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 - Root-cause candidates: unknown
 - Formal metrics status: `replayed`
 
+### design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json
+
+- Mode: `committed_codex_candidate_replay`
+- Source counts: llm=15
+- Failure categories: proven_non_vacuous=15
+- Root-cause candidates: unknown=15
+- Formal metrics status: `measured`
+
 ### design2sva_eval_antivacuity_codex_new_jasper_subset.json
 
 - Mode: `replay`
@@ -85,6 +96,22 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 - Failure categories: not_run=15, temporal_mismatch=15
 - Root-cause candidates: unknown
 - Formal metrics status: `not_run`
+
+### design2sva_eval_codex_fixed_wrapper_rerun.json
+
+- Mode: `committed_codex_candidate_replay`
+- Source counts: llm=9
+- Failure categories: proven_non_vacuous=9
+- Root-cause candidates: unknown=9
+- Formal metrics status: `measured`
+
+### design2sva_eval_reference_oracle_fixed_wrapper_sanity.json
+
+- Mode: `reference_oracle_fixed_wrapper_sanity`
+- Source counts: reference_oracle=3
+- Failure categories: proven_non_vacuous=3
+- Root-cause candidates: unknown=3
+- Formal metrics status: `measured`
 
 ### design2sva_eval_reference_oracle_jasper.json
 

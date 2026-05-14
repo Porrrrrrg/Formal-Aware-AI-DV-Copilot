@@ -307,11 +307,83 @@ def load_replay_records(path: Path | None) -> list[dict[str, Any]] | None:
     data = json.loads(text)
     if isinstance(data, dict) and isinstance(data.get("responses"), list):
         return [item for item in data["responses"] if isinstance(item, dict)]
+    if isinstance(data, dict) and isinstance(data.get("results"), list):
+        return replay_records_from_result_payload(data)
     if isinstance(data, list):
         return [item for item in data if isinstance(item, dict)]
     if isinstance(data, dict):
         return [data]
     raise ValueError(f"Unsupported replay response format: {path}")
+
+
+def replay_records_from_result_payload(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """Extract replay records from a committed Design2SVA result artifact."""
+
+    records: list[dict[str, Any]] = []
+    results = payload.get("results", [])
+    if not isinstance(results, list):
+        return records
+
+    for result in results:
+        if not isinstance(result, dict):
+            continue
+        result_case_id = str(result.get("case_id") or "")
+        result_property_id = str(result.get("property_id") or "")
+        paths = result.get("candidate_paths", [])
+        if not isinstance(paths, list):
+            continue
+        for path in paths:
+            if not isinstance(path, dict):
+                continue
+            path_candidate_index = safe_int(path.get("candidate_index"), default=0)
+            rounds = path.get("rounds", [])
+            if not isinstance(rounds, list):
+                continue
+            for round_record in rounds:
+                if not isinstance(round_record, dict):
+                    continue
+                candidate = round_record.get("candidate")
+                if not isinstance(candidate, dict):
+                    continue
+                metrics = round_record.get("metrics", {})
+                if not isinstance(metrics, dict):
+                    metrics = {}
+                round_index = safe_int(
+                    metrics.get("round"),
+                    default=safe_int(
+                        (candidate.get("repair_metadata") or {}).get("round")
+                        if isinstance(candidate.get("repair_metadata"), dict)
+                        else None,
+                        default=0,
+                    ),
+                )
+                candidate_index = safe_int(
+                    metrics.get("candidate_index"),
+                    default=path_candidate_index,
+                )
+                case_id = str(metrics.get("case_id") or result_case_id)
+                property_id = str(metrics.get("property_id") or result_property_id)
+                if not case_id or not property_id:
+                    continue
+                records.append(
+                    {
+                        "task": "design2sva",
+                        "phase": "candidate" if round_index == 0 else "repair",
+                        "case_id": case_id,
+                        "property_id": property_id,
+                        "candidate_index": candidate_index,
+                        "round": round_index,
+                        "response": dict(candidate),
+                    }
+                )
+    return records
+
+
+def safe_int(value: Any, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def validate_candidate(candidate: dict[str, Any]) -> None:

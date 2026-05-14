@@ -135,6 +135,16 @@ def test_candidate_generation_failure_after_native_harness_proves() -> None:
     )
 
 
+def test_backend_blocked_is_not_candidate_generation_failure() -> None:
+    row = {
+        "source": "llm",
+        "failure_category": "backend_blocked",
+        "proof_metadata": {"status": "blocked", "proof_status": "not_run"},
+    }
+
+    assert classify_root_cause_candidate(row, proven_native_oracle()) == UNKNOWN
+
+
 def test_unknown_when_no_stage11_rule_matches() -> None:
     assert classify_root_cause_candidate({"proof_metadata": {"status": "not_run"}}) == UNKNOWN
 
