@@ -25,6 +25,12 @@ from tools.run_jasper import run_jasper as legacy_run_jasper  # noqa: E402
 
 DEFAULT_CASES = Path("benchmarks/design2sva_cases.json")
 DEFAULT_OUT = Path("evaluation/results/design2sva_native_reference_oracle_jasper.json")
+DEFAULT_NATIVE_EXPANDED_LOCAL_OUT = Path(
+    "evaluation/results/design2sva_native_oracle_expanded_local.json"
+)
+DEFAULT_NATIVE_EXPANDED_JASPER_OUT = Path(
+    "evaluation/results/design2sva_native_oracle_expanded_jasper.json"
+)
 DEFAULT_EXPANDED_LOCAL_OUT = Path(
     "evaluation/results/design2sva_reference_oracle_expanded_local.json"
 )
@@ -36,7 +42,9 @@ DEFAULT_REFERENCE_ORACLE_REPLAY = Path(
 )
 DEFAULT_WRAPPER_OUT_ROOT = Path("jasper/reports/design2sva_reference_oracle_expanded")
 NATIVE_REFERENCE_MODE = "native_reference_oracle"
+NATIVE_EXPANDED_MODE = "design2sva_native_oracle_expanded"
 EXPANDED_REFERENCE_MODE = "design2sva_reference_oracle_expanded"
+MOORE_JASPER_BIN = "/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg"
 EXPANDED_REFERENCE_MODE_ALIASES = {
     "expanded",
     "reference-oracle-expanded",
@@ -48,6 +56,14 @@ NATIVE_REFERENCE_MODE_ALIASES = {
     "native-reference-oracle",
     "native_reference_oracle",
     NATIVE_REFERENCE_MODE,
+}
+NATIVE_EXPANDED_MODE_ALIASES = {
+    "native-expanded",
+    "native_expanded",
+    "native-oracle-expanded",
+    "native_oracle_expanded",
+    "design2sva-native-oracle-expanded",
+    NATIVE_EXPANDED_MODE,
 }
 
 TOP_RE = re.compile(r"^\s*elaborate\s+-top\s+(?P<top>[A-Za-z_][A-Za-z0-9_$]*)\b", re.MULTILINE)
@@ -437,6 +453,99 @@ def build_payload(
         "cases_path": repo_relative(cases_path),
         "summary": summarize_results(results, dry_run=dry_run),
         "results": results,
+    }
+
+
+def build_expanded_native_payload(
+    cases: list[dict[str, Any]],
+    cases_path: Path,
+    variant: str,
+    dry_run: bool,
+    artifact_kind: str,
+) -> dict[str, Any]:
+    payload = build_payload(cases, cases_path=cases_path, variant=variant, dry_run=dry_run)
+    summary = payload["summary"]
+    metrics = stage15_native_metrics(summary)
+    output_mode = stage15_output_mode(artifact_kind=artifact_kind, dry_run=dry_run)
+    payload.update(
+        {
+            "schema_version": "stage15_native_oracle_expanded_v1",
+            "mode": NATIVE_EXPANDED_MODE,
+            "formal_check_mode": "dry_run" if dry_run else "jasper",
+            "llm_prompts_sent": False,
+            "result_artifact_paths": {
+                "local": repo_relative(DEFAULT_NATIVE_EXPANDED_LOCAL_OUT),
+                "jasper": repo_relative(DEFAULT_NATIVE_EXPANDED_JASPER_OUT),
+            },
+            "artifact_kind": artifact_kind,
+            "output_mode": output_mode,
+            "execution_status": "dry_run" if dry_run else "jaspergold_requested",
+            "expanded_fixture_count": len(cases),
+            "metrics": metrics,
+            "command_metadata": native_stage15_command_metadata(
+                artifact_kind=artifact_kind,
+                dry_run=dry_run,
+            ),
+            "claim_boundary": {
+                "supported": (
+                    "Expanded native oracle mapping and JasperGold execution metadata "
+                    "for checked-in Design2SVA references."
+                ),
+                "unsupported": (
+                    "This artifact does not measure generated-candidate quality or "
+                    "broad Design2SVA LLM success."
+                ),
+            },
+        }
+    )
+    return payload
+
+
+def stage15_output_mode(*, artifact_kind: str, dry_run: bool) -> str:
+    if dry_run:
+        return f"{artifact_kind}_dry_run"
+    if artifact_kind == "jasper":
+        return "jasper_measured"
+    return f"{artifact_kind}_jasper"
+
+
+def stage15_native_metrics(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "native_reference_proven_rate": summary.get("native_reference_proven_rate"),
+        "native_reference_non_vacuous_rate": summary.get(
+            "native_reference_non_vacuous_rate"
+        ),
+        "native_failures_by_design": summary.get("native_failures_by_design", {}),
+        "native_root_cause_counts": summary.get("native_root_cause_counts", {}),
+        "native_proof_status_counts": summary.get("native_proof_status_counts", {}),
+        "native_vacuity_status_counts": summary.get("native_vacuity_status_counts", {}),
+    }
+
+
+def native_stage15_command_metadata(artifact_kind: str, dry_run: bool) -> dict[str, Any]:
+    local_command = (
+        "python evaluation/run_design2sva_native_oracle.py "
+        "--native-expanded-local"
+    )
+    jasper_command = (
+        f"JASPER_BIN={MOORE_JASPER_BIN} "
+        "python3.11 evaluation/run_design2sva_native_oracle.py "
+        "--native-expanded-jasper"
+    )
+    return {
+        "artifact_generation_command": local_command
+        if artifact_kind == "local"
+        else f"{jasper_command} --dry-run",
+        "local_generation_command": local_command,
+        "jasper_dry_run_generation_command": f"{jasper_command} --dry-run",
+        "moore_real_jasper_command": jasper_command,
+        "jasper_bin": MOORE_JASPER_BIN,
+        "real_jasper_output_path": repo_relative(DEFAULT_NATIVE_EXPANDED_JASPER_OUT),
+        "dry_run_reason": (
+            "JasperGold was not invoked for this artifact."
+            if dry_run
+            else "JasperGold execution requested through tools/run_jasper.py."
+        ),
     }
 
 
@@ -1009,23 +1118,89 @@ def summarize_results(results: list[dict[str, Any]], dry_run: bool) -> dict[str,
     proof_counts = collections.Counter(str(row.get("native_proof_status")) for row in results)
     vacuity_counts = collections.Counter(str(row.get("native_vacuity_status")) for row in results)
     root_counts = collections.Counter(str(row.get("root_cause_candidate")) for row in results)
+    cases_by_design = collections.Counter(str(row.get("design_id")) for row in results)
     mapped = sum(1 for row in results if row.get("mapping_status") == "mapped")
     proves = sum(1 for row in results if row.get("native_reference_proves") is True)
     disproves = sum(1 for row in results if row.get("native_reference_proves") is False)
     unknown = sum(1 for row in results if row.get("native_reference_proves") is None)
+    measured = [row for row in results if native_result_measured(row)]
+    non_vacuous = sum(1 for row in measured if native_result_non_vacuous(row))
+    failures_by_design = collections.Counter(
+        str(row.get("design_id")) for row in results if native_result_failed(row)
+    )
+    unmeasured_by_design = collections.Counter(
+        str(row.get("design_id")) for row in results if not native_result_measured(row)
+    )
     return {
         "num_cases": len(results),
         "dry_run": dry_run,
         "mapped_cases": mapped,
         "all_cases_mapped": mapped == len(results),
         "candidate_embedding": False,
+        "cases_by_design": dict(sorted(cases_by_design.items())),
         "native_reference_proves_count": proves,
         "native_reference_does_not_prove_count": disproves,
         "native_reference_unknown_count": unknown,
+        "native_reference_proven_rate": (proves / len(measured)) if measured else None,
+        "native_reference_non_vacuous_rate": (
+            non_vacuous / len(measured) if measured else None
+        ),
+        "native_failures_by_design": dict(sorted(failures_by_design.items())),
+        "native_unmeasured_by_design": dict(sorted(unmeasured_by_design.items())),
+        "native_root_cause_counts": dict(sorted(root_counts.items())),
+        "native_measurement_status": native_measurement_status(
+            dry_run=dry_run,
+            measured_cases=len(measured),
+            total_cases=len(results),
+        ),
+        "native_measured_cases": len(measured),
+        "native_unmeasured_cases": len(results) - len(measured),
         "native_proof_status_counts": dict(sorted(proof_counts.items())),
         "native_vacuity_status_counts": dict(sorted(vacuity_counts.items())),
         "root_cause_candidate_counts": dict(sorted(root_counts.items())),
     }
+
+
+def native_result_measured(row: dict[str, Any]) -> bool:
+    proof_status = str(row.get("native_proof_status") or "").lower()
+    backend_status = str(row.get("backend_status") or "").lower()
+    if proof_status in {"", "none", "not_run"}:
+        return False
+    return backend_status not in {"dry_run"}
+
+
+def native_result_failed(row: dict[str, Any]) -> bool:
+    if row.get("mapping_status") != "mapped":
+        return True
+    if str(row.get("backend_status") or "").lower() == "blocked":
+        return True
+    if row.get("native_reference_proves") is False:
+        return True
+    return str(row.get("native_vacuity_status") or "").lower() == "vacuous"
+
+
+def native_result_non_vacuous(row: dict[str, Any]) -> bool:
+    if row.get("native_reference_proves") is not True:
+        return False
+    vacuity_status = str(row.get("native_vacuity_status") or "").lower()
+    return vacuity_status not in {"", "none", "not_run", "blocked", "vacuous"}
+
+
+def native_measurement_status(
+    *,
+    dry_run: bool,
+    measured_cases: int,
+    total_cases: int,
+) -> str:
+    if dry_run:
+        return "dry_run_not_measured"
+    if total_cases == 0:
+        return "empty"
+    if measured_cases == total_cases:
+        return "measured"
+    if measured_cases:
+        return "partial"
+    return "not_measured"
 
 
 def public_summary(summary: dict[str, Any]) -> dict[str, Any]:
@@ -1243,6 +1418,21 @@ def summarize_expanded_reference_validation(
         "native_vacuity_status_counts": native_summary["native_vacuity_status_counts"],
         "native_root_cause_candidate_counts": native_summary["root_cause_candidate_counts"],
         "root_cause_summaries": root_cause_summaries,
+        "reference_proven@1": wrapper_summary.get("reference_proven@1", 0.0),
+        "reference_non_vacuous@1": wrapper_summary.get("reference_non_vacuous@1", 0.0),
+        "reference_antecedent_reachable@1": wrapper_summary.get(
+            "reference_antecedent_reachable@1",
+            0.0,
+        ),
+        "wrapper_parity_pass_rate": wrapper_summary.get("wrapper_parity_pass_rate", 0.0),
+        "root_cause_candidate_counts": wrapper_summary.get(
+            "root_cause_candidate_counts",
+            wrapper_summary.get("root_cause_candidates", {}),
+        ),
+        "root_cause_detail_counts": wrapper_summary.get(
+            "root_cause_detail_counts",
+            wrapper_summary.get("root_cause_details", {}),
+        ),
     }
 
 
@@ -1252,6 +1442,7 @@ def build_expanded_reference_payload(
     variant: str,
     dry_run: bool,
     jasper_out_root: Path,
+    artifact_kind: str = "local",
 ) -> dict[str, Any]:
     native_payload = build_payload(
         cases,
@@ -1264,11 +1455,18 @@ def build_expanded_reference_payload(
         dry_run=dry_run,
         jasper_out_root=jasper_out_root,
     )
+    summary = summarize_expanded_reference_validation(
+        native_payload,
+        wrapper_results,
+        wrapper_summary,
+        dry_run=dry_run,
+    )
     return {
         "schema_version": "stage14_reference_oracle_expanded_v1",
         "mode": EXPANDED_REFERENCE_MODE,
         "backend": "jaspergold",
         "dry_run": dry_run,
+        "formal_check_mode": "dry_run" if dry_run else "jasper",
         "variant": variant,
         "cases_path": repo_relative(cases_path),
         "llm_prompts_sent": False,
@@ -1276,12 +1474,8 @@ def build_expanded_reference_payload(
             "local": repo_relative(DEFAULT_EXPANDED_LOCAL_OUT),
             "jasper": repo_relative(DEFAULT_EXPANDED_JASPER_OUT),
         },
-        "summary": summarize_expanded_reference_validation(
-            native_payload,
-            wrapper_results,
-            wrapper_summary,
-            dry_run=dry_run,
-        ),
+        "summary": summary,
+        "metrics": stage15_wrapper_metrics(summary),
         "native_oracle": native_payload,
         "wrapper_reference_oracle_summary": wrapper_summary,
         "results": [
@@ -1303,13 +1497,83 @@ def build_expanded_reference_payload(
                 "This artifact does not measure generated-candidate quality or production signoff."
             ),
         },
+        "output_mode": stage15_output_mode(
+            artifact_kind=artifact_kind,
+            dry_run=dry_run,
+        ),
+        "prompt_safety": {
+            "llm_prompts_sent": False,
+            "reference_sva_in_prompts": False,
+            "reference_sva_prompt_omission_policy": (
+                "copilot.agents.design2sva_agent.PROMPT_OMIT_KEYS removes "
+                "reference_sva and expected_proof_status recursively."
+            ),
+        },
+        "command_metadata": wrapper_stage15_command_metadata(
+            artifact_kind=artifact_kind,
+            dry_run=dry_run,
+            jasper_out_root=jasper_out_root,
+        ),
+    }
+
+
+def stage15_wrapper_metrics(summary: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "reference_proven@1": summary.get("reference_proven@1"),
+        "reference_non_vacuous@1": summary.get("reference_non_vacuous@1"),
+        "reference_antecedent_reachable@1": summary.get(
+            "reference_antecedent_reachable@1"
+        ),
+        "wrapper_parity_pass_rate": summary.get("wrapper_parity_pass_rate"),
+        "root_cause_candidate_counts": summary.get("root_cause_candidate_counts", {}),
+        "root_cause_detail_counts": summary.get("root_cause_detail_counts", {}),
+    }
+
+
+def wrapper_stage15_command_metadata(
+    *,
+    artifact_kind: str,
+    dry_run: bool,
+    jasper_out_root: Path,
+) -> dict[str, Any]:
+    local_command = "python evaluation/run_design2sva_native_oracle.py --expanded-local"
+    jasper_command = (
+        f"JASPER_BIN={MOORE_JASPER_BIN} "
+        "python3.11 evaluation/run_design2sva_native_oracle.py "
+        "--expanded-jasper "
+        f"--jasper-out-root {repo_relative(jasper_out_root)}"
+    )
+    return {
+        "artifact_generation_command": local_command
+        if artifact_kind == "local"
+        else f"{jasper_command} --dry-run",
+        "local_generation_command": local_command,
+        "jasper_dry_run_generation_command": f"{jasper_command} --dry-run",
+        "moore_real_jasper_command": jasper_command,
+        "jasper_bin": MOORE_JASPER_BIN,
+        "real_jasper_output_path": repo_relative(DEFAULT_EXPANDED_JASPER_OUT),
+        "external_llms_used": False,
+        "dry_run_reason": (
+            "JasperGold was not invoked for this artifact."
+            if dry_run
+            else "JasperGold execution requested through the Design2SVA wrapper."
+        ),
     }
 
 
 def normalize_mode(args: argparse.Namespace) -> str:
-    if args.expanded_local or args.expanded_jasper:
+    if args.native_expanded_local or args.native_expanded_jasper:
+        return NATIVE_EXPANDED_MODE
+    if (
+        args.expanded_local
+        or args.expanded_jasper
+        or args.wrapper_expanded_local
+        or args.wrapper_expanded_jasper
+    ):
         return EXPANDED_REFERENCE_MODE
     mode = str(args.mode or NATIVE_REFERENCE_MODE)
+    if mode in NATIVE_EXPANDED_MODE_ALIASES:
+        return NATIVE_EXPANDED_MODE
     if mode in EXPANDED_REFERENCE_MODE_ALIASES:
         return EXPANDED_REFERENCE_MODE
     if mode in NATIVE_REFERENCE_MODE_ALIASES:
@@ -1320,8 +1584,18 @@ def normalize_mode(args: argparse.Namespace) -> str:
 def default_out_for_mode(args: argparse.Namespace, mode: str) -> Path:
     if args.out != DEFAULT_OUT:
         return args.out
+    if mode == NATIVE_EXPANDED_MODE:
+        return (
+            DEFAULT_NATIVE_EXPANDED_JASPER_OUT
+            if args.native_expanded_jasper
+            else DEFAULT_NATIVE_EXPANDED_LOCAL_OUT
+        )
     if mode == EXPANDED_REFERENCE_MODE:
-        return DEFAULT_EXPANDED_JASPER_OUT if args.expanded_jasper else DEFAULT_EXPANDED_LOCAL_OUT
+        return (
+            DEFAULT_EXPANDED_JASPER_OUT
+            if args.expanded_jasper or args.wrapper_expanded_jasper
+            else DEFAULT_EXPANDED_LOCAL_OUT
+        )
     return DEFAULT_OUT
 
 
@@ -1337,14 +1611,24 @@ def main(argv: list[str] | None = None) -> int:
         default=NATIVE_REFERENCE_MODE,
         help=(
             "Oracle mode. Use 'native_reference_oracle' for the existing native flow "
-            "or 'expanded' for Stage 14 native+wrapper reference validation."
+            "or Stage 15 expanded native/wrapper oracle aliases."
         ),
+    )
+    parser.add_argument(
+        "--native-expanded-local",
+        action="store_true",
+        help="Shortcut for Stage 15 expanded native oracle local dry-run output.",
+    )
+    parser.add_argument(
+        "--native-expanded-jasper",
+        action="store_true",
+        help="Shortcut for Stage 15 expanded native oracle JasperGold output.",
     )
     parser.add_argument(
         "--expanded-local",
         action="store_true",
         help=(
-            "Shortcut for Stage 14 expanded native+wrapper reference validation in "
+            "Shortcut for Stage 15 expanded native+wrapper reference validation in "
             "local dry-run mode."
         ),
     )
@@ -1352,9 +1636,19 @@ def main(argv: list[str] | None = None) -> int:
         "--expanded-jasper",
         action="store_true",
         help=(
-            "Shortcut for Stage 14 expanded native+wrapper reference validation with "
+            "Shortcut for Stage 15 expanded native+wrapper reference validation with "
             "JasperGold expected."
         ),
+    )
+    parser.add_argument(
+        "--wrapper-expanded-local",
+        action="store_true",
+        help="Alias for --expanded-local.",
+    )
+    parser.add_argument(
+        "--wrapper-expanded-jasper",
+        action="store_true",
+        help="Alias for --expanded-jasper.",
     )
     parser.add_argument("--jasper-out-root", type=Path, default=DEFAULT_WRAPPER_OUT_ROOT)
     args = parser.parse_args(argv)
@@ -1363,15 +1657,34 @@ def main(argv: list[str] | None = None) -> int:
     if args.limit is not None:
         cases = cases[: args.limit]
     mode = normalize_mode(args)
-    dry_run = True if args.expanded_local else bool(args.dry_run)
+    dry_run = (
+        True
+        if args.expanded_local
+        or args.wrapper_expanded_local
+        or args.native_expanded_local
+        else bool(args.dry_run)
+    )
 
-    if mode == EXPANDED_REFERENCE_MODE:
+    if mode == NATIVE_EXPANDED_MODE:
+        payload = build_expanded_native_payload(
+            cases,
+            cases_path=args.cases,
+            variant=args.variant,
+            dry_run=dry_run,
+            artifact_kind="jasper" if args.native_expanded_jasper else "local",
+        )
+    elif mode == EXPANDED_REFERENCE_MODE:
         payload = build_expanded_reference_payload(
             cases,
             cases_path=args.cases,
             variant=args.variant,
             dry_run=dry_run,
             jasper_out_root=args.jasper_out_root,
+            artifact_kind=(
+                "jasper"
+                if args.expanded_jasper or args.wrapper_expanded_jasper
+                else "local"
+            ),
         )
     else:
         payload = build_payload(

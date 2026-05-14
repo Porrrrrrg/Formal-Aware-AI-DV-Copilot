@@ -70,6 +70,18 @@ DESIGN2SVA_SECTIONS = [
             "design2sva_eval_reference_oracle_parity_jasper.json",
             "design2sva_eval_reference_oracle_rootcause_jasper.json",
             "design2sva_native_reference_oracle_jasper.json",
+        ],
+    ),
+    (
+        "Expanded oracle validation",
+        (
+            "Stage 15 expanded native and wrapper reference-oracle controls are rendered "
+            "separately from generated-candidate rows. Dry-run, replay, and real "
+            "JasperGold outputs must not be collapsed into one result."
+        ),
+        [
+            "design2sva_native_oracle_expanded_local.json",
+            "design2sva_native_oracle_expanded_jasper.json",
             "design2sva_reference_oracle_expanded_local.json",
             "design2sva_reference_oracle_expanded_jasper.json",
         ],
@@ -456,7 +468,10 @@ def design2sva_source_text(payload: dict[str, object], summary: dict[str, object
     source_counts = summary.get("source_counts")
     if isinstance(source_counts, dict) and source_counts:
         return counts_text(source_counts)
-    if payload.get("mode") == "native_reference_oracle":
+    if payload.get("mode") in {
+        "native_reference_oracle",
+        "design2sva_native_oracle_expanded",
+    }:
         return f"native_reference_oracle={fmt_design2sva(summary.get('num_cases'))}"
     return "unknown"
 
@@ -467,9 +482,9 @@ def design2sva_row_type(payload: dict[str, object], summary: dict[str, object]) 
     source_keys = set(source_counts) if isinstance(source_counts, dict) else set()
     if mode == "deterministic_scaffold" or "structured_fallback" in source_keys:
         return "deterministic"
-    if mode == "native_reference_oracle":
+    if mode in {"native_reference_oracle", "design2sva_native_oracle_expanded"}:
         return "native oracle"
-    if mode.startswith("reference_oracle"):
+    if mode.startswith("reference_oracle") or mode == "design2sva_reference_oracle_expanded":
         return "reference oracle"
     if mode == "real_llm":
         return "real LLM"
@@ -481,6 +496,16 @@ def design2sva_row_type(payload: dict[str, object], summary: dict[str, object]) 
 
 
 def design2sva_formal_text(payload: dict[str, object], summary: dict[str, object]) -> str:
+    output_mode = payload.get("output_mode")
+    if output_mode:
+        return str(output_mode)
+    formal_mode = payload.get("formal_check_mode")
+    if formal_mode:
+        if formal_mode == "jasper":
+            return "JasperGold-measured"
+        if formal_mode == "replay":
+            return "replayed"
+        return str(formal_mode)
     status = summary.get("formal_metrics_status")
     if status == "measured":
         return "JasperGold-measured"
@@ -500,6 +525,7 @@ def design2sva_signal_text(summary: dict[str, object]) -> str:
         ("root details", "root_cause_detail_counts"),
         ("backend", "backend_status_counts"),
         ("harness", "harness_reachability_status_counts"),
+        ("native failures", "native_failures_by_design"),
         ("native proof", "native_proof_status_counts"),
         ("native vacuity", "native_vacuity_status_counts"),
     ]
@@ -522,6 +548,13 @@ def design2sva_table_header() -> list[str]:
     ]
 
 
+def summary_first(summary: dict[str, object], *keys: str) -> object:
+    for key in keys:
+        if key in summary:
+            return summary.get(key)
+    return None
+
+
 def design2sva_row(result_path: Path, payload: dict[str, object], summary: dict[str, object]) -> str:
     mode = str(payload.get("mode", "unknown"))
     return (
@@ -535,9 +568,30 @@ def design2sva_row(result_path: Path, payload: dict[str, object], summary: dict[
                 fmt_design2sva(summary.get("k")),
                 fmt_design2sva(summary.get("syntax@1")),
                 fmt_design2sva(summary.get("syntax@k")),
-                fmt_design2sva(summary.get("proven@1")),
-                fmt_design2sva(summary.get("proven@k")),
-                fmt_design2sva(summary.get("non_vacuous@k")),
+                fmt_design2sva(
+                    summary_first(
+                        summary,
+                        "proven@1",
+                        "reference_proven@1",
+                        "native_reference_proven_rate",
+                    )
+                ),
+                fmt_design2sva(
+                    summary_first(
+                        summary,
+                        "proven@k",
+                        "reference_proven@1",
+                        "native_reference_proven_rate",
+                    )
+                ),
+                fmt_design2sva(
+                    summary_first(
+                        summary,
+                        "non_vacuous@k",
+                        "reference_non_vacuous@1",
+                        "native_reference_non_vacuous_rate",
+                    )
+                ),
                 fmt_design2sva(summary.get("valid_json_rate")),
                 fmt_design2sva(summary.get("fallback_rate")),
                 design2sva_source_text(payload, summary),
@@ -650,6 +704,8 @@ def write_design2sva_results_if_present() -> None:
             "- JasperGold-measured rows are the only rows where `proven@*` and `non_vacuous@k` should be cited as formal outcomes.",
             "- Reference and native-oracle rows are infrastructure controls; exact/reference agreement on fixtures is not production signoff.",
             "- Fixed-wrapper reruns isolate wrapper correctness from candidate generation quality.",
+            "- If expanded references prove non-vacuously with high native/wrapper parity, the expanded fixtures are valid for LLM evaluation.",
+            "- If expanded references fail, do not run the expanded LLM benchmark yet; repair the fixture, harness, or wrapper first.",
             "",
         ]
     )
@@ -666,8 +722,10 @@ def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
         "design2sva_eval_reference_oracle_parity_jasper.json": 13,
         "design2sva_eval_reference_oracle_rootcause_jasper.json": 14,
         "design2sva_native_reference_oracle_jasper.json": 15,
-        "design2sva_reference_oracle_expanded_local.json": 16,
-        "design2sva_reference_oracle_expanded_jasper.json": 17,
+        "design2sva_native_oracle_expanded_local.json": 16,
+        "design2sva_native_oracle_expanded_jasper.json": 17,
+        "design2sva_reference_oracle_expanded_local.json": 18,
+        "design2sva_reference_oracle_expanded_jasper.json": 19,
         "design2sva_eval_codex_subset.json": 20,
         "design2sva_eval_codex_jasper_subset.json": 21,
         "design2sva_eval_reference_oracle_fixed_wrapper_sanity.json": 30,

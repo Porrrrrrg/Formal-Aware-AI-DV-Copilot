@@ -101,8 +101,10 @@ def test_refresh_eval_results_writes_design2sva_markdown_when_json_exists(tmp_pa
 
     markdown = (tmp_path / "design2sva_results.md").read_text(encoding="utf-8")
     assert "Design2SVA Results" in markdown
+    assert "Expanded oracle validation" in markdown
     assert "syntax@k" in markdown
     assert "structured_fallback=9" in markdown
     assert "design2sva_eval_codex_subset.json" in markdown
     assert "llm=9" in markdown
+    assert "do not run the expanded LLM benchmark yet" in markdown
     assert "production signoff" in markdown

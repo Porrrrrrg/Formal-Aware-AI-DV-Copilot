@@ -83,6 +83,44 @@ def test_design2sva_native_oracle_dry_run_output(tmp_path, monkeypatch) -> None:
         }
 
 
+def test_design2sva_native_expanded_dry_run_output(tmp_path, monkeypatch) -> None:
+    out = tmp_path / "native_expanded.json"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "run_design2sva_native_oracle.py",
+            "--native-expanded-local",
+            "--limit",
+            "3",
+            "--out",
+            str(out),
+        ],
+    )
+
+    assert main() == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    summary = payload["summary"]
+
+    assert payload["schema_version"] == "stage15_native_oracle_expanded_v1"
+    assert payload["mode"] == "design2sva_native_oracle_expanded"
+    assert payload["dry_run"] is True
+    assert payload["llm_prompts_sent"] is False
+    assert payload["output_mode"] == "local_dry_run"
+    assert summary["num_cases"] == 3
+    assert summary["mapped_cases"] == 3
+    assert summary["native_reference_proven_rate"] is None
+    assert summary["native_reference_non_vacuous_rate"] is None
+    assert summary["native_failures_by_design"] == {}
+    assert summary["native_root_cause_counts"] == {"unknown": 3}
+    assert payload["metrics"]["native_root_cause_counts"] == {"unknown": 3}
+    assert payload["result_artifact_paths"]["local"].endswith(
+        "design2sva_native_oracle_expanded_local.json"
+    )
+    assert payload["result_artifact_paths"]["jasper"].endswith(
+        "design2sva_native_oracle_expanded_jasper.json"
+    )
+
+
 def test_dry_run_does_not_invoke_jasper(monkeypatch) -> None:
     cases = load_cases(Path("benchmarks/design2sva_cases.json"))[:1]
 
