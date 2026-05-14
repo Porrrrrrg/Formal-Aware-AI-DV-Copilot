@@ -14,6 +14,8 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 | design2sva_eval_anti_vacuity_replay.json | replay | 1 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | replay=1 | replayed |
 | design2sva_eval_antivacuity_codex_new_jasper_subset.json | replay | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=15 | measured |
 | design2sva_eval_antivacuity_codex_new_subset.json | real_llm | 3 | 5 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=15 | not_run |
+| design2sva_eval_reference_oracle_jasper.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | measured |
+| design2sva_eval_reference_oracle_local.json | reference_oracle | 3 | 1 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | reference_oracle=3 | not_run |
 
 ## Provenance
 
@@ -71,6 +73,20 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 - Mode: `real_llm`
 - Source counts: llm=15
 - Failure categories: not_run=15, temporal_mismatch=15
+- Formal metrics status: `not_run`
+
+### design2sva_eval_reference_oracle_jasper.json
+
+- Mode: `reference_oracle`
+- Source counts: reference_oracle=3
+- Failure categories: unreachable_antecedent=2, unreachable_cover_goal=1
+- Formal metrics status: `measured`
+
+### design2sva_eval_reference_oracle_local.json
+
+- Mode: `reference_oracle`
+- Source counts: reference_oracle=3
+- Failure categories: not_run=3
 - Formal metrics status: `not_run`
 
 ## Claim Boundary

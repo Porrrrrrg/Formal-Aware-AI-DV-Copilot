@@ -8,6 +8,7 @@ from evaluation.run_design2sva_eval import classify_failure, load_cases, main, r
 
 
 ANTI_VACUITY_REPLAY = "evaluation/fixtures/design2sva_anti_vacuity_replay.jsonl"
+REFERENCE_ORACLE_REPLAY = "evaluation/fixtures/design2sva_reference_oracle_replay.jsonl"
 
 
 def test_design2sva_prompt_omits_reference_sva() -> None:
@@ -79,6 +80,100 @@ def test_design2sva_replay_source_counts(tmp_path, monkeypatch) -> None:
     assert payload["mode"] == "replay"
     assert summary["source_counts"] == {"replay": 6}
     assert summary["fallback_rate"] == 0.0
+
+
+def test_design2sva_reference_oracle_dry_run_audits_reference(tmp_path, monkeypatch) -> None:
+    out = tmp_path / "design2sva_reference_oracle.json"
+
+    def fail_generate_candidates(*_args, **_kwargs):  # pragma: no cover - failure path only
+        raise AssertionError("reference oracle mode must not invoke candidate generation")
+
+    monkeypatch.setattr(
+        "evaluation.run_design2sva_eval.generate_candidates",
+        fail_generate_candidates,
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "run_design2sva_eval.py",
+            "--limit",
+            "3",
+            "--k",
+            "1",
+            "--reference-oracle",
+            "--llm",
+            "--jasper-check",
+            "--dry-run",
+            "--out",
+            str(out),
+            "--markdown",
+            str(tmp_path / "design2sva_reference_oracle.md"),
+        ],
+    )
+
+    assert main() == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    summary = payload["summary"]
+
+    assert payload["mode"] == "reference_oracle"
+    assert payload["formal_check_mode"] == "jasper"
+    assert summary["source_counts"] == {"reference_oracle": 3}
+    assert summary["fallback_rate"] == 0.0
+    assert summary["reference_proven@1"] == 0.0
+    assert summary["reference_non_vacuous@1"] == 0.0
+    assert summary["reference_antecedent_reachable@1"] == 0.0
+    assert summary["harness_reachability_status"] == "not_run"
+
+    for result in payload["results"]:
+        audit = result["harness_reachability_audit"]
+        candidate = result["candidate_paths"][0]["rounds"][0]["candidate"]
+        assert audit["reference_sva"] == candidate["sva"]
+        assert audit["clock_reset_metadata"]["clock"]
+        assert audit["cover_sva"]
+        assert audit["harness_reachability_status"] == "not_run"
+        assert candidate["source"] == "reference_oracle"
+
+
+def test_design2sva_reference_oracle_replay_metrics(tmp_path, monkeypatch) -> None:
+    out = tmp_path / "design2sva_reference_oracle_replay.json"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "run_design2sva_eval.py",
+            "--limit",
+            "3",
+            "--k",
+            "1",
+            "--reference-oracle",
+            "--jasper-replay",
+            REFERENCE_ORACLE_REPLAY,
+            "--out",
+            str(out),
+            "--markdown",
+            str(tmp_path / "design2sva_reference_oracle_replay.md"),
+        ],
+    )
+
+    assert main() == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    summary = payload["summary"]
+
+    assert payload["mode"] == "reference_oracle"
+    assert payload["formal_check_mode"] == "replay"
+    assert summary["formal_metrics_status"] == "replayed"
+    assert summary["reference_proven@1"] == 1.0
+    assert summary["reference_non_vacuous@1"] == 1.0
+    assert summary["reference_antecedent_reachable@1"] == 1.0
+    assert summary["harness_reachability_status"] == "reachable"
+    assert summary["harness_reachability_status_counts"] == {"reachable": 3}
+    assert summary["proven@1"] == 1.0
+    assert summary["source_counts"] == {"reference_oracle": 3}
+    for result in payload["results"]:
+        audit = result["harness_reachability_audit"]
+        assert audit["reference_proven"] is True
+        assert audit["reference_non_vacuous"] is True
+        assert audit["reference_antecedent_reachable"] is True
+        assert audit["cover_status"] == "covered"
 
 
 def test_unreachable_formal_result_is_not_counted_as_passed() -> None:
