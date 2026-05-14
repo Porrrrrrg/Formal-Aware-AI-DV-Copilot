@@ -92,8 +92,6 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "-B",
             str(ROOT / "evaluation" / "run_sva_repair_eval.py"),
             "--llm",
-            "--limit",
-            str(args.limit),
             "--prompt-version",
             args.prompt_version,
         ]
@@ -107,8 +105,6 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--systems",
             "structured",
             "--llm",
-            "--limit",
-            str(args.limit),
             "--packet-source",
             args.packet_source,
         ]
@@ -122,8 +118,6 @@ def run_eval_task(args: argparse.Namespace) -> int:
             "--systems",
             "structured",
             "--llm",
-            "--limit",
-            str(args.limit),
             "--packet-source",
             args.packet_source,
         ]
@@ -132,6 +126,8 @@ def run_eval_task(args: argparse.Namespace) -> int:
         raise ValueError(f"Unsupported task: {args.task}")
 
     out_path = Path(args.out) if args.out else default_out
+    if args.limit is not None:
+        cmd.extend(["--limit", str(args.limit)])
     cmd.extend(["--out", str(out_path)])
 
     env = os.environ.copy()
@@ -237,7 +233,7 @@ def display_path(path: Path) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", choices=["healthcheck", "sva_repair", "triage", "coverage"], default="healthcheck")
-    parser.add_argument("--limit", type=int, default=3)
+    parser.add_argument("--limit", type=int)
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--model")
     parser.add_argument("--out")
