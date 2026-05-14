@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 from copilot.agents.coverage_closure_agent import recommend as structured_recommend  # noqa: E402
 from copilot.baselines.raw_log_llm import diagnose_from_raw_log  # noqa: E402
 from copilot.json_utils import coerce_string_list  # noqa: E402
+from copilot.llm_client import llm_configured  # noqa: E402
 from evaluation.metrics import accuracy  # noqa: E402
 from evaluation.output_quality import source_summary  # noqa: E402
 from scripts.build_all_evidence_packets import iter_case_files, resolve_repo_path  # noqa: E402
@@ -93,6 +94,7 @@ def evaluate_system(
 ) -> tuple[dict[str, object], list[dict[str, object]]]:
     rows = []
     predictions = []
+    attempted_llm = bool(use_llm or llm_configured(llm_command))
     for case_path in case_paths:
         case = json.loads(case_path.read_text())
         if case.get("task_type") != "coverage_closure":
@@ -105,6 +107,7 @@ def evaluate_system(
                 "case_id": case.get("case_id"),
                 "design_id": case.get("design_id"),
                 "source": prediction.get("source", "unknown"),
+                "llm_attempted": attempted_llm,
                 "llm_error": prediction.get("llm_error"),
                 "coverage_goal": case.get("property_id"),
                 "gold_gap_type": case.get("expected_issue_type"),
@@ -146,6 +149,8 @@ def summarize_rows(rows: list[dict[str, object]]) -> dict[str, object]:
         "reachable_sequence_presence_rate": len(sequence_rows) / len(reachable_rows)
         if reachable_rows
         else 0.0,
+        "hallucinated_signal_rate": None,
+        "hallucinated_signal_checked_count": 0,
         "predicted_gap_distribution": dict(
             sorted(collections.Counter(row["predicted_gap_type"] for row in rows).items())
         ),
@@ -175,6 +180,7 @@ def main() -> int:
             Path("benchmarks/arbiter_rr2/cases"),
             Path("benchmarks/rv_buffer/cases"),
             Path("benchmarks/apb_regblock/cases"),
+            Path("benchmarks/fifo_1r1w/cases"),
         ],
     )
     parser.add_argument("--packet-root", type=Path, default=Path("jasper/reports/case_packets"))

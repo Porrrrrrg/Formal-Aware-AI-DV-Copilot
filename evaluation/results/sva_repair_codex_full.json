@@ -1,0 +1,2628 @@
+{
+  "summary": {
+    "num_cases": 23,
+    "cases_by_design": {
+      "apb_regblock": 6,
+      "arbiter_rr2": 6,
+      "fifo_1r1w": 5,
+      "rv_buffer": 6
+    },
+    "cases_by_bug_type": {
+      "overbroad_property": 4,
+      "reset_error": 3,
+      "syntax_error": 3,
+      "temporal_or_semantic_error": 8,
+      "unknown_signal": 5
+    },
+    "cases_by_feedback_mode": {
+      "jasper": 23
+    },
+    "cases_by_prompt_version": {
+      "baseline": 23
+    },
+    "syntax_pass_round0": 0.8695652173913043,
+    "repair_success_rate": 0.6521739130434783,
+    "exact_match_round0": 0.0,
+    "exact_match_final": 0.6521739130434783,
+    "hallucinated_signal_rate": 0.0,
+    "hallucinated_signal_checked_count": 23,
+    "jasper_syntax_pass_final": 0.0,
+    "proven_final": 0.0,
+    "vacuous_final": 0.0,
+    "average_rounds_to_success": 1.0,
+    "rows": [
+      {
+        "case_id": "repair_arbiter_mutex_syntax",
+        "design_id": "arbiter_rr2",
+        "bug_type": "syntax_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "syntax_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_arbiter_spurious_unknown_signal",
+        "design_id": "arbiter_rr2",
+        "bug_type": "unknown_signal",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_arbiter_single_req1_wrong_grant",
+        "design_id": "arbiter_rr2",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_arbiter_turn0_missing_condition",
+        "design_id": "arbiter_rr2",
+        "bug_type": "overbroad_property",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_arbiter_reset_wrong_polarity",
+        "design_id": "arbiter_rr2",
+        "bug_type": "reset_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_arbiter_fairness_too_strong",
+        "design_id": "arbiter_rr2",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_buffer_reset_syntax",
+        "design_id": "rv_buffer",
+        "bug_type": "syntax_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "syntax_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_buffer_unknown_data_signal",
+        "design_id": "rv_buffer",
+        "bug_type": "unknown_signal",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_buffer_capture_missing_fire",
+        "design_id": "rv_buffer",
+        "bug_type": "overbroad_property",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_buffer_full_clear_wrong_guard",
+        "design_id": "rv_buffer",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_buffer_simul_unknown_signal",
+        "design_id": "rv_buffer",
+        "bug_type": "unknown_signal",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_buffer_out_valid_wrong_relation",
+        "design_id": "rv_buffer",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_apb_setup_syntax",
+        "design_id": "apb_regblock",
+        "bug_type": "syntax_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "syntax_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_apb_write_wrong_addr",
+        "design_id": "apb_regblock",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_apb_read_unknown_signal",
+        "design_id": "apb_regblock",
+        "bug_type": "unknown_signal",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_apb_pready_missing_access",
+        "design_id": "apb_regblock",
+        "bug_type": "overbroad_property",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 3,
+        "hallucinated_signals": [],
+        "scaffold_success": false,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_fail",
+        "success": false,
+        "rounds_to_success": null,
+        "round0_exact_match": false,
+        "final_exact_match": false,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_apb_reset_wrong_polarity",
+        "design_id": "apb_regblock",
+        "bug_type": "reset_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_apb_invalid_missing_inside",
+        "design_id": "apb_regblock",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_fifo_no_underflow_wrong_guard",
+        "design_id": "fifo_1r1w",
+        "bug_type": "overbroad_property",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_fifo_overflow_missing_pop_exception",
+        "design_id": "fifo_1r1w",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_fifo_pop_data_unknown_signal",
+        "design_id": "fifo_1r1w",
+        "bug_type": "unknown_signal",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_fifo_reset_wrong_polarity",
+        "design_id": "fifo_1r1w",
+        "bug_type": "reset_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      },
+      {
+        "case_id": "repair_fifo_eventual_pop_too_fast",
+        "design_id": "fifo_1r1w",
+        "bug_type": "temporal_or_semantic_error",
+        "feedback_mode": "jasper",
+        "prompt_version": "baseline",
+        "cex_fields_present": {
+          "failing_property_intent": true,
+          "broken_sva": true,
+          "jasper_status": false,
+          "failing_cycle": false,
+          "expected_behavior": true,
+          "observed_behavior": false,
+          "relevant_signal_values": false,
+          "allowed_signal_whitelist": true,
+          "reset_clock_semantics": true,
+          "assumption_risks": false,
+          "vacuity_hint": false
+        },
+        "repair_rounds": 1,
+        "hallucinated_signals": [],
+        "scaffold_success": true,
+        "jasper_checked": false,
+        "round0_status": "scaffold_fail",
+        "final_status": "scaffold_pass",
+        "success": true,
+        "rounds_to_success": 1,
+        "round0_exact_match": false,
+        "final_exact_match": true,
+        "final_has_hallucinated_signal": false,
+        "final_jasper_syntax_pass": null,
+        "final_jasper_proof_status": null,
+        "final_jasper_vacuity_status": null
+      }
+    ],
+    "source_counts": {
+      "llm": 39
+    },
+    "output_family_counts": {
+      "jasper_feedback_repair_loop": 39
+    },
+    "deterministic_fallback_count": 0,
+    "deterministic_scaffold_count": 0,
+    "raw_log_llm_count": 0,
+    "structured_llm_count": 0,
+    "real_llm_count": 39,
+    "jasper_feedback_repair_loop_count": 39,
+    "llm_attempted_count": 39,
+    "valid_json_count": 39,
+    "valid_json_rate": 1.0,
+    "llm_success_rate": 1.0,
+    "real_llm_rate": 1.0,
+    "deterministic_scaffold_rate": 0.0,
+    "fallback_rate": 0.0,
+    "llm_error_rate": 0.0,
+    "llm_error_count": 0,
+    "num_outputs": 39
+  },
+  "results": [
+    {
+      "case_id": "repair_arbiter_mutex_syntax",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "bug_type": "syntax_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1))",
+          "jasper_status": "syntax_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": false,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_mutex",
+            "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+            "explanation": "Fixed the syntax error by terminating the assertion statement with a semicolon while preserving the mutex intent: on each clk rising edge, except during rst, gnt0 and gnt1 must not both be high."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_arbiter_spurious_unknown_signal",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_no_spurious_gnt0",
+      "bug_type": "unknown_signal",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) grant0 |-> req0);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": true,
+            "hallucinated_identifiers": [
+              "grant0"
+            ],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_no_spurious_gnt0",
+            "sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) gnt0 |-> req0);",
+            "explanation": "Replaced the unknown signal grant0 with the allowed design signal gnt0. The assertion now checks that whenever gnt0 is asserted, req0 is asserted in the same cycle, matching the stated no-spurious-grant intent."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) gnt0 |-> req0);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_arbiter_single_req1_wrong_grant",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_single_req1_grant",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) !req0 && req1 |-> gnt0 && !gnt1);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_single_req1_grant",
+            "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) !req0 && req1 |-> gnt1 && !gnt0);",
+            "explanation": "The broken assertion inverted the expected grant outputs for the single-client-1 request case. When req1 is high and req0 is low, the property now checks that client 1 is granted and client 0 is not granted, using only the allowed signals."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) !req0 && req1 |-> gnt1 && !gnt0);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_single_req1_grant",
+            "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) (!req0 && req1) |-> (gnt1 && !gnt0));",
+            "explanation": "The repaired assertion matches the intent by checking that when client 1 is the only requester, grant 1 is asserted and grant 0 is deasserted. Only the allowed signals are used."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) (!req0 && req1) |-> (gnt1 && !gnt0));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_single_req1_grant",
+            "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) (!req0 && req1) |-> (gnt1 && !gnt0));",
+            "explanation": "The assertion matches the intent: when req1 is asserted and req0 is not asserted, the arbiter must grant client 1 with gnt1 high and must not grant client 0 with gnt0 low."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_single_req1_grant: assert property (@(posedge clk) disable iff (rst) (!req0 && req1) |-> (gnt1 && !gnt0));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_arbiter_turn0_missing_condition",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_both_req_priority_turn0",
+      "bug_type": "overbroad_property",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) req0 && req1 |-> gnt0 && !gnt1);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_both_req_priority_turn0",
+            "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && (turn == 1'b0) |-> gnt0 && !gnt1);",
+            "explanation": "The original assertion was overbroad because it required client 0 to win whenever both req0 and req1 were high, regardless of turn. The repaired assertion matches the intent by adding the missing condition that turn is 0, while using only the allowed signals."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && (turn == 1'b0) |-> gnt0 && !gnt1);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_both_req_priority_turn0",
+            "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && (turn == 1'b0)) |-> (gnt0 && !gnt1));",
+            "explanation": "The original assertion was overbroad because it required client 0 priority whenever both requests were high, regardless of turn. The repaired assertion constrains the antecedent to the stated intent: both req0 and req1 are asserted and turn is 0, then only gnt0 may be asserted."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && (turn == 1'b0)) |-> (gnt0 && !gnt1));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_both_req_priority_turn0",
+            "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && (turn == 1'b0)) |-> (gnt0 && !gnt1));",
+            "explanation": "The original assertion was overbroad because it required client 0 priority whenever both requests were high, regardless of turn. The repaired antecedent adds the missing turn == 1'b0 condition from the property intent, while the consequent keeps the required grant of client 0 only."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_both_req_priority_turn0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && (turn == 1'b0)) |-> (gnt0 && !gnt1));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_arbiter_reset_wrong_polarity",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_reset_initial_priority",
+      "bug_type": "reset_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_reset_initial_priority: assert property (@(posedge clk) !rst |=> !turn);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_reset_initial_priority",
+            "sva": "p_reset_initial_priority: assert property (@(posedge clk) rst |=> !turn);",
+            "explanation": "The original assertion used the wrong reset polarity by triggering on !rst. With rst as the reset signal, the property should check that after an asserted reset cycle, turn is 0 on the following clock."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_reset_initial_priority: assert property (@(posedge clk) rst |=> !turn);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_arbiter_fairness_too_strong",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_persistent_fairness0",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !gnt0 |=> gnt0);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_persistent_fairness0",
+            "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !gnt0 |=> (!(req0 && req1) || gnt0));",
+            "explanation": "The original assertion required gnt0 on the next cycle even if contention ended. This repair preserves the intent by requiring gnt0 only when req0 and req1 are still both asserted on the next cycle; if contention ends, the property passes."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) req0 && req1 && !gnt0 |=> (!(req0 && req1) || gnt0));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_persistent_fairness0",
+            "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && !gnt0) |=> (!req0 || !req1 || gnt0));",
+            "explanation": "The repair keeps the trigger on client 0 being in contention without a grant, but weakens the next-cycle obligation so gnt0 is required only if contention persists. If either req0 or req1 drops on the next cycle, the unless-contention-ends exception satisfies the property."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && !gnt0) |=> (!req0 || !req1 || gnt0));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_persistent_fairness0",
+            "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && !gnt0) |=> ((req0 && req1) -> gnt0));",
+            "explanation": "The repaired assertion only requires gnt0 on the next cycle when contention persists with both req0 and req1 still high. If either request drops, contention ended and the grant is not required."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_persistent_fairness0: assert property (@(posedge clk) disable iff (rst) (req0 && req1 && !gnt0) |=> ((req0 && req1) -> gnt0));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_buffer_reset_syntax",
+      "design_id": "rv_buffer",
+      "property_id": "p_reset_empty",
+      "bug_type": "syntax_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> !full && !out_valid",
+          "jasper_status": "syntax_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": false,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_reset_empty",
+            "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> (!full && !out_valid));",
+            "explanation": "Fixed the syntax error by closing the property expression and assert statement. The assertion preserves the intent: on a rising clock edge with reset asserted, the next cycle requires the buffer to be not full and out_valid low."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> (!full && !out_valid));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_reset_empty",
+            "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> (!full && !out_valid));",
+            "explanation": "Repaired the syntax by closing the assertion property expression. The assertion uses only the allowed signals and checks that one cycle after reset is sampled high, the buffer is not full and out_valid is low."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> (!full && !out_valid));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_reset_empty",
+            "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> (!full && !out_valid));",
+            "explanation": "Fixed the syntax by adding the missing closing parenthesis for the assert property statement while preserving the intended reset-to-empty check using only rst, full, out_valid, and clk."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> (!full && !out_valid));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_buffer_unknown_data_signal",
+      "design_id": "rv_buffer",
+      "property_id": "p_data_stable_while_stalled",
+      "bug_type": "unknown_signal",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(data_out));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": true,
+            "hallucinated_identifiers": [
+              "data_out"
+            ],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_data_stable_while_stalled",
+            "sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));",
+            "explanation": "Replaced the unknown signal data_out with the allowed design signal out_data, preserving the intent that output data remains stable across a stalled valid output cycle."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_buffer_capture_missing_fire",
+      "design_id": "rv_buffer",
+      "property_id": "p_capture_on_input_fire",
+      "bug_type": "overbroad_property",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) in_valid |=> full && out_data == $past(in_data));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_capture_on_input_fire",
+            "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) (in_valid && in_ready) |=> (full && out_data == $past(in_data)));",
+            "explanation": "The original assertion triggered on any in_valid, including cycles without an input handshake. The repaired antecedent uses the intended input fire condition, in_valid && in_ready, and keeps the required next-cycle full state and captured data check."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) (in_valid && in_ready) |=> (full && out_data == $past(in_data)));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_capture_on_input_fire",
+            "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) (in_valid && in_ready) |=> (full && out_data == $past(in_data)));",
+            "explanation": "The antecedent is narrowed from in_valid alone to the actual input handshake, in_valid && in_ready. This matches the intent that capture occurs only when input fires, then checks on the next cycle that the buffer is full and out_data equals the captured in_data."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) (in_valid && in_ready) |=> (full && out_data == $past(in_data)));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_capture_on_input_fire",
+            "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) (in_valid && in_ready) |=> (full && (out_data == $past(in_data))));",
+            "explanation": "Restricts the capture requirement to a real input handshake (`in_valid && in_ready`) instead of any `in_valid` cycle, then checks on the next clock that the buffer is full and `out_data` holds the accepted `in_data`."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_capture_on_input_fire: assert property (@(posedge clk) disable iff (rst) (in_valid && in_ready) |=> (full && (out_data == $past(in_data))));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_buffer_full_clear_wrong_guard",
+      "design_id": "rv_buffer",
+      "property_id": "p_full_clear_on_dequeue",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_full_clear_on_dequeue: assert property (@(posedge clk) disable iff (rst) out_valid && out_ready |=> !full);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_full_clear_on_dequeue",
+            "sva": "p_full_clear_on_dequeue: assert property (@(posedge clk) disable iff (rst) out_valid && out_ready && !in_valid |=> !full);",
+            "explanation": "Added the missing guard that excludes simultaneous input. The property now checks only a dequeue without an input, which matches the intent that this condition clears full on the next cycle."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_full_clear_on_dequeue: assert property (@(posedge clk) disable iff (rst) out_valid && out_ready && !in_valid |=> !full);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_buffer_simul_unknown_signal",
+      "design_id": "rv_buffer",
+      "property_id": "p_simultaneous_enqueue_dequeue_semantics",
+      "bug_type": "unknown_signal",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_simultaneous_enqueue_dequeue_semantics: assert property (@(posedge clk) disable iff (rst) full && input_valid && in_ready && out_ready |=> full && out_data == $past(in_data));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": true,
+            "hallucinated_identifiers": [
+              "input_valid"
+            ],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_simultaneous_enqueue_dequeue_semantics",
+            "sva": "p_simultaneous_enqueue_dequeue_semantics: assert property (@(posedge clk) disable iff (rst) full && in_valid && in_ready && out_ready |=> full && out_data == $past(in_data));",
+            "explanation": "Replaced the unknown signal input_valid with the allowed signal in_valid while preserving the intended simultaneous enqueue/dequeue condition and consequent behavior."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_simultaneous_enqueue_dequeue_semantics: assert property (@(posedge clk) disable iff (rst) full && in_valid && in_ready && out_ready |=> full && out_data == $past(in_data));",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_buffer_out_valid_wrong_relation",
+      "design_id": "rv_buffer",
+      "property_id": "p_out_valid_equals_full",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == !full);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_out_valid_equals_full",
+            "sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == full);",
+            "explanation": "The intent states that out_valid should equal the one-entry buffer full state. The broken assertion inverted full, so the repair removes the negation and checks out_valid == full using only the allowed signals."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == full);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_apb_setup_syntax",
+      "design_id": "apb_regblock",
+      "property_id": "p_setup_then_enable",
+      "bug_type": "syntax_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable)",
+          "jasper_status": "syntax_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": false,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_setup_then_enable",
+            "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+            "explanation": "Added required assertion terminator and explicit parentheses around setup and access phase expressions while preserving the intent: when psel is high and penable is low, the next cycle must have both psel and penable high."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_setup_then_enable",
+            "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+            "explanation": "Repairs the syntax by grouping the setup and access phase expressions and terminating the assertion with a semicolon. The property checks that when psel is high and penable is low in setup, the next cycle has psel and penable high for access."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_setup_then_enable",
+            "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+            "explanation": "Repairs the assertion syntax by adding clear antecedent/consequent grouping and the terminating semicolon. The property preserves the intent: when psel is asserted with penable low in setup, the next cycle must keep psel asserted and assert penable for access."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) (psel && !penable) |=> (psel && penable));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_apb_write_wrong_addr",
+      "design_id": "apb_regblock",
+      "property_id": "p_write_updates_reg0",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && pwrite && pready && paddr == 8'h04 |=> reg0 == $past(pwdata));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_write_updates_reg0",
+            "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable && pwrite && pready && (paddr == 8'h00)) |=> (reg0 == $past(pwdata)));",
+            "explanation": "Repaired the semantic address error: the intent requires a valid APB write to address 0x00 to update reg0, but the broken assertion checked 0x04. The APB valid-write handshake and next-cycle data check are preserved using only allowed signals."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable && pwrite && pready && (paddr == 8'h00)) |=> (reg0 == $past(pwdata)));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_write_updates_reg0",
+            "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable && pwrite && pready && (paddr == 8'h00)) |=> (reg0 == $past(pwdata)));",
+            "explanation": "The broken assertion checked address 8'h04, but the intent is for writes to address 0x00. The antecedent now matches a valid completed APB write to 8'h00, and the consequent checks that reg0 updates on the following cycle to the sampled write data."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable && pwrite && pready && (paddr == 8'h00)) |=> (reg0 == $past(pwdata)));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_write_updates_reg0",
+            "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable && pwrite && pready && (paddr == 8'h00)) |=> (reg0 == $past(pwdata)));",
+            "explanation": "Repaired the semantic address error by checking the intended APB write address 8'h00 instead of 8'h04. The implication remains non-overlapped so reg0 is checked on the cycle after the valid write, against the pwdata sampled during the write handshake."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable && pwrite && pready && (paddr == 8'h00)) |=> (reg0 == $past(pwdata)));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_apb_read_unknown_signal",
+      "design_id": "apb_regblock",
+      "property_id": "p_read_returns_reg0",
+      "bug_type": "unknown_signal",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_read_returns_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !pwrite && paddr == 8'h00 |-> read_data == reg0);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": true,
+            "hallucinated_identifiers": [
+              "read_data"
+            ],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_read_returns_reg0",
+            "sva": "p_read_returns_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !pwrite && paddr == 8'h00 |-> prdata == reg0);",
+            "explanation": "Replaced the unknown signal read_data with the allowed APB read data signal prdata, preserving the intent that a valid read to address 0x00 returns reg0."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_read_returns_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !pwrite && paddr == 8'h00 |-> prdata == reg0);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_apb_pready_missing_access",
+      "design_id": "apb_regblock",
+      "property_id": "p_pready_response_valid",
+      "bug_type": "overbroad_property",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 3,
+      "hallucinated_signals": [],
+      "scaffold_success": false,
+      "final_exact_match": false,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) psel |-> pready);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_pready_response_valid",
+            "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable) |-> pready);",
+            "explanation": "Restricts the antecedent to the APB access phase, defined by psel and penable asserted together. This avoids requiring pready during the setup phase while still checking that a zero-wait-state access response asserts pready."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable) |-> pready);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_pready_response_valid",
+            "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable) |-> pready);",
+            "explanation": "Narrowed the antecedent from any selected APB cycle to the APB access phase only. In APB, the access phase is indicated by psel and penable both asserted, so pready is required only for the intended zero-wait-state response cycle without constraining setup cycles."
+          }
+        },
+        {
+          "round": 2,
+          "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable) |-> pready);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_pready_response_valid",
+            "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable) |-> pready);",
+            "explanation": "Constrain the antecedent to the APB access phase using only allowed signals: psel and penable must both be high before requiring the zero-wait-state pready response. This avoids the overbroad setup-phase check from the broken assertion."
+          }
+        },
+        {
+          "round": 3,
+          "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) (psel && penable) |-> pready);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_fail",
+      "success": false,
+      "rounds_to_success": null
+    },
+    {
+      "case_id": "repair_apb_reset_wrong_polarity",
+      "design_id": "apb_regblock",
+      "property_id": "p_reset_clears_registers",
+      "bug_type": "reset_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_reset_clears_registers: assert property (@(posedge pclk) presetn |=> reg0 == 32'h0 && reg1 == 32'h0);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_reset_clears_registers",
+            "sva": "p_reset_clears_registers: assert property (@(posedge pclk) !presetn |=> reg0 == 32'h0 && reg1 == 32'h0);",
+            "explanation": "Repaired the reset polarity: presetn is active-low, so the property now checks that after reset is asserted (!presetn), both APB registers are cleared."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_reset_clears_registers: assert property (@(posedge pclk) !presetn |=> reg0 == 32'h0 && reg1 == 32'h0);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_apb_invalid_missing_inside",
+      "design_id": "apb_regblock",
+      "property_id": "p_invalid_address_behavior",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && paddr inside {8'h00, 8'h04} |-> pslverr);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_invalid_address_behavior",
+            "sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);",
+            "explanation": "Repaired the address predicate so pslverr is required only for invalid APB addresses during the access phase. The original assertion checked addresses inside the valid set; this version negates that set membership without introducing any new signals."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_fifo_no_underflow_wrong_guard",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_no_underflow",
+      "bug_type": "overbroad_property",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_ready));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_no_underflow",
+            "sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));",
+            "explanation": "The original assertion was overbroad because pop_ready alone does not mean a pop completed. Underflow intent is violated only when a completed pop occurs while the FIFO is empty, so the guard is repaired to use pop_fire."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_fifo_overflow_missing_pop_exception",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_no_overflow",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid |-> !push_ready);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_no_overflow",
+            "sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid && !pop_ready |-> !push_ready);",
+            "explanation": "The original assertion forbids accepting any push while full, but the intent allows a push when a pop also happens. The repaired antecedent checks only the disallowed case: FIFO is full, a push is requested, and no pop occurs; then push_ready must be low."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid && !pop_ready |-> !push_ready);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_fifo_pop_data_unknown_signal",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_pop_data_stable_when_stalled",
+      "bug_type": "unknown_signal",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(data_out));",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": true,
+            "hallucinated_identifiers": [
+              "data_out"
+            ],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_pop_data_stable_when_stalled",
+            "sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(pop_data));",
+            "explanation": "Repaired the unknown signal data_out by replacing it with the allowed output signal pop_data, preserving the intent that pop_data remains stable across a stalled valid pop cycle."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(pop_data));",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_fifo_reset_wrong_polarity",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_reset_empty",
+      "bug_type": "reset_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_reset_empty: assert property (@(posedge clk) !rst |=> empty && !full && level == '0 && !pop_valid);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_reset_empty",
+            "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> empty && !full && level == '0 && !pop_valid);",
+            "explanation": "Repaired the reset polarity by checking the cycle after rst is asserted. The assertion now matches the intent that reset leaves the FIFO empty, not full, level cleared, and no valid pop output."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_reset_empty: assert property (@(posedge clk) rst |=> empty && !full && level == '0 && !pop_valid);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    },
+    {
+      "case_id": "repair_fifo_eventual_pop_too_fast",
+      "design_id": "fifo_1r1w",
+      "property_id": "p_eventual_pop",
+      "bug_type": "temporal_or_semantic_error",
+      "feedback_mode": "jasper",
+      "prompt_version": "baseline",
+      "llm_attempted": true,
+      "cex_fields_present": {
+        "failing_property_intent": true,
+        "broken_sva": true,
+        "jasper_status": false,
+        "failing_cycle": false,
+        "expected_behavior": true,
+        "observed_behavior": false,
+        "relevant_signal_values": false,
+        "allowed_signal_whitelist": true,
+        "reset_clock_semantics": true,
+        "assumption_risks": false,
+        "vacuity_hint": false
+      },
+      "repair_rounds": 1,
+      "hallucinated_signals": [],
+      "scaffold_success": true,
+      "final_exact_match": true,
+      "jasper_checked": false,
+      "rounds": [
+        {
+          "round": 0,
+          "sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:1] pop_fire);",
+          "jasper_status": "scaffold_fail",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": false,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          },
+          "repair_action": {
+            "source": "llm",
+            "property_id": "p_eventual_pop",
+            "sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:4] pop_fire);",
+            "explanation": "The original assertion required acceptance within 0 to 1 cycles, which is stricter than the stated four-cycle fairness bound. The repaired property keeps the same clock, reset, and allowed signals, and checks that whenever pop_valid is asserted, pop_fire occurs within 0 to 4 cycles."
+          }
+        },
+        {
+          "round": 1,
+          "sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:4] pop_fire);",
+          "jasper_status": "scaffold_pass",
+          "feedback": "Scaffold check only.",
+          "metrics": {
+            "syntax_scaffold_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "feedback": "Scaffold check only."
+          }
+        }
+      ],
+      "final_status": "scaffold_pass",
+      "success": true,
+      "rounds_to_success": 1
+    }
+  ]
+}

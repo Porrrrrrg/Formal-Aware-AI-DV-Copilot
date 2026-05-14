@@ -15,6 +15,9 @@ evaluation/results/agent_eval*.json
 evaluation/results/sva_eval*.json
 evaluation/results/sva_repair*.json
 evaluation/results/coverage_eval*.json
+!evaluation/results/agent_eval_codex_full.json
+!evaluation/results/sva_repair_codex_full.json
+!evaluation/results/coverage_eval_codex_full.json
 evaluation/prompt_previews/
 copilot/baselines/*([0-9]).py
 artifacts/**
@@ -33,6 +36,7 @@ xcelium.d/
 .formal/
 jgproject/
 dist/
+.codex/runs/
 
 # Local secrets and model configs
 .env
@@ -44,7 +48,7 @@ llm_logs/
 raw_llm_logs/
 reports/local_llm/raw/**
 reports/llm/raw/**
-models/
+/models/
 .cache/
 hf_cache/
 transformers_cache/

@@ -55,6 +55,8 @@ def main() -> int:
         cmd,
         input=wrapped,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         capture_output=True,
         check=False,
         timeout=args.timeout,
@@ -67,8 +69,9 @@ def main() -> int:
     return 0
 
 
-def sanitize_error(stderr: str, max_lines: int = 24, max_chars: int = 4000) -> str:
+def sanitize_error(stderr: str | None, max_lines: int = 24, max_chars: int = 4000) -> str:
     """Keep actionable Codex CLI errors without embedding long HTML challenge pages."""
+    stderr = stderr or ""
     lines = []
     skipping_html = False
     omitted_html = False

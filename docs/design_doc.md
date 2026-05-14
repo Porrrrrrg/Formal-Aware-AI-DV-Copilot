@@ -8,6 +8,16 @@ JasperLoop-DV is a formal-aware AI design verification copilot. It consumes RTL,
 
 The LLM is not the verification oracle. JasperGold is the source of truth for syntax, proof, counterexamples, cover reachability, and vacuity. The agent is responsible for summarizing evidence, proposing fixes, and ranking likely next actions for engineer review.
 
+## Claim Boundary Table
+
+| Claim | Supported Today | Unsupported Claim | Next Evidence Required |
+| --- | --- | --- | --- |
+| JasperGold proof | Supported only for checked harnesses, properties, assumptions, and imported Moore summaries | Full design signoff or intent correctness | Per-property proof, vacuity, harness, assumptions, and tool-version manifests |
+| Vacuity | Vacuity status is parsed when report data exists | `not_flagged_vacuous` as an explicit non-vacuity certificate | Explicit vacuity runs with parsed property-level status |
+| Codex results | Real runs may be reported only when source/error/fallback fields show Codex was used | Deterministic fallback accuracy as Codex accuracy | Valid JSON, fallback, source, error, and hallucinated-signal metrics |
+| FVEval subset | Local-compatible subset plumbing and prompt-sanitization checks | Official FVEval reproduction or commercial equivalence results | FVEval-compatible harnesses and FV tool scoring |
+| Replay/dry-run | Workflow and artifact-contract evidence | Model quality or new JasperGold proof | Live backend run manifests and imported formal evidence |
+
 ## Architecture
 
 ```text
@@ -17,10 +27,10 @@ RTL + Spec + SVA + Assumptions
 JasperGold Formal Runner
         |
         v
-Formal Evidence Extractor
+Formal BackendResult + Evidence Extractor
         |
         v
-Structured Evidence Packet
+Structured Evidence Packet + RTL Retrieval Index
         |
         +--> SVA Generation Agent
         +--> SVA Repair Agent
@@ -43,6 +53,16 @@ The evidence packet is the central interface between formal tooling and LLM reas
 - allowed issue labels and next actions
 
 Counterexample summaries are role-aware. The raw VCD-derived signal events are preserved, and the packet also includes semantic events that annotate signals with manifest roles such as `client 0 request`, `client 1 grant`, or `APB write data`. This gives the LLM a compact DV explanation without hiding the formal evidence.
+
+`copilot/backends` is the package boundary for formal tools. It exposes typed
+`BackendResult` objects with syntax, proof, vacuity, counterexample path, raw
+log path, and structured error fields. Prompt code should consume these typed
+objects or evidence packets; it should not shell out to JasperGold directly.
+
+`copilot/retrieval` provides ProofLoop-style local context: module interfaces,
+assign drivers, always blocks, instance hierarchy, signal logic, and clock/reset
+candidates. The current implementation is a robust regex fallback with optional
+future `pyslang`/`slang` integration.
 
 ## Agent Modes
 
@@ -90,8 +110,9 @@ Primary benchmark:
 - 2-client round-robin arbiter
 - single-entry ready/valid buffer
 - tiny APB-lite register block
+- 1-read/1-write FIFO
 
-Each design has correct RTL, bug variants, assertions, assumptions, coverage goals, manifests, and labeled diagnosis cases. The target primary set is 30 labeled cases: 10 per design, covering RTL bugs, assertion bugs, assumption bugs, testbench/stimulus bugs, reachable coverage gaps, and invalid/unreachable coverage goals.
+Each design has correct RTL, bug variants, assertions, assumptions, coverage goals, manifests, and labeled diagnosis cases. The current local-DV set contains 53 labeled cases across four designs, covering RTL bugs, assertion bugs, assumption bugs, testbench/stimulus bugs, reachable coverage gaps, invalid/unreachable coverage goals, vacuity cases, and false-positive-style intent traps where a property can prove but still not match the intended behavior.
 
 ## Evaluation
 
@@ -103,3 +124,8 @@ The main comparison is:
 - structured JasperLoop-DV agent
 
 Ablations remove assertion manifest, assumption manifest, counterexample summary, coverage plan, or repair loop.
+
+Evaluation outputs separate deterministic scaffold/fallback behavior from real
+LLM-backed rows with `source_counts`, fallback/error rates,
+hallucinated-signal rates, and `output_family_counts`. Syntax pass is reported
+as a scaffold metric unless backed by JasperGold proof/vacuity evidence.
