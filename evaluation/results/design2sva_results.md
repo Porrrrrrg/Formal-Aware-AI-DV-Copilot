@@ -9,6 +9,7 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 | design2sva_eval_local.json | deterministic_scaffold | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | 0.000 | structured_fallback=9 | not_run |
 | design2sva_eval_replay_local.json | replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 0.000 | replay=9 | not_run |
 | design2sva_eval_codex_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 | llm=9 | not_run |
+| design2sva_eval_codex_jasper_subset.json | real_llm | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 | 0.000 | llm=9 | measured |
 
 ## Provenance
 
@@ -32,6 +33,13 @@ These results are generated from the retrieval-assisted Design2SVA scaffold. Row
 - Source counts: llm=9
 - Failure categories: passed=9, temporal_mismatch=9
 - Formal metrics status: `not_run`
+
+### design2sva_eval_codex_jasper_subset.json
+
+- Mode: `real_llm`
+- Source counts: llm=9
+- Failure categories: weak_vacuous_assertion=18
+- Formal metrics status: `measured`
 
 ## Claim Boundary
 
