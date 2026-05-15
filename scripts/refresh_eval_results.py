@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -50,6 +51,8 @@ ABLATION_NOTES = {
     "structured:no_coverage_context": "Removes coverage context, causing coverage cases to collapse into assertion-style diagnoses.",
     "structured:minimal_packet": "Keeps only IDs and Jasper status summary.",
 }
+
+AMBIENT_LLM_ENV_KEYS = ("JASPERLOOP_LLM_CMD",)
 
 DESIGN2SVA_SECTIONS = [
     (
@@ -137,6 +140,7 @@ DESIGN2SVA_ROW_LABEL_OVERRIDES = {
     "design2sva_eval_codex_expanded_jasper.json": (
         "expanded real Codex JasperGold-measured"
     ),
+    "design2sva_ablation_summary.json": "Stage 17 ablation ledger",
 }
 
 DESIGN2SVA_ABLATION_PLAN = [
@@ -163,8 +167,23 @@ DESIGN2SVA_ABLATION_PLAN = [
 ]
 
 
-def run_summary(cmd: list[str]) -> dict[str, object]:
-    result = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True)
+def local_eval_env(*, allow_ambient_llm: bool = False) -> dict[str, str]:
+    env = os.environ.copy()
+    if not allow_ambient_llm:
+        for key in AMBIENT_LLM_ENV_KEYS:
+            env.pop(key, None)
+    return env
+
+
+def run_summary(cmd: list[str], *, allow_ambient_llm: bool = False) -> dict[str, object]:
+    result = subprocess.run(
+        cmd,
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        env=local_eval_env(allow_ambient_llm=allow_ambient_llm),
+    )
     return json.loads(result.stdout)
 
 
@@ -666,6 +685,13 @@ def write_design2sva_results_if_present() -> None:
         "# Design2SVA Results",
         "",
         "These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact, provenance, and formal-check status so deterministic, replay, real LLM, and JasperGold-measured outcomes are not conflated.",
+        "",
+        "## Stage Result Links",
+        "",
+        "- Stage 15 oracle validation: [docs/design2sva_expanded_oracle_stage15.md](../../docs/design2sva_expanded_oracle_stage15.md)",
+        "- Stage 16 expanded Codex result: [docs/design2sva_expanded_codex_stage16_error_analysis.md](../../docs/design2sva_expanded_codex_stage16_error_analysis.md)",
+        "- Stage 17 ablation summary: [evaluation/results/design2sva_ablation_results.md](design2sva_ablation_results.md)",
+        "- Stage 17 paper package: [docs/paper_result_package_stage17.md](../../docs/paper_result_package_stage17.md)",
     ]
     written: set[str] = set()
     for title, description, artifact_names in DESIGN2SVA_SECTIONS:
@@ -680,9 +706,9 @@ def write_design2sva_results_if_present() -> None:
     lines.extend(
         [
             "",
-            "## Ablation Plan",
+            "## Stage 17 Ablation Summary",
             "",
-            "Design2SVA ablation artifacts are rendered here when present; planned rows below reserve non-overlapping reporting slots for follow-up runs.",
+            "Design2SVA ablation artifacts are rendered here when present. Stage 17 rows are built from existing committed artifacts only; placeholder rows reserve non-overlapping reporting slots for explicitly gated follow-up runs.",
             "",
         ]
     )
@@ -765,7 +791,8 @@ def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
         "design2sva_eval_antivacuity_codex_new_jasper_subset.json": 43,
         "design2sva_codex_replay_expanded_local.json": 44,
         "design2sva_codex_replay_expanded_jasper.json": 45,
-        "design2sva_ablation_replay_local.json": 50,
+        "design2sva_ablation_summary.json": 50,
+        "design2sva_ablation_replay_local.json": 51,
     }
     return (priority.get(path.name, 100), path.name)
 
@@ -778,6 +805,14 @@ def main() -> int:
         "--allow-rebuild-packets",
         action="store_true",
         help="Allow evaluation runners to build missing packets from case metadata.",
+    )
+    parser.add_argument(
+        "--allow-ambient-llm",
+        action="store_true",
+        help=(
+            "Preserve ambient LLM configuration such as JASPERLOOP_LLM_CMD for "
+            "downstream eval runners. Default refreshes scrub it and stay local."
+        ),
     )
     args = parser.parse_args()
 
@@ -794,7 +829,8 @@ def main() -> int:
             args.packet_source,
             "--packet-root",
             str(packet_root),
-        ]
+        ],
+        allow_ambient_llm=args.allow_ambient_llm,
     )
     ablation_payload = run_summary(
         [
@@ -808,7 +844,8 @@ def main() -> int:
             args.packet_source,
             "--packet-root",
             str(packet_root),
-        ]
+        ],
+        allow_ambient_llm=args.allow_ambient_llm,
     )
     coverage_payload = run_summary(
         [
@@ -819,7 +856,8 @@ def main() -> int:
             args.packet_source,
             "--packet-root",
             str(packet_root),
-        ]
+        ],
+        allow_ambient_llm=args.allow_ambient_llm,
     )
 
     write_main_results(agent_payload, coverage_payload)
