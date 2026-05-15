@@ -2,6 +2,13 @@
 
 These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact, provenance, and formal-check status so deterministic, replay, real LLM, and JasperGold-measured outcomes are not conflated.
 
+## Stage Result Links
+
+- Stage 15 oracle validation: [docs/design2sva_expanded_oracle_stage15.md](../../docs/design2sva_expanded_oracle_stage15.md)
+- Stage 16 expanded Codex result: [docs/design2sva_expanded_codex_stage16_error_analysis.md](../../docs/design2sva_expanded_codex_stage16_error_analysis.md)
+- Stage 17 ablation summary: [evaluation/results/design2sva_ablation_results.md](design2sva_ablation_results.md)
+- Stage 17 paper package: [docs/paper_result_package_stage17.md](../../docs/paper_result_package_stage17.md)
+
 ## Infrastructure Sanity
 
 Local scaffold rows used to validate parsing, schema, and replay plumbing before citing model or JasperGold behavior.
@@ -77,12 +84,13 @@ Expanded anti-vacuity fixture rows are isolated from the original subset to avoi
 | design2sva_codex_replay_expanded_local.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | jasper_dry_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
 | design2sva_codex_replay_expanded_jasper.json | replay | committed_codex_expanded_replay | 3 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=9 | jasper_dry_run | failures: not_run=9, temporal_mismatch=9; root causes: unknown=18; root details: formal_check_not_run=9, temporal_mismatch=9; backend: dry_run=18; harness: not_run=3 |
 
-## Ablation Plan
+## Stage 17 Ablation Summary
 
-Design2SVA ablation artifacts are rendered here when present; planned rows below reserve non-overlapping reporting slots for follow-up runs.
+Design2SVA ablation artifacts are rendered here when present. Stage 17 rows are built from existing committed artifacts only; placeholder rows reserve non-overlapping reporting slots for explicitly gated follow-up runs.
 
 | Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_ablation_summary.json | Stage 17 ablation ledger | stage17_design2sva_ablation | 12 | mixed | mixed | mixed | mixed | mixed | mixed | mixed | mixed | llm=69, native_reference_oracle=12, reference_oracle=12, structured_fallback=9 | mixed | none |
 | design2sva_ablation_replay_local.json | replay | dry_run_replay_plan | 12 | 1 | N/A | N/A | N/A | N/A | N/A | 1.000 | 0.000 | ablation_plan=6 | not_run | none |
 
 | Variant | Status | Isolation target |

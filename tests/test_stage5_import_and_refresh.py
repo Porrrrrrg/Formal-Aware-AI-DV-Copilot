@@ -187,3 +187,29 @@ def test_refresh_eval_results_writes_design2sva_markdown_when_json_exists(tmp_pa
     assert "llm=9" in markdown
     assert "do not run the expanded LLM benchmark yet" in markdown
     assert "production signoff" in markdown
+
+
+def test_refresh_run_summary_scrubs_ambient_llm(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class Completed:
+        stdout = "{}"
+
+    def fake_run(*args, **kwargs):
+        captured["env"] = kwargs["env"]
+        return Completed()
+
+    monkeypatch.setenv("JASPERLOOP_LLM_CMD", "external-model-command")
+    monkeypatch.setattr(refresh_eval_results.subprocess, "run", fake_run)
+
+    assert refresh_eval_results.run_summary(["fake"]) == {}
+    env = captured["env"]
+    assert isinstance(env, dict)
+    assert "JASPERLOOP_LLM_CMD" not in env
+
+    assert (
+        refresh_eval_results.run_summary(["fake"], allow_ambient_llm=True) == {}
+    )
+    env = captured["env"]
+    assert isinstance(env, dict)
+    assert env["JASPERLOOP_LLM_CMD"] == "external-model-command"
