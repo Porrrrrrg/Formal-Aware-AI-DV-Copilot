@@ -25,6 +25,8 @@ This command will send local JasperLoop benchmark content to Codex/OpenAI:
 - SVA repair: broken assertions, allowed signals, and property intents.
 - Triage: evidence packets, JasperGold summaries, RTL excerpts, and manifests.
 - Coverage: coverage goals, reachability context, and directed sequences.
+- Design2SVA: natural-language property intents, visible signals, and bounded
+  RTL/harness retrieval context.
 
 Rerun with --acknowledge-external-send if you approve that data export.
 """
@@ -125,6 +127,32 @@ def run_eval_task(args: argparse.Namespace) -> int:
         ]
         subset_out = ROOT / "evaluation" / "results" / "coverage_eval_codex_subset.json"
         full_out = ROOT / "evaluation" / "results" / "coverage_eval_codex_full.json"
+    elif args.task == "design2sva":
+        schema = ROOT / "copilot" / "schemas" / "design2sva_candidate.schema.json"
+        cmd = [
+            sys.executable,
+            "-B",
+            str(ROOT / "evaluation" / "run_design2sva_eval.py"),
+            "--llm",
+            "--k",
+            str(args.k),
+            "--max-repair-rounds",
+            str(args.max_repair_rounds),
+            "--context-budget",
+            str(args.context_budget),
+        ]
+        if args.cases:
+            cmd.extend(["--cases", args.cases])
+        markdown_path = (
+            ROOT / "evaluation" / "results" / "design2sva_eval_codex_expanded_subset.md"
+        )
+        if args.markdown:
+            markdown_path = ROOT / args.markdown
+        cmd.extend(["--markdown", str(markdown_path)])
+        subset_out = (
+            ROOT / "evaluation" / "results" / "design2sva_eval_codex_expanded_subset.json"
+        )
+        full_out = subset_out
     else:
         raise ValueError(f"Unsupported task: {args.task}")
 
@@ -143,6 +171,12 @@ def run_eval_task(args: argparse.Namespace) -> int:
         return 0
     if not args.acknowledge_external_send:
         sys.stderr.write(EXTERNAL_SEND_WARNING)
+        return 2
+    if args.task == "design2sva" and not prompt_audit_exists(args.prompt_audit):
+        sys.stderr.write(
+            "Design2SVA external runs require a generated prompt audit. "
+            f"Missing: {args.prompt_audit}\n"
+        )
         return 2
     completed = subprocess.run(cmd, cwd=ROOT, env=env, check=False)
     if completed.returncode == 0:
@@ -181,6 +215,12 @@ READINESS_KEYS = (
     "hallucinated_signal_rate",
     "hallucinated_signal_checked_count",
     "source_counts",
+    "syntax@1",
+    "syntax@k",
+    "proven@1",
+    "proven@k",
+    "proven_non_vacuous@k",
+    "candidate_count_by_case",
     "output_family_counts",
     "deterministic_scaffold_count",
     "deterministic_scaffold_rate",
@@ -201,7 +241,7 @@ def load_codex_eval_summary(out_path: Path, task: str) -> dict[str, object]:
         return {"task": task, "result_file": display_path(out_path), "error": "result file not found"}
     payload = json.loads(out_path.read_text())
     result_file = display_path(out_path)
-    if task == "sva_repair":
+    if task in {"sva_repair", "design2sva"}:
         return {
             "task": task,
             "result_file": result_file,
@@ -234,13 +274,35 @@ def display_path(path: Path) -> str:
         return str(path)
 
 
+def prompt_audit_exists(path_text: str | None) -> bool:
+    if not path_text:
+        return False
+    path = Path(path_text)
+    if not path.is_absolute():
+        path = ROOT / path
+    return path.exists()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--task", choices=["healthcheck", "sva_repair", "triage", "coverage"], default="healthcheck")
+    parser.add_argument(
+        "--task",
+        choices=["healthcheck", "sva_repair", "triage", "coverage", "design2sva"],
+        default="healthcheck",
+    )
     parser.add_argument("--limit", type=int)
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--model")
     parser.add_argument("--out")
+    parser.add_argument("--markdown")
+    parser.add_argument("--cases")
+    parser.add_argument("--k", type=int, default=3)
+    parser.add_argument("--max-repair-rounds", type=int, default=0)
+    parser.add_argument("--context-budget", type=int, default=24)
+    parser.add_argument(
+        "--prompt-audit",
+        default="evaluation/prompt_previews/design2sva_expanded_prompt_audit.md",
+    )
     parser.add_argument("--prompt-version", choices=PROMPT_VERSIONS, default="baseline")
     parser.add_argument("--packet-source", choices=["minimal", "actual"], default="minimal")
     parser.add_argument("--dry-run", action="store_true")

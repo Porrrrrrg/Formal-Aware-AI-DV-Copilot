@@ -4,11 +4,23 @@ import json
 from pathlib import Path
 
 from copilot.agents.design2sva_agent import build_prompt
+from copilot.sva_library import hallucinated_identifiers
 from evaluation.run_design2sva_eval import classify_failure, load_cases, main, row_success
 
 
 ANTI_VACUITY_REPLAY = "evaluation/fixtures/design2sva_anti_vacuity_replay.jsonl"
 REFERENCE_ORACLE_REPLAY = "evaluation/fixtures/design2sva_reference_oracle_replay.jsonl"
+
+
+def test_multiline_property_keyword_is_not_hallucinated() -> None:
+    sva = """
+    p_ready: assert property (@(posedge clk) disable iff (rst)
+      full |-> !in_ready
+    );
+    endproperty
+    """
+
+    assert hallucinated_identifiers(sva, ["p_ready", "clk", "rst", "full", "in_ready"]) == []
 
 
 def test_design2sva_prompt_omits_reference_sva() -> None:

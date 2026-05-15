@@ -87,6 +87,20 @@ DESIGN2SVA_SECTIONS = [
         ],
     ),
     (
+        "Expanded real Codex Design2SVA benchmark",
+        (
+            "Stage 16 expanded benchmark rows keep the measured reference-oracle gate, "
+            "the real Codex LLM-only generation artifact, and the JasperGold-measured "
+            "replay of those exact candidates separate from the older Stage 13 "
+            "three-case fixed-wrapper reruns."
+        ),
+        [
+            "design2sva_reference_oracle_expanded_jasper.json",
+            "design2sva_eval_codex_expanded_subset.json",
+            "design2sva_eval_codex_expanded_jasper.json",
+        ],
+    ),
+    (
         "Real LLM Subset",
         "Hosted-model subset rows are separated by whether JasperGold was run, so schema success is not conflated with measured proof quality.",
         [
@@ -116,6 +130,14 @@ DESIGN2SVA_SECTIONS = [
         ],
     ),
 ]
+
+DESIGN2SVA_ROW_LABEL_OVERRIDES = {
+    "design2sva_reference_oracle_expanded_jasper.json": "expanded reference oracle",
+    "design2sva_eval_codex_expanded_subset.json": "expanded real Codex LLM-only",
+    "design2sva_eval_codex_expanded_jasper.json": (
+        "expanded real Codex JasperGold-measured"
+    ),
+}
 
 DESIGN2SVA_ABLATION_PLAN = [
     (
@@ -557,12 +579,16 @@ def summary_first(summary: dict[str, object], *keys: str) -> object:
 
 def design2sva_row(result_path: Path, payload: dict[str, object], summary: dict[str, object]) -> str:
     mode = str(payload.get("mode", "unknown"))
+    row_type = DESIGN2SVA_ROW_LABEL_OVERRIDES.get(
+        result_path.name,
+        design2sva_row_type(payload, summary),
+    )
     return (
         "| "
         + " | ".join(
             [
                 result_path.name,
-                design2sva_row_type(payload, summary),
+                row_type,
                 mode,
                 fmt_design2sva(summary.get("num_cases")),
                 fmt_design2sva(summary.get("k")),
@@ -728,6 +754,8 @@ def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
         "design2sva_reference_oracle_expanded_jasper.json": 19,
         "design2sva_eval_codex_subset.json": 20,
         "design2sva_eval_codex_jasper_subset.json": 21,
+        "design2sva_eval_codex_expanded_subset.json": 22,
+        "design2sva_eval_codex_expanded_jasper.json": 23,
         "design2sva_eval_reference_oracle_fixed_wrapper_sanity.json": 30,
         "design2sva_eval_codex_fixed_wrapper_rerun.json": 31,
         "design2sva_eval_antivacuity_codex_fixed_wrapper_rerun.json": 32,

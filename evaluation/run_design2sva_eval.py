@@ -488,6 +488,7 @@ def evaluate_candidate(
         "reset_clock_mismatch": reset_clock_issue,
         "unsupported_helper_code_issue": helper_issue,
         "source": candidate.get("source", "unknown"),
+        "property_type": property_type_from_antecedent_metadata(antecedent_metadata),
         "proof_metadata": proof_metadata,
         "antecedent_metadata": antecedent_metadata,
         "antecedent_reachable": antecedent_reachable(antecedent_metadata),
@@ -822,6 +823,8 @@ def summarize(
             ).items()
         )
     )
+    failure_by_design_counts = nested_failure_counts(all_rows, "design_id")
+    failure_by_property_type_counts = nested_failure_counts(all_rows, "property_type")
     backend_status_counts = dict(
         sorted(
             collections.Counter(
@@ -885,6 +888,10 @@ def summarize(
             lambda row: row["source"] == "structured_fallback",
         ),
         "valid_json_rate": rate(all_initial_rows, lambda row: row["valid_json"]),
+        "real_llm_count": sum(1 for row in all_initial_rows if row["source"] == "llm"),
+        "candidate_count_by_case": dict(
+            sorted(collections.Counter(row["case_id"] for row in all_initial_rows).items())
+        ),
         "average_rounds": (
             sum(
                 int(path["final_metrics"]["round"])
@@ -912,6 +919,8 @@ def summarize(
         "root_cause_details": root_cause_detail_counts,
         "root_cause_candidate_counts": root_cause_counts,
         "root_cause_detail_counts": root_cause_detail_counts,
+        "failure_by_design_counts": failure_by_design_counts,
+        "failure_by_property_type_counts": failure_by_property_type_counts,
         "failure_taxonomy": sorted(DESIGN2SVA_FAILURE_TAXONOMY),
         "root_cause_taxonomy": sorted(ROOT_CAUSE_LABELS),
         "rows": all_rows,
@@ -971,6 +980,30 @@ def group_initial_by_case(rows: list[dict[str, Any]]) -> dict[str, list[dict[str
     for row in rows:
         grouped[str(row["case_id"])].append(row)
     return grouped
+
+
+def property_type_from_antecedent_metadata(antecedent_metadata: dict[str, Any]) -> str:
+    trigger_kind = str(
+        antecedent_metadata.get("trigger_kind")
+        or antecedent_metadata.get("antecedent_kind")
+        or "unknown"
+    )
+    if trigger_kind == "antecedent":
+        return "implication"
+    if trigger_kind == "invariant":
+        return "invariant"
+    return trigger_kind or "unknown"
+
+
+def nested_failure_counts(rows: list[dict[str, Any]], group_key: str) -> dict[str, dict[str, int]]:
+    grouped: dict[str, collections.Counter[str]] = collections.defaultdict(collections.Counter)
+    for row in rows:
+        group = str(row.get(group_key) or "unknown")
+        grouped[group][str(row.get("failure_category") or "unknown")] += 1
+    return {
+        group: dict(sorted(counter.items()))
+        for group, counter in sorted(grouped.items())
+    }
 
 
 def rate(rows: list[Any], predicate) -> float:
