@@ -18,7 +18,8 @@ evaluation/results/coverage_eval*.json
 !evaluation/results/agent_eval_codex_full.json
 !evaluation/results/sva_repair_codex_full.json
 !evaluation/results/coverage_eval_codex_full.json
-evaluation/prompt_previews/
+evaluation/prompt_previews/*
+!evaluation/prompt_previews/design2sva_expanded_prompt_audit.md
 copilot/baselines/*([0-9]).py
 artifacts/**
 **/traces/**

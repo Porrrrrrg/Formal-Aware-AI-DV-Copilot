@@ -33,7 +33,17 @@ Stage 15 expanded native and wrapper reference-oracle controls are rendered sepa
 | design2sva_native_oracle_expanded_local.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | native_reference_oracle=12 | local_dry_run | root causes: unknown=12; native proof: not_run=12; native vacuity: not_run=12 |
 | design2sva_native_oracle_expanded_jasper.json | native oracle | design2sva_native_oracle_expanded | 12 | N/A | N/A | N/A | 1.000 | 1.000 | 0.000 | N/A | N/A | native_reference_oracle=12 | jasper_measured | root causes: unknown=12; native proof: proven=12; native vacuity: not_run=12 |
 | design2sva_reference_oracle_expanded_local.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | reference_oracle=12 | local_dry_run | root causes: unknown=12; root details: formal_check_not_run=12; native proof: not_run=12; native vacuity: not_run=12 |
-| design2sva_reference_oracle_expanded_jasper.json | reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=12 | jasper_measured | root causes: unknown=12; root details: reference_oracle_matches_native_formal_behavior=12; native proof: proven=12; native vacuity: not_run=12 |
+| design2sva_reference_oracle_expanded_jasper.json | expanded reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=12 | jasper_measured | root causes: unknown=12; root details: reference_oracle_matches_native_formal_behavior=12; native proof: proven=12; native vacuity: not_run=12 |
+
+## Expanded real Codex Design2SVA benchmark
+
+Stage 16 expanded benchmark rows keep the measured reference-oracle gate, the real Codex LLM-only generation artifact, and the JasperGold-measured replay of those exact candidates separate from the older Stage 13 three-case fixed-wrapper reruns.
+
+| Artifact | Row type | Mode | Cases | k | syntax@1 | syntax@k | proven@1 | proven@k | non_vacuous@k | valid_json | fallback | Source | Formal check | Signal |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| design2sva_reference_oracle_expanded_jasper.json | expanded reference oracle | design2sva_reference_oracle_expanded | 12 | 1 | N/A | N/A | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 | reference_oracle=12 | jasper_measured | root causes: unknown=12; root details: reference_oracle_matches_native_formal_behavior=12; native proof: proven=12; native vacuity: not_run=12 |
+| design2sva_eval_codex_expanded_subset.json | expanded real Codex LLM-only | real_llm | 12 | 3 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | llm=36 | not_run | failures: temporal_mismatch=36; root causes: unknown=36; root details: temporal_mismatch=36; backend: not_run=36; harness: not_run=12 |
+| design2sva_eval_codex_expanded_jasper.json | expanded real Codex JasperGold-measured | replay | 12 | 3 | 1.000 | 1.000 | 0.750 | 1.000 | 1.000 | 1.000 | 0.000 | llm=36 | JasperGold-measured | failures: proven_non_vacuous=36, unreachable_cover_goal=7; root causes: cover_generation_bug=7, unknown=36; root details: assertion_proven_non_vacuous=36, invariant_assertion_reported_unreachable_without_antecedent_cover_obligation=7; backend: failed=2, passed=36, unknown=5; harness: not_run=12 |
 
 ## Real LLM Subset
 
