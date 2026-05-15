@@ -71,6 +71,22 @@ See [docs/architecture_agentic_refactor.md](docs/architecture_agentic_refactor.m
 - Retrieval-assisted Design2SVA scaffold with pass@k dry-run/replay evaluation and optional JasperGold checks.
 - DV playbooks and YAML rule libraries for repair, counterexample debugging, assumptions/vacuity, triage, and coverage closure guidance.
 
+## Current Research Status
+
+Latest existing tag: `v0.17-design2sva-ablation-paper-package`.
+
+Strongest measured result: Stage 16, local 12-case expanded Design2SVA benchmark, real Codex candidates replayed through JasperGold after native/wrapper oracle validation. Headline metrics are `proven@1 = 0.75`, `proven@k = 1.0`, `non_vacuous@k = 1.0`, and `proven_non_vacuous@k = 1.0` for `k = 3`.
+
+Local reproduction checks:
+
+```bash
+python -m pytest -q
+python -m ruff check .
+python scripts/refresh_eval_results.py --allow-rebuild-packets
+```
+
+Do not claim production signoff, arbitrary RTL generalization, or official FVEval reproduction. JasperLoop-DV is a research prototype and the headline result is bounded to the local 12-case benchmark.
+
 ## Key Results
 
 These results are copied from the committed Stage 6A reports and retain their original boundaries.
@@ -215,8 +231,11 @@ JasperGold execution.
 ## Reference Links
 
 - [Final report](reports/final/jasperloop_dv_final_report.md)
+- [Final research report](reports/final/jasperloop_dv_final_research_report.md)
+- [Final result index](reports/final/result_index.md)
 - [Result tables](reports/final/jasperloop_dv_result_tables.md)
-- [Demo script](docs/demo_script.md)
+- [Final demo script](docs/final_demo_script.md)
+- [Final claim boundary](docs/final_claim_boundary.md)
 - [Workflow usage](docs/workflow_usage.md)
 - [Design2SVA Stage 5](docs/design2sva_proofloop_stage5.md)
 - [Artifact policy](docs/artifact_policy.md)
