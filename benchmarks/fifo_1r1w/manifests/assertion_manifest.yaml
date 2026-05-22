@@ -1,0 +1,45 @@
+assertions:
+  - id: p_reset_empty
+    intent: Reset clears occupancy, status flags, and pop validity.
+    type: reset
+    signals: [rst, empty, full, level, pop_valid]
+  - id: p_level_bounds
+    intent: FIFO occupancy must stay between zero and DEPTH.
+    type: safety
+    signals: [level]
+  - id: p_flags_match_level
+    intent: Empty and full flags must match the occupancy count.
+    type: safety
+    signals: [empty, full, level]
+  - id: p_no_underflow
+    intent: The FIFO must not complete a pop when empty.
+    type: safety
+    signals: [empty, pop_fire]
+  - id: p_no_overflow
+    intent: The FIFO must not accept a push when full unless a pop also happens.
+    type: safety
+    signals: [full, push_valid, pop_ready, push_ready]
+  - id: p_level_increments_on_push
+    intent: A push without a pop increases occupancy by one.
+    type: temporal
+    signals: [push_fire, pop_fire, level]
+  - id: p_level_decrements_on_pop
+    intent: A pop without a push decreases occupancy by one.
+    type: temporal
+    signals: [push_fire, pop_fire, level]
+  - id: p_simultaneous_push_pop_full
+    intent: Simultaneous push and pop while full are both accepted and preserve occupancy.
+    type: temporal
+    signals: [full, push_valid, push_ready, pop_ready, push_fire, pop_fire, level]
+  - id: p_pop_data_stable_when_stalled
+    intent: Pop data remains stable while valid output is stalled.
+    type: temporal
+    signals: [pop_valid, pop_ready, pop_data]
+  - id: p_fifo_ordering
+    intent: Pop data is returned in first-in-first-out order.
+    type: temporal
+    signals: [pop_fire, pop_data, ref_mem, ref_rd_q, ref_count_q]
+  - id: p_eventual_pop
+    intent: Any valid output is accepted by the consumer within the fairness bound.
+    type: liveness
+    signals: [pop_valid, pop_fire]

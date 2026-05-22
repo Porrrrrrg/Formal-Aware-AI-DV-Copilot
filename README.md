@@ -1,226 +1,107 @@
 # JasperLoop-DV
 
-**A JasperGold-in-the-loop AI Design Verification Agent for SVA Generation, Repair, Failure Triage, and Coverage Closure**
+JasperLoop-DV is a JasperGold-in-the-loop AI design verification copilot for SVA generation, SVA repair, failure triage, and coverage-closure recommendations.
 
-JasperLoop-DV is a formal-aware AI DV copilot. It does not replace JasperGold or human signoff. It wraps RTL, specs, SVA, assumptions, coverage goals, and JasperGold evidence into structured context so an LLM can help a DV engineer generate assertions, repair properties, triage failures, and recommend coverage closure actions.
+**Central principle:** the LLM is not the verification oracle. JasperGold is the formal oracle for syntax, proof, counterexamples, cover reachability, and vacuity when those checks are actually run. The LLM/agent interprets structured formal evidence and proposes candidate assertions, repairs, diagnoses, rankings, and next actions for DV engineer review.
 
-```text
-RTL + spec + properties + assumptions + JasperGold evidence
--> structured formal/DV context
--> LLM agent
--> SVA generation / repair / failure diagnosis / coverage closure recommendation
--> JasperGold re-check
-```
+JasperLoop-DV is not an AI RTL generator and is not a signoff authority.
 
-## Agent Modes
-
-1. **SVA Generation**: RTL + natural-language property intent -> candidate SVA.
-2. **SVA Repair**: failed SVA + JasperGold syntax/proof/vacuity feedback -> repaired assertion.
-3. **Failure Triage**: failing assertion/counterexample/assumptions/RTL context -> root-cause diagnosis.
-4. **Coverage Closure**: coverage hole + formal cover/reachability evidence -> closure recommendation.
-
-## Repository Layout
+## Repository Structure
 
 ```text
-docs/                  project design, related work, report, and demo script
-benchmarks/            local RTL DV benchmarks
-jasper/                JasperGold TCL flows and generated reports
-tools/                 Jasper runners, parsers, context builders, validators
-copilot/               agent stubs, prompts, baselines, JSON schemas
-evaluation/            metrics, evaluation runner, result tables
-scripts/               convenience scripts
+benchmarks/          RTL, properties, assumptions, coverage plans, manifests, cases
+copilot/             agents, prompts, schemas, baselines, LLM adapters
+evaluation/          metrics, evaluation runners, curated Markdown result summaries
+jasper/              common JasperGold TCL flows; raw reports stay local
+scripts/             local eval, prompt export, JasperGold wrapper scripts
+tools/               parsers, evidence-packet builders, validators, Jasper runner
+docs/                canonical project, method, environment, and result docs
+artifacts/           local generated artifacts; gitignored
 ```
 
-## Benchmarks
+The project is repository-root based. JasperGold/Cadence runs can be executed in any environment where the required tools are available.
 
-The primary benchmark is local and DV-focused:
-
-- `arbiter_rr2`: 2-client round-robin arbiter
-- `rv_buffer`: single-entry ready/valid buffer
-- `apb_regblock`: tiny APB-lite register block
-
-Each benchmark is structured around correct RTL, bug variants, SVA properties, assumptions, coverage goals, manifests, and labeled cases. The current primary benchmark contains 30 labeled DV triage / coverage-closure cases, 10 per design.
-
-## JasperGold Environment
-
-The target server environment provided for this project is:
+## Quickstart
 
 ```bash
-ssh moore
-source /vol/eecs391/cadence.env
-```
-
-Typical remote use:
-
-```bash
-ssh moore
-cd /path/to/Formal-Aware-AI-DV-Copilot
-source /vol/eecs391/cadence.env
-python3 tools/run_jasper.py --design arbiter_rr2 --variant correct --mode prove
-```
-
-The wrapper expects a JasperGold executable named `jg` by default. Override it with `JASPER_BIN` if needed:
-
-```bash
-JASPER_BIN=jaspergold python3 tools/run_jasper.py --design arbiter_rr2 --variant correct --mode prove
-```
-
-On `moore`, the default `python3` can be too old for this codebase. Use `python3.11` and the JasperGold binary found under Xcelium 2018:
-
-```bash
-source /vol/eecs391/cadence.env
-JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg \
-  python3.11 tools/run_jasper.py --design arbiter_rr2 --variant correct --mode prove
-```
-
-## Initial Commands
-
-Build a structured evidence packet from existing reports:
-
-```bash
-python tools/build_evidence_packet.py \
-  --case benchmarks/arbiter_rr2/cases/rtl_bug_double_grant.json \
-  --out jasper/reports/arbiter_rr2_rtl_bug_double_grant/evidence_packet.json
-```
-
-Validate JSON files against the local schemas:
-
-```bash
-python tools/validate_json.py copilot/schemas/evidence_packet.schema.json jasper/reports/arbiter_rr2_rtl_bug_double_grant/evidence_packet.json
-```
-
-Run the scaffold-level evaluation:
-
-```bash
-python evaluation/run_eval.py --cases benchmarks/arbiter_rr2/cases benchmarks/rv_buffer/cases benchmarks/apb_regblock/cases
-```
-
-Build evidence packets for all labeled cases:
-
-```bash
+python -m venv .venv
+python -m pip install -e ".[dev]"
+python -m compileall copilot tools evaluation scripts
 python scripts/build_all_evidence_packets.py
-```
-
-Run the current formal-aware triage agent scaffold on all 30 cases:
-
-```bash
-python evaluation/run_agent_eval.py --out evaluation/results/agent_eval_local.json
-```
-
-Run the deterministic baseline comparison without an LLM:
-
-```bash
 python evaluation/run_agent_eval.py --all-systems --out evaluation/results/agent_eval_all_local.json
-```
-
-Run the structured-packet ablation scaffold:
-
-```bash
-python evaluation/run_agent_eval.py \
-  --systems structured \
-  --ablations no_assertion_manifest no_assumption_manifest no_jasper_cex no_coverage_context minimal_packet \
-  --out evaluation/results/agent_eval_ablation_local.json
-```
-
-Run SVA generation scaffold evaluation on the local property-intent set:
-
-```bash
-python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
-```
-
-Run SVA generation with JasperGold syntax/proof/vacuity re-check:
-
-```bash
-python evaluation/run_sva_eval.py --jasper-check --out evaluation/results/sva_eval_jasper_moore.json
-```
-
-On `moore`, the convenience script sets the JasperGold binary path:
-
-```bash
-source /vol/eecs391/cadence.env
-bash scripts/run_moore_sva_eval.sh
-```
-
-Run the SVA repair benchmark with injected syntax, signal, reset, and temporal property bugs:
-
-```bash
-python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_local.json
-```
-
-Run the same repair loop with JasperGold re-check after each candidate:
-
-```bash
-python evaluation/run_sva_repair_eval.py --jasper-check --out evaluation/results/sva_repair_jasper_moore.json
-```
-
-On `moore`:
-
-```bash
-source /vol/eecs391/cadence.env
-bash scripts/run_moore_sva_repair_eval.sh
-```
-
-The current JasperGold repair result table is tracked in `evaluation/results/sva_repair_results.md`.
-
-Run the coverage-closure benchmark on coverage-only cases:
-
-```bash
 python evaluation/run_coverage_eval.py --all-systems --out evaluation/results/coverage_eval_local.json
-```
-
-Refresh the scaffold markdown result tables from the current evaluation runners after actual evidence packets have been generated, typically on `moore`:
-
-```bash
+python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
+python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_local.json
 python scripts/refresh_eval_results.py
 ```
 
-For a local scaffold-only refresh without JasperGold report packets, pass `--allow-rebuild-packets`.
+The local evaluation path uses deterministic scaffold/fallback systems unless `--llm`, `--llm-command`, `--jasper-check`, or `--jasper-dry-run` is explicitly enabled.
 
-The agent layer is model-agnostic. By default it uses a deterministic structured fallback so the evaluation plumbing can run without a hosted API. To connect an LLM, set `JASPERLOOP_LLM_CMD` to a command that reads the prompt from stdin and writes a JSON object to stdout, or pass `--llm-command`:
+## JasperGold Environment
 
-```bash
-JASPERLOOP_LLM_CMD="python path/to/your_llm_wrapper.py" \
-  python evaluation/run_agent_eval.py --all-systems --llm --out evaluation/results/agent_eval_llm.json
-```
-
-This repository includes a Codex CLI JSON adapter for local non-interactive experiments. It reads the agent prompt from stdin and writes the final Codex message to stdout:
+Generic JasperGold runs use environment variables:
 
 ```bash
-JASPERLOOP_LLM_CMD="python copilot/llm_adapters/codex_json.py --schema copilot/schemas/sva_repair_candidate.schema.json --cd ." \
-  python evaluation/run_sva_repair_eval.py --llm --out evaluation/results/sva_repair_codex_local.json
+export JASPER_BIN=/path/to/jg
+export PYTHON_BIN=python3.11
+bash scripts/run_jasper_smoke.sh
+bash scripts/run_jasper_sva_eval.sh
+bash scripts/run_jasper_sva_repair_eval.sh
 ```
 
-For a safer opt-in wrapper around Codex CLI experiments, see `docs/codex_cli_usage.md`. The wrapper requires `--acknowledge-external-send` before sending local benchmark content to Codex/OpenAI.
-The same guide also documents `copilot/llm_adapters/replay_json.py` for replaying previously generated Codex/LLM JSON outputs without another network call.
-Current Codex CLI smoke-test status is tracked in `evaluation/results/codex_cli_results.md`.
-Use `scripts/export_codex_prompts.py --summary-only` to audit prompt size and content categories before any external Codex run.
+If your shell requires a Cadence setup script, set `JASPER_ENV` or source the setup before running the wrapper. See [docs/environment/jaspergold.md](docs/environment/jaspergold.md).
 
-You can inspect the exact prompt sent to the DV triage agent:
+## Benchmarks
 
-```bash
-python copilot/agents/dv_triage_agent.py jasper/reports/case_packets/arbiter_rr2/arbiter_A1/evidence_packet.json --prompt-out /tmp/triage_prompt.txt
-```
+The primary local DV benchmark includes:
 
-You can also inspect the raw-log baseline prompt:
+- `arbiter_rr2`: two-client round-robin arbiter
+- `rv_buffer`: single-entry ready/valid buffer
+- `apb_regblock`: small APB-lite register block
+- `fifo_1r1w`: optional FIFO benchmark with reset, underflow/overflow, ordering, and simultaneous push/pop cases
 
-```bash
-python copilot/baselines/raw_log_llm.py jasper/reports/case_packets/arbiter_rr2/arbiter_A1/evidence_packet.json --prompt-out /tmp/raw_log_prompt.txt
-```
+The repository also includes `benchmarks/external/fveval_subset/` for a local FVEval subset import or adapter scaffold. Its results are not official FVEval reproduction results unless the exact FVEval flow is imported and run.
 
-For SVA generation prompts:
+See [docs/benchmark_catalog.md](docs/benchmark_catalog.md).
 
-```bash
-python copilot/agents/sva_generation_agent.py benchmarks/sva_generation_cases.json --prompt-out /tmp/sva_generation_prompt.txt
-```
+## Current Results Boundary
 
-## Research Claim
+Curated Markdown summaries live in `evaluation/results/`. They separate:
 
-The core claim is not that the LLM is the oracle. JasperGold remains the oracle for syntax, proof, counterexamples, cover reachability, and vacuity. The LLM is constrained by structured formal evidence and used as an assistant for interpretation, repair suggestions, diagnosis, and next actions.
+- deterministic scaffold/fallback results
+- hosted or CLI LLM results, when explicitly run
+- replayed LLM outputs
+- JasperGold-backed syntax/proof/vacuity checks
+- local Python validation results
 
-## Planned Evaluation
+Deterministic scaffold results validate plumbing and evaluation contracts. They are not Codex performance numbers.
 
-- SVA generation/repair: `syntax_pass@1`, `syntax_pass_final`, `proven@1`, `proven_final`, `vacuous_rate`, `repair_success_rate`, `average_rounds_to_success`
-- Failure triage: `issue_type_accuracy`, `next_action_accuracy`, `top1/top3_root_cause_accuracy`, `evidence_precision`
-- Coverage closure: `gap_type_accuracy`, `action_accuracy`, `wrong_test_suggestion_rate`
-- Output quality: `valid_json_rate`, `hallucinated_signal_rate`, `unsupported_recommendation_rate`
-- LLM integration quality: `source_counts`, `llm_success_rate`, `fallback_rate`, `llm_error_rate`
+## Claims And Non-Claims
+
+Current claims:
+
+- Structured evidence packets give the agent a reproducible boundary between formal evidence and LLM reasoning.
+- Local deterministic runners can exercise SVA generation, repair, triage, and coverage-closure plumbing without a hosted model.
+- JasperGold re-checks, when run, bind SVA syntax/proof/vacuity claims to the configured harness, assumptions, and tool environment.
+
+Non-claims:
+
+- The project is not production-ready.
+- The agent cannot sign off RTL.
+- JasperGold proof of one property does not prove semantic intent equivalence.
+- FVEval integration is not complete unless the local data and evaluation flow are actually imported and run.
+- Coverage witness traces are only fully integrated when parser, schema, prompts, and eval all consume witness events.
+
+See [docs/limitations_and_claims.md](docs/limitations_and_claims.md).
+
+## Documentation Index
+
+- [Architecture](docs/architecture.md)
+- [Methods](docs/methods.md)
+- [Benchmark catalog](docs/benchmark_catalog.md)
+- [Evaluation](docs/evaluation.md)
+- [Artifact policy](docs/artifact_policy.md)
+- [Limitations and claims](docs/limitations_and_claims.md)
+- [Generic JasperGold setup](docs/environment/jaspergold.md)
+- [Codex CLI usage](docs/codex/codex_cli_usage.md)
+- [Prompt audit](docs/codex/prompt_audit.md)

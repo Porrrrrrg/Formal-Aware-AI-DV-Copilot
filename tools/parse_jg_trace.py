@@ -15,8 +15,15 @@ import json
 import re
 from pathlib import Path
 
-CYCLE_RE = re.compile(r"\b(?:cycle|time|step)\s*(?P<cycle>\d+)\b", re.IGNORECASE)
-ASSIGN_RE = re.compile(r"\b(?P<signal>[A-Za-z_][A-Za-z0-9_$]*)\s*=\s*(?P<value>[A-Za-z0-9_'bxzBXZ]+)")
+CYCLE_RE = re.compile(
+    r"(?:\b(?:cycle|time|step)\s*(?:=|:)?\s*|@)(?P<cycle>\d+)\b",
+    re.IGNORECASE,
+)
+ASSIGN_RE = re.compile(
+    r"(?P<signal>[A-Za-z_][A-Za-z0-9_.$]*(?:\[[^\]]+\])?)\s*=\s*"
+    r"(?P<value>[A-Za-z0-9_'bxzBXZ.]+|0x[0-9A-Fa-f]+|true|false)"
+)
+PROPERTY_RE = re.compile(r"\b(?:property|assertion|cover)\s*[:=]?\s*(?P<property>[A-Za-z_][A-Za-z0-9_$:.-]+)")
 VCD_VAR_RE = re.compile(
     r"^\$var\s+\S+\s+(?P<width>\d+)\s+(?P<code>\S+)\s+(?P<name>\S+)(?:\s+\S+)?\s+\$end"
 )
@@ -36,7 +43,10 @@ def parse_trace(path: Path) -> dict[str, object]:
     raw_events: list[str] = []
     current_cycle: int | None = None
 
-    for line in read_trace_text(path).splitlines():
+    text = read_trace_text(path)
+    property_id = infer_property_from_trace_path(path) or infer_property_from_text(text)
+
+    for line in text.splitlines():
         cycle_match = CYCLE_RE.search(line)
         if cycle_match:
             current_cycle = int(cycle_match.group("cycle"))
@@ -46,13 +56,14 @@ def parse_trace(path: Path) -> dict[str, object]:
         if assigns and current_cycle is not None:
             cycles.setdefault(current_cycle, {})
             for signal, value in assigns:
-                cycles[current_cycle][signal] = value
+                cycles[current_cycle][normalize_signal(signal)] = value
             raw_events.append(line.strip())
 
     events = [
         {
             "cycle": cycle,
             "signals": signals,
+            "changed_signals": sorted(signals),
         }
         for cycle, signals in sorted(cycles.items())
     ]
@@ -60,8 +71,10 @@ def parse_trace(path: Path) -> dict[str, object]:
     return {
         "trace_file": str(path),
         "trace_format": "text",
+        "property_id": property_id,
         "events": events,
         "raw_events": raw_events[:50],
+        "parser_errors": [] if events else parser_warnings(path, text),
     }
 
 
@@ -69,9 +82,11 @@ def parse_vcd(path: Path, max_events: int = 200) -> dict[str, object]:
     code_to_signal: dict[str, str] = {}
     current_time = 0
     snapshots: dict[int, dict[str, str]] = {}
+    changes_by_time: dict[int, dict[str, str]] = {}
     values: dict[str, str] = {}
     in_header = True
     scope_stack: list[str] = []
+    raw_events: list[str] = []
 
     for raw_line in read_trace_text(path).splitlines():
         line = raw_line.strip()
@@ -113,12 +128,17 @@ def parse_vcd(path: Path, max_events: int = 200) -> dict[str, object]:
         if signal is None:
             continue
         values[signal] = value
+        changes_by_time.setdefault(current_time, {})[signal] = value
         snapshots[current_time] = dict(values)
+        if len(raw_events) < max_events:
+            raw_events.append(line)
 
     events = [
         {
             "cycle": cycle,
             "signals": signals,
+            "changed_signals": sorted(changes_by_time.get(cycle, {})),
+            "changes": changes_by_time.get(cycle, {}),
         }
         for cycle, signals in sorted(snapshots.items())[:max_events]
     ]
@@ -128,6 +148,8 @@ def parse_vcd(path: Path, max_events: int = 200) -> dict[str, object]:
         "property_id": infer_property_from_trace_path(path),
         "signals": sorted(set(code_to_signal.values())),
         "events": events,
+        "raw_events": raw_events[:50],
+        "parser_errors": [] if events else parser_warnings(path, read_trace_text(path)),
     }
 
 
@@ -155,6 +177,32 @@ def infer_property_from_trace_path(path: Path) -> str | None:
     if match:
         return match.group(1)
     return None
+
+
+def infer_property_from_text(text: str) -> str | None:
+    for line in text.splitlines()[:20]:
+        match = PROPERTY_RE.search(line)
+        if match:
+            return match.group("property")
+    return None
+
+
+def parser_warnings(path: Path, text: str) -> list[dict[str, object]]:
+    suspicious = [
+        line.strip()
+        for line in text.splitlines()
+        if any(token in line.lower() for token in ["cycle", "step", "time", "trace", "error"])
+    ]
+    if not suspicious:
+        return []
+    return [
+        {
+            "kind": "unparsed_trace_events",
+            "message": "Trace contained event-like text but no signal events were parsed.",
+            "trace_file": str(path),
+            "examples": suspicious[:5],
+        }
+    ]
 
 
 def should_keep_vcd_signal(scope_stack: list[str], signal_name: str) -> bool:

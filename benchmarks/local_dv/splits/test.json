@@ -1,0 +1,19 @@
+{
+  "design_ids": [
+    "apb_regblock"
+  ],
+  "item_ids": [
+    "local_dv:apb_C6",
+    "local_dv:apb_C5",
+    "local_dv:apb_C7",
+    "local_dv:apb_C2",
+    "local_dv:apb_C10",
+    "local_dv:apb_C9",
+    "local_dv:apb_C8",
+    "local_dv:apb_C4",
+    "local_dv:apb_C1",
+    "local_dv:apb_C3"
+  ],
+  "policy": "repo-local overlay; split by design family",
+  "split": "test"
+}

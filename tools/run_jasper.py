@@ -73,7 +73,7 @@ def run_jasper(design: str, variant: str, mode: str, dry_run: bool = False) -> P
     if shutil.which(jasper_bin) is None:
         raise RuntimeError(
             f"Cannot find JasperGold executable '{jasper_bin}'. "
-            "On moore, run: source /vol/eecs391/cadence.env"
+            "Set JASPER_BIN or source the Cadence environment for this host."
         )
 
     with (report_dir / "jg.log").open("w") as log:

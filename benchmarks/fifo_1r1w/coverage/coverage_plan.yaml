@@ -1,0 +1,21 @@
+coverage_goals:
+  - id: cov_fill_to_full
+    intent: Exercise four pushes that fill the FIFO to full.
+    expression: "!full followed by four push_fire cycles followed by full"
+    expected_reachable: true
+  - id: cov_simultaneous_full_push_pop
+    intent: Exercise simultaneous push and pop while the FIFO is full.
+    expression: full && push_valid && push_ready && pop_ready && push_fire && pop_fire
+    expected_reachable: true
+  - id: cov_reset_release_first_push
+    intent: Exercise reset release followed by the first successful push.
+    expression: rst followed by !rst followed by push_fire
+    expected_reachable: true
+  - id: cov_stall_then_pop
+    intent: Exercise valid pop data stalled for one cycle and then accepted.
+    expression: pop_valid && !pop_ready followed by pop_valid && pop_ready
+    expected_reachable: true
+  - id: cov_invalid_empty_and_full
+    intent: Invalid goal that asks for mutually exclusive empty and full flags.
+    expression: empty && full
+    expected_reachable: false

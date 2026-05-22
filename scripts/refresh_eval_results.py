@@ -16,6 +16,7 @@ CASE_DIRS = [
     Path("benchmarks/arbiter_rr2/cases"),
     Path("benchmarks/rv_buffer/cases"),
     Path("benchmarks/apb_regblock/cases"),
+    Path("benchmarks/fifo_1r1w/cases"),
 ]
 
 ABLATIONS = [
@@ -104,7 +105,7 @@ def ensure_actual_packets(packet_root: Path, allow_rebuild_packets: bool) -> Non
         "Missing actual evidence packets: "
         f"found {actual} packets and {formal} with formal evidence, expected {expected} "
         f"under {packet_root_display}. "
-        "Run this on moore after Jasper packet generation, or pass "
+        "Run this after Jasper packet generation in a configured JasperGold environment, or pass "
         "--allow-rebuild-packets for a local scaffold refresh."
     )
 
@@ -226,7 +227,7 @@ def write_coverage_results(coverage_payload: dict[str, object]) -> None:
     lines.extend(
         [
             "",
-            "The coverage-only benchmark has 9 cases across arbiter, ready/valid buffer, and APB-lite: 6 reachable coverage gaps and 3 invalid or unreachable coverage goals. The raw-log fallback intentionally lacks coverage-plan intent and therefore suggests directed tests for all goals, including illegal or invalid targets. The structured agent receives coverage-plan metadata and JasperGold reachability context, so it distinguishes reachable gaps from waiver/prove-unreachable cases in the scaffold evaluation.",
+            "The coverage-only benchmark spans arbiter, ready/valid buffer, APB-lite, and optional FIFO cases. The raw-log fallback intentionally lacks coverage-plan intent and can suggest directed tests for illegal or invalid targets. The structured agent receives coverage-plan metadata and JasperGold reachability context, so it distinguishes reachable gaps from waiver/prove-unreachable cases in the scaffold evaluation.",
             "",
             "The coverage runner also reports `source_counts`, `llm_success_rate`, `fallback_rate`, and `llm_error_rate`, so Codex-backed coverage experiments can be separated from deterministic fallback behavior.",
             "",
@@ -271,7 +272,7 @@ def write_output_quality_results(
         "",
         "The evaluation runners track output provenance and hallucinated suspect signals. These metrics are intended for Codex-backed runs, where a failed LLM call can fall back to a deterministic path.",
         "",
-        "## Triage, Actual Packets",
+        "## Triage, Local Packets",
         "",
         "| System | Cases | Source | LLM Success | Fallback | LLM Error | Hallucinated Signal |",
         "| --- | ---: | --- | ---: | ---: | ---: | ---: |",
@@ -300,7 +301,7 @@ def write_output_quality_results(
     lines.extend(
         [
             "",
-            "## Coverage Closure, Actual Packets",
+            "## Coverage Closure, Local Packets",
             "",
             "| System | Cases | Source | LLM Success | Fallback | LLM Error |",
             "| --- | ---: | --- | ---: | ---: | ---: |",

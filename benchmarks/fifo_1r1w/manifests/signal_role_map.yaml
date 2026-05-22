@@ -1,0 +1,18 @@
+signals:
+  clk: FIFO clock
+  rst: active-high synchronous reset
+  push_valid: producer request to enqueue push_data
+  push_ready: FIFO accepts push_data when push_valid is high
+  push_data: data presented for enqueue
+  pop_valid: FIFO has valid pop_data available
+  pop_ready: consumer request to dequeue pop_data
+  pop_data: oldest enqueued data item
+  full: FIFO occupancy is DEPTH entries
+  empty: FIFO occupancy is zero entries
+  level: FIFO occupancy count
+  push_fire: completed enqueue handshake
+  pop_fire: completed dequeue handshake
+  ref_mem: property scoreboard storage for FIFO ordering
+  ref_wr_q: property scoreboard write pointer
+  ref_rd_q: property scoreboard read pointer
+  ref_count_q: property scoreboard occupancy

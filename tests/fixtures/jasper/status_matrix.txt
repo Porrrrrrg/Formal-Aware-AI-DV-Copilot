@@ -1,0 +1,8 @@
+p_ok proven
+p_bad falsified bound=4
+p_unknown undetermined
+ERROR p_syntax syntax error
+p_vac vacuous
+cov_hit covered
+cov_miss not covered
+cov_dead unreachable

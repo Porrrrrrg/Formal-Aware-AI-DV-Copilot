@@ -1,0 +1,19 @@
+{
+  "design_ids": [
+    "arbiter_rr2"
+  ],
+  "item_ids": [
+    "local_dv:arbiter_A2",
+    "local_dv:arbiter_A5",
+    "local_dv:arbiter_A6",
+    "local_dv:arbiter_A7",
+    "local_dv:arbiter_A3",
+    "local_dv:arbiter_A9",
+    "local_dv:arbiter_A10",
+    "local_dv:arbiter_A1",
+    "local_dv:arbiter_A4",
+    "local_dv:arbiter_A8"
+  ],
+  "policy": "repo-local overlay; split by design family",
+  "split": "train"
+}

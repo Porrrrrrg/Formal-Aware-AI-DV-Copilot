@@ -1,0 +1,23 @@
+{
+  "case_id": "fifo_D14",
+  "design_id": "fifo_1r1w",
+  "variant": "correct",
+  "task_type": "coverage_closure",
+  "property_id": "cov_simultaneous_full_push_pop",
+  "coverage_context": {
+    "coverage_goal": "cov_simultaneous_full_push_pop",
+    "expected_test_hits": 0,
+    "expected_reachable": true,
+    "expected_cover_status": "reachable",
+    "related_signals": ["full", "push_valid", "push_ready", "pop_ready", "push_fire", "pop_fire"],
+    "suggested_sequence": [
+      "Push four entries to fill the FIFO.",
+      "Keep push_valid high with a new data value.",
+      "Assert pop_ready in the same cycle and observe push_fire and pop_fire together."
+    ]
+  },
+  "label_source": "author_expected",
+  "expected_issue_type": "reachable_coverage_gap",
+  "expected_next_action": "add_directed_test_or_sequence",
+  "root_cause": "The goal is reachable, but current stimulus never fills the FIFO before attempting simultaneous push and pop."
+}

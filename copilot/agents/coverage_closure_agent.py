@@ -38,13 +38,29 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     evidence_packet = packet.get("coverage_evidence", {})
     if not isinstance(evidence_packet, dict):
         evidence_packet = {}
+    observed_status = str(evidence_packet.get("observed_cover_status") or "").lower()
     cover_status = str(
-        evidence_packet.get("formal_cover_status") or coverage.get("jasper_cover_result") or ""
+        observed_status
+        or evidence_packet.get("formal_cover_status")
+        or evidence_packet.get("expected_cover_status")
+        or coverage.get("jasper_cover_result")
+        or coverage.get("expected_cover_status")
+        or ""
     ).lower()
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable", True))
-    reachable = cover_status in {"reachable", "covered"}
+    reachable = cover_status in {"reachable", "covered", "uncovered"}
 
-    if reachable and expected:
+    if observed_status in {"syntax_error", "undetermined"}:
+        gap_type = "reachable_coverage_gap"
+        action = "rerun_jaspergold"
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
+        evidence.insert(0, f"Observed JasperGold status is {observed_status}; refresh or fix evidence before closure.")
+    elif observed_status == "covered":
+        gap_type = "reachable_coverage_gap"
+        action = "rerun_jaspergold"
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
+        evidence.insert(0, "Observed JasperGold status is already covered; refresh stale coverage accounting before adding stimulus.")
+    elif reachable and expected:
         gap_type = "reachable_coverage_gap"
         action = "add_directed_test_or_sequence"
         evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
@@ -72,9 +88,15 @@ def collect_structured_evidence(
     goal = evidence_packet.get("coverage_goal") or coverage.get("coverage_goal")
     if goal:
         evidence.append(f"Coverage goal: {goal}")
-    status = evidence_packet.get("formal_cover_status") or coverage.get("jasper_cover_result")
+    status = (
+        evidence_packet.get("observed_cover_status")
+        or evidence_packet.get("formal_cover_status")
+        or evidence_packet.get("expected_cover_status")
+        or coverage.get("jasper_cover_result")
+        or coverage.get("expected_cover_status")
+    )
     if status:
-        evidence.append(f"JasperGold cover result: {status}")
+        evidence.append(f"Cover status: {status}")
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable"))
     if expected is not None:
         evidence.append(f"Expected reachable: {expected}")
@@ -82,6 +104,8 @@ def collect_structured_evidence(
     if expression:
         evidence.append(f"Coverage expression: {expression}")
     witness_events = evidence_packet.get("witness_events")
+    if not witness_events:
+        witness_events = coverage.get("witness_events")
     if isinstance(witness_events, list) and witness_events:
         evidence.append("Witness trace starts with: " + str(witness_events[0]))
     if not evidence:
@@ -97,7 +121,11 @@ def build_prompt(packet: dict[str, object]) -> str:
     return (
         "You are JasperLoop-DV, a formal-aware coverage closure assistant. "
         "Use cover reachability, coverage intent, assumptions, and related signals. "
-        "Return JSON with coverage_gap_type, recommended_next_action, directed_sequence, and evidence.\n\n"
+        "When witness_events are present, prefer them over inferred stimulus. "
+        "When observed JasperGold status exists, prefer it over expected benchmark metadata. "
+        "Use only coverage_gap_type and recommended_next_action values allowed by coverage_closure_output.schema.json. "
+        "Do not invent signals or local paths. Return only one JSON object with coverage_gap_type, "
+        "recommended_next_action, directed_sequence, and evidence; do not include Markdown.\n\n"
         + json.dumps(sanitized_packet(packet), indent=2)
     )
 

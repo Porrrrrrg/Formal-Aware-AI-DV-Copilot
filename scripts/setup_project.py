@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Print setup instructions for local and moore environments."""
+"""Print setup instructions for local and JasperGold environments."""
 
 from __future__ import annotations
 
 
 def main() -> int:
     print("Local scaffold is ready.")
-    print("On moore:")
-    print("  source /vol/eecs391/cadence.env")
-    print("  JASPER_BIN=/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg \\")
-    print("    python3.11 tools/run_jasper.py --design arbiter_rr2 --variant correct --mode prove")
+    print("With JasperGold available:")
+    print("  export JASPER_BIN=/path/to/jg")
+    print("  export PYTHON_BIN=python3.11")
+    print("  bash scripts/run_jasper_smoke.sh")
     return 0
 
 
