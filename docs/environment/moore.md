@@ -13,4 +13,4 @@ export PYTHON_BIN=python3.11
 bash scripts/run_jasper_smoke.sh
 ```
 
-Compatibility wrappers named `scripts/run_moore_*.sh` may remain for older notes, but they call the generic `run_jasper_*` scripts and print that Moore is only one possible JasperGold host.
+Compatibility wrappers named `scripts/run_moore_smoke.sh`, `scripts/run_moore_sva_eval.sh`, and `scripts/run_moore_sva_repair_eval.sh` may remain for older notes, but they call the generic `scripts/run_jasper_smoke.sh`, `scripts/run_jasper_sva_eval.sh`, and `scripts/run_jasper_sva_repair_eval.sh` scripts and print that Moore is only one possible JasperGold host.

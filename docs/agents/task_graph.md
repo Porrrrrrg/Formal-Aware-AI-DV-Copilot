@@ -31,7 +31,7 @@ This is an orchestrator-observed bootstrap census. The Repo Auditor candidate is
 - Packaging: `pyproject.toml`, Python `>=3.10`, empty dependency list
 - Existing schema location: `copilot/schemas/`
 - Existing benchmark/eval paths: `benchmarks/`, `evaluation/`, `evaluation/results/`
-- Existing JasperGold flow paths: `jasper/common/`, `tools/run_jasper.py`, `scripts/run_jasper_*.sh`
+- Existing JasperGold flow paths: `jasper/common/`, `tools/run_jasper.py`, `scripts/run_jasper_smoke.sh`, `scripts/run_jasper_sva_eval.sh`, `scripts/run_jasper_sva_repair_eval.sh`
 - Missing from tracked tree: `.github/workflows/`, `tests/`, top-level `schemas/`
 - JasperGold environment is configured with `JASPER_BIN`, optional `JASPER_ENV`, and repository-root paths.
 - Review packet: `unspecified`
