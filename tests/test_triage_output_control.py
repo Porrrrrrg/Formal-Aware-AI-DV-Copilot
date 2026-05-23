@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from copilot.agents.dv_triage_agent import build_prompt, normalize_diagnosis
 from copilot.json_utils import extract_json_object
 from evaluation.output_quality import hallucinated_signals, source_summary
+from tools.build_evidence_packet import build_packet
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def sample_packet() -> dict[str, object]:
@@ -45,6 +51,7 @@ def test_triage_prompt_renders_explicit_signal_constraints() -> None:
     prompt = build_prompt(sample_packet())
 
     assert "ALLOWED_SIGNALS" in prompt
+    assert "ASSUMPTION_VACUITY_TRIAGE_HINTS" in prompt
     assert '"pready"' in prompt
     assert "natural-language labels" in prompt
     assert "valid_addr" in prompt
@@ -91,3 +98,82 @@ def test_fallback_is_not_counted_as_llm_success() -> None:
     assert summary["llm_success_rate"] == 0.0
     assert summary["fallback_rate"] == 1.0
     assert summary["llm_error_rate"] == 1.0
+
+
+def test_evidence_packet_marks_blocking_active_assumption_without_gold_label() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "apb_regblock" / "cases" / "assumption_bug_no_enable_vacuous.json"
+    )
+
+    assert "gold_label" not in packet
+    vacuity = packet["vacuity_context"]
+    assert vacuity["requires_assumption_review"] is True
+    assert vacuity["constraint_direction"] == "overconstraint"
+    assert vacuity["suspect_assumptions"] == ["a_no_access_phase"]
+    assert any(cue["kind"] == "blocking_assumption" for cue in vacuity["assumption_risk_cues"])
+
+
+def test_evidence_packet_marks_missing_environment_constraint_without_gold_label() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "fifo_1r1w" / "cases" / "assumption_bug_missing_input_stability.json"
+    )
+
+    assert "gold_label" not in packet
+    vacuity = packet["vacuity_context"]
+    assert vacuity["requires_assumption_review"] is True
+    assert vacuity["constraint_direction"] == "underconstraint"
+    assert any(cue["kind"] == "missing_environment_constraint" for cue in vacuity["assumption_risk_cues"])
+
+
+def test_normalize_diagnosis_aligns_issue_with_assumption_vacuity_priority() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "rv_buffer" / "cases" / "assumption_bug_no_output_stalls.json"
+    )
+    output = {
+        "case_id": "rv_B6",
+        "predicted_issue_type": "assertion_property_bug",
+        "root_cause_ranked": [
+            {
+                "rank": 1,
+                "hypothesis": "The active assumption removes the stalled-output antecedent.",
+                "evidence": ["Active assumptions under suspicion: a_no_output_stalls"],
+            }
+        ],
+        "suspect_rtl_signals": [],
+        "suspect_assertions_or_assumptions": ["a_no_output_stalls"],
+        "recommended_next_action": "fix_assertion_property",
+        "debug_checklist": ["Review the assumption."],
+    }
+
+    normalized = normalize_diagnosis(packet, output)
+
+    assert normalized["source"] == "llm"
+    assert normalized["predicted_issue_type"] == "assumption_constraint_bug"
+    assert normalized["recommended_next_action"] == "fix_assumption_constraint"
+    assert any("Aligned issue/action" in item for item in normalized["debug_checklist"])
+
+
+def test_normalize_diagnosis_does_not_relabel_benign_active_assumption() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "arbiter_rr2" / "cases" / "assertion_bug_valid_assumption_wrong_mutex.json"
+    )
+    output = {
+        "case_id": "arbiter_A12",
+        "predicted_issue_type": "assertion_property_bug",
+        "root_cause_ranked": [
+            {
+                "rank": 1,
+                "hypothesis": "The property forbids legal grants.",
+                "evidence": ["Reset eventually deasserts; the assertion intent is too broad."],
+            }
+        ],
+        "suspect_rtl_signals": [],
+        "suspect_assertions_or_assumptions": ["p_no_grants_bad"],
+        "recommended_next_action": "fix_assertion_property",
+        "debug_checklist": ["Review assertion intent."],
+    }
+
+    normalized = normalize_diagnosis(packet, output)
+
+    assert normalized["predicted_issue_type"] == "assertion_property_bug"
+    assert normalized["recommended_next_action"] == "fix_assertion_property"

@@ -42,6 +42,30 @@ ALLOWED_NEXT_ACTIONS = [
     "rerun_jaspergold",
 ]
 
+OVERCONSTRAINT_WORDS = (
+    "force",
+    "forces",
+    "forbid",
+    "forbids",
+    "restrict",
+    "restricts",
+    "keep",
+    "keeps",
+    "hold",
+    "holds",
+    "stuck",
+    "never",
+)
+
+UNDERCONSTRAINT_WORDS = (
+    "contract should constrain",
+    "should constrain",
+    "missing assumption",
+    "missing constraint",
+    "environment may",
+    "producer-side contract",
+)
+
 
 def load_json(path: Path | None) -> object:
     if not path or not path.exists():
@@ -206,14 +230,99 @@ def build_vacuity_context(
         for item in active_assumptions
         if isinstance(item, dict) and item.get("id")
     ]
+    assumption_risk_cues = assumption_vacuity_risk_cues(case, vacuous_properties)
+    has_overconstraint = any(
+        cue["kind"] in {"blocking_assumption", "reset_stuck_assumption"}
+        for cue in assumption_risk_cues
+    )
+    has_underconstraint = any(cue["kind"] == "missing_environment_constraint" for cue in assumption_risk_cues)
+    if has_overconstraint:
+        constraint_direction = "overconstraint"
+    elif has_underconstraint:
+        constraint_direction = "underconstraint"
+    else:
+        constraint_direction = "unknown"
+    reason = ""
+    if vacuous_properties and suspect_assumptions:
+        reason = "Active assumptions may make the target antecedent or coverage goal unreachable."
+    elif has_overconstraint:
+        reason = (
+            "Active assumptions contain blocking/reset-stuck cues; review whether "
+            "they remove legal trigger behavior before blaming the assertion."
+        )
+    elif has_underconstraint:
+        reason = "The property intent describes an environment contract or missing constraint; review underconstraint before blaming the assertion."
     return {
         "vacuity_status": "vacuous" if vacuous_properties else "not_observed",
         "vacuous_properties": [str(item) for item in vacuous_properties if item],
         "suspect_assumptions": [str(item) for item in suspect_assumptions],
-        "reason": "Active assumptions may make the target antecedent or coverage goal unreachable."
-        if vacuous_properties and suspect_assumptions
-        else "",
+        "assumption_risk_cues": assumption_risk_cues,
+        "constraint_direction": constraint_direction,
+        "requires_assumption_review": bool(assumption_risk_cues or vacuous_properties),
+        "reason": reason,
     }
+
+
+def assumption_vacuity_risk_cues(
+    case: dict[str, object],
+    vacuous_properties: object,
+) -> list[dict[str, str]]:
+    cues: list[dict[str, str]] = []
+    active_assumptions = case.get("active_assumptions", [])
+    if isinstance(active_assumptions, list):
+        for item in active_assumptions:
+            if not isinstance(item, dict):
+                continue
+            assumption_id = str(item.get("id", ""))
+            intent = str(item.get("intent", ""))
+            lowered = intent.lower()
+            matched_words = [word for word in OVERCONSTRAINT_WORDS if word in lowered]
+            if not matched_words:
+                continue
+            reset_stuck = "reset" in lowered and any(
+                word in lowered for word in ("stuck", "hold", "holds", "keep", "keeps")
+            )
+            kind = "reset_stuck_assumption" if reset_stuck else "blocking_assumption"
+            cues.append(
+                {
+                    "kind": kind,
+                    "assumption_id": assumption_id,
+                    "intent": intent,
+                    "cue": ", ".join(sorted(set(matched_words))),
+                    "interpretation": (
+                        "This assumption may block legal behavior needed by the "
+                        "failing property or coverage goal."
+                    ),
+                }
+            )
+
+    property_text = " ".join(
+        str(case.get(key, ""))
+        for key in ("property_id", "property_intent")
+    ).lower()
+    matched_underconstraint = [word for word in UNDERCONSTRAINT_WORDS if word in property_text]
+    if matched_underconstraint:
+        cues.append(
+            {
+                "kind": "missing_environment_constraint",
+                "assumption_id": "",
+                "intent": str(case.get("property_intent", "")),
+                "cue": ", ".join(sorted(set(matched_underconstraint))),
+                "interpretation": "The failure may be caused by an underconstrained environment contract rather than a bad assertion.",
+            }
+        )
+
+    if vacuous_properties:
+        cues.append(
+            {
+                "kind": "vacuous_property",
+                "assumption_id": "",
+                "intent": ", ".join(str(item) for item in vacuous_properties if item),
+                "cue": "vacuous_property",
+                "interpretation": "A vacuous result requires assumption and trigger-reachability review before an assertion fix.",
+            }
+        )
+    return cues
 
 
 def sort_trace_paths(

@@ -82,14 +82,13 @@ def infer_issue_type(packet: dict[str, object]) -> str:
     task_type = str(packet.get("task_type", ""))
     variant = str(packet.get("variant", ""))
     coverage = packet.get("coverage_context", {})
-    active_assumptions = packet.get("active_assumptions", [])
     failing_property = packet.get("failing_property", {})
     vacuity = packet.get("vacuity_context", {})
     property_id = ""
     if isinstance(failing_property, dict):
         property_id = str(failing_property.get("property_id", "")).lower()
 
-    if isinstance(active_assumptions, list) and active_assumptions:
+    if assumption_constraint_priority(packet):
         return "assumption_constraint_bug"
     if isinstance(vacuity, dict) and (
         vacuity.get("vacuity_status") == "vacuous" or vacuity.get("vacuous_properties")
@@ -170,6 +169,17 @@ def collect_evidence(packet: dict[str, object], issue_type: str) -> list[str]:
         if ids:
             evidence.append("Active assumptions under suspicion: " + ", ".join(ids))
 
+    vacuity = packet.get("vacuity_context", {})
+    if issue_type == "assumption_constraint_bug" and isinstance(vacuity, dict):
+        reason = vacuity.get("reason")
+        if reason:
+            evidence.append(str(reason))
+        cues = vacuity.get("assumption_risk_cues")
+        if isinstance(cues, list):
+            for cue in cues[:2]:
+                if isinstance(cue, dict) and cue.get("interpretation"):
+                    evidence.append(str(cue["interpretation"]))
+
     if not evidence:
         evidence.append(f"Structured fallback classified this packet as {issue_type}.")
     return evidence[:5]
@@ -235,6 +245,7 @@ def infer_suspect_properties(packet: dict[str, object]) -> list[str]:
 def build_prompt(packet: dict[str, object]) -> str:
     payload = sanitized_packet(packet)
     allowed_signals = sorted(allowed_signal_names(packet))
+    assumption_hints = assumption_vacuity_prompt_hints(packet)
     return (
         "You are JasperLoop-DV, a formal-aware DV triage assistant. "
         "Classify the issue using only the evidence packet. Do not invent signals. "
@@ -246,11 +257,20 @@ def build_prompt(packet: dict[str, object]) -> str:
         "for example, do not emit access or valid_addr unless they are in ALLOWED_SIGNALS. "
         "If the RTL variant is marked correct and the property intent contradicts the "
         "design intent, prefer assertion_property_bug over rtl_design_bug unless the "
-        "packet provides concrete RTL signal evidence. Return exactly one JSON object "
+        "packet provides concrete RTL signal evidence. If ASSUMPTION_VACUITY_TRIAGE_HINTS "
+        "contains blocking assumptions, reset-stuck assumptions, missing environment "
+        "constraints, or vacuous properties, review assumption_constraint_bug before "
+        "assertion_property_bug. When your hypothesis or evidence says an assumption "
+        "or constraint removes, blocks, allows impossible, or underconstrains required "
+        "behavior, predicted_issue_type must be assumption_constraint_bug and "
+        "recommended_next_action must be fix_assumption_constraint. Return exactly one JSON object "
         "matching diagnosis_output.schema.json; no Markdown, comments, code fences, "
         "or explanations outside the JSON object.\n\n"
         "ALLOWED_SIGNALS:\n"
         + json.dumps(allowed_signals, indent=2)
+        + "\n\n"
+        "ASSUMPTION_VACUITY_TRIAGE_HINTS:\n"
+        + json.dumps(assumption_hints, indent=2)
         + "\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(
@@ -288,6 +308,14 @@ def normalize_diagnosis(packet: dict[str, object], output: dict[str, object]) ->
     action = str(output.get("recommended_next_action", ""))
     if action not in set(ACTION_BY_ISSUE.values()):
         action = ACTION_BY_ISSUE[issue]
+    normalized_notes = []
+    if should_normalize_to_assumption_constraint(packet, output, issue, action):
+        issue = "assumption_constraint_bug"
+        action = ACTION_BY_ISSUE[issue]
+        normalized_notes.append(
+            "Aligned issue/action with assumption/vacuity evidence: use "
+            "assumption_constraint_bug and fix_assumption_constraint."
+        )
     roots = output.get("root_cause_ranked")
     if not isinstance(roots, list) or not roots:
         roots = structured_fallback(packet)["root_cause_ranked"]
@@ -298,6 +326,8 @@ def normalize_diagnosis(packet: dict[str, object], output: dict[str, object]) ->
             *debug_checklist,
             "Dropped unsupported suspect_rtl_signals: " + ", ".join(sorted(dropped_signals)),
         ]
+    if normalized_notes:
+        debug_checklist = [*debug_checklist, *normalized_notes]
     return {
         "source": "llm",
         "case_id": str(output.get("case_id", packet.get("case_id", "unknown"))),
@@ -310,6 +340,77 @@ def normalize_diagnosis(packet: dict[str, object], output: dict[str, object]) ->
         "recommended_next_action": action,
         "debug_checklist": debug_checklist,
     }
+
+
+def assumption_constraint_priority(packet: dict[str, object]) -> bool:
+    vacuity = packet.get("vacuity_context")
+    if not isinstance(vacuity, dict):
+        return False
+    if vacuity.get("vacuity_status") == "vacuous" or vacuity.get("vacuous_properties"):
+        return True
+    if vacuity.get("constraint_direction") in {"overconstraint", "underconstraint"}:
+        return True
+    cues = vacuity.get("assumption_risk_cues")
+    return isinstance(cues, list) and bool(cues)
+
+
+def assumption_vacuity_prompt_hints(packet: dict[str, object]) -> dict[str, object]:
+    vacuity = packet.get("vacuity_context")
+    if not isinstance(vacuity, dict):
+        return {
+            "requires_assumption_review": False,
+            "constraint_direction": "unknown",
+            "risk_cues": [],
+        }
+    return {
+        "requires_assumption_review": bool(vacuity.get("requires_assumption_review")),
+        "constraint_direction": vacuity.get("constraint_direction", "unknown"),
+        "suspect_assumptions": vacuity.get("suspect_assumptions", []),
+        "reason": vacuity.get("reason", ""),
+        "risk_cues": vacuity.get("assumption_risk_cues", []),
+        "classification_rule": (
+            "If these cues explain the failure, classify as assumption_constraint_bug "
+            "with recommended_next_action fix_assumption_constraint."
+        ),
+    }
+
+
+def should_normalize_to_assumption_constraint(
+    packet: dict[str, object],
+    output: dict[str, object],
+    issue: str,
+    action: str,
+) -> bool:
+    if (
+        issue == "assumption_constraint_bug"
+        and action == ACTION_BY_ISSUE["assumption_constraint_bug"]
+    ):
+        return False
+    if not assumption_constraint_priority(packet):
+        return False
+    vacuity = packet.get("vacuity_context")
+    if isinstance(vacuity, dict) and vacuity.get("constraint_direction") in {
+        "overconstraint",
+        "underconstraint",
+    }:
+        return True
+    output_text = json.dumps(output, sort_keys=True).lower()
+    evidence_terms = (
+        "assumption",
+        "constraint",
+        "overconstrain",
+        "underconstrain",
+        "vacuous",
+        "vacuity",
+        "unreachable",
+        "removes",
+        "blocks",
+        "forbids",
+        "forces",
+        "missing environment",
+        "environment contract",
+    )
+    return any(term in output_text for term in evidence_terms)
 
 
 def main() -> int:
