@@ -8,6 +8,7 @@ set generated_harness_file [jl_getenv JASPERLOOP_GENERATED_HARNESS ""]
 set top_module [jl_getenv JASPERLOOP_TOP ""]
 set clock_signal [jl_getenv JASPERLOOP_CLOCK ""]
 set reset_command [jl_getenv JASPERLOOP_RESET_CMD ""]
+set formal_mode [jl_getenv JASPERLOOP_FORMAL_MODE "prove"]
 set report_dir [jl_report_dir]
 
 if {$rtl_file == ""} {
@@ -41,13 +42,23 @@ if {$reset_command != ""} {
 }
 
 file mkdir "$report_dir/traces"
-prove -all -dump_trace -dump_trace_type vcd -dump_trace_dir "$report_dir/traces"
-report -summary -results -detailed -file "$report_dir/properties.rpt" -force
-
-if {[catch {check_vacuity -all} vacuity_error]} {
-  set fh [open "$report_dir/vacuity_error.txt" "w"]
-  puts $fh $vacuity_error
-  close $fh
-} else {
+if {$formal_mode == "cover"} {
+  # JasperGold 2018 reports cover-property reachability through prove -all;
+  # the older Moore build does not support an all-properties cover switch.
+  prove -all
+  report -summary -results -detailed -file "$report_dir/cover.rpt" -force
+} elseif {$formal_mode == "vacuity"} {
+  check_vacuity -all
   report -summary -results -detailed -file "$report_dir/vacuity.rpt" -force
+} else {
+  prove -all -dump_trace -dump_trace_type vcd -dump_trace_dir "$report_dir/traces"
+  report -summary -results -detailed -file "$report_dir/properties.rpt" -force
+
+  if {[catch {check_vacuity -all} vacuity_error]} {
+    set fh [open "$report_dir/vacuity_error.txt" "w"]
+    puts $fh $vacuity_error
+    close $fh
+  } else {
+    report -summary -results -detailed -file "$report_dir/vacuity.rpt" -force
+  }
 }

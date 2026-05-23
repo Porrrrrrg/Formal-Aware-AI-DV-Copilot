@@ -1,11 +1,11 @@
-# Qwen On A Single RTX 3090 Ti
+# Qwen on a single RTX 3090 Ti
 
 ## Scope
 
 This runbook targets a local Qwen inference service for JasperLoop-DV on one
 NVIDIA RTX 3090 Ti. The service exposes a localhost OpenAI-compatible API for
-Codex-style agent experiments. Cloud API fallback remains explicit and
-hard-disabled whenever `LOCAL_ONLY=true`.
+Codex-style agent experiments, while retaining an explicit cloud API fallback
+for cases where local inference is unavailable or unsafe.
 
 Unknowns are intentionally probed at runtime rather than hard-coded:
 
@@ -14,42 +14,52 @@ Unknowns are intentionally probed at runtime rather than hard-coded:
 - CUDA/cuDNN versions: unspecified.
 - model weight filenames: unspecified.
 
-## Sources
+## Official guidance used
+
+Qwen's deployment docs recommend vLLM for Qwen serving and show that it exposes
+an OpenAI-compatible API at `http://localhost:8000` by default. The same docs
+note that prebuilt vLLM has strict Torch/CUDA dependencies, so this project
+does environment probing before launch instead of pinning an unverified CUDA
+stack. Qwen's SGLang docs show the same OpenAI-compatible route on port 30000.
+Qwen's Qwen3 release notes recommend SGLang and vLLM for deployment and Ollama,
+LM Studio, llama.cpp, and related tools for local use.
+
+Qwen's model card for `Qwen/Qwen3-14B-AWQ` identifies it as a 14.8B parameter
+Qwen3 model with native 32768-token context, 131072-token YaRN extension, and
+AWQ 4-bit quantization. The Qwen speed benchmark reports Qwen3-14B AWQ memory
+usage under Transformers of about 9962 MB at short input and about 15323 MB at
+30720-token input plus 2048 generated tokens. vLLM and SGLang allocate memory
+differently, so this runbook uses conservative 3090 Ti thresholds.
+
+Sources:
 
 - https://github.com/QwenLM/Qwen3/blob/main/docs/source/deployment/vllm.md
 - https://github.com/QwenLM/Qwen3/blob/main/docs/source/deployment/sglang.md
 - https://qwenlm.github.io/blog/qwen3/
 - https://huggingface.co/Qwen/Qwen3-14B-AWQ
-- https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507
-- https://huggingface.co/Qwen/Qwen3-32B-AWQ
+- https://qwen.readthedocs.io/en/v3.0/getting_started/speed_benchmark.html
 
-## Profile Choice
+## Model choice
 
-Safe profile:
+Default:
 
-- `safe_profile`: `Qwen/Qwen3-14B-AWQ`
-- Quantization: `AWQ`
-- Purpose: default local RTX 3090 Ti serving profile.
+- `Qwen/Qwen3-14B-AWQ`
+- Reason: best balance of coding/formal-DV usefulness, 4-bit VRAM footprint,
+  and 24 GB single-GPU viability.
 
-Larger MoE candidate:
-
-- `big_profile`: `Qwen/Qwen3-30B-A3B-Instruct-2507`
-- Quantization: `native_or_local_quantized` by default.
-- A local quantized 30B-A3B snapshot can replace this with
-  `QWEN_BIG_PROFILE_MODEL`, and the exact value is recorded in the manifest.
-
-Fast development local fallback:
+Fast development fallback:
 
 - `Qwen/Qwen3-8B-AWQ`
-- Purpose: CI smoke tests, lower latency local repair loops, or OOM recovery.
+- Use for CI smoke tests, lower latency local repair loops, or OOM recovery.
 
-Experimental dense profile only:
+Experimental only:
 
-- `experimental_dense_profile`: `Qwen/Qwen3-32B-AWQ`
-- The startup scripts and healthcheck reject `Qwen/Qwen3-32B-AWQ` unless this
-  profile is selected.
+- Qwen3 30B-A3B or 32B quantized variants.
+- These can be useful experiments, but they should not be defaults on one
+  3090 Ti because context length, KV cache, and serving overhead leave less
+  operational headroom.
 
-## Serving Route Order
+## Serving route order
 
 1. vLLM
    - Preferred route.
@@ -61,40 +71,37 @@ Experimental dense profile only:
    - Strong Qwen3 support and OpenAI-compatible API.
 3. Ollama
    - Local developer fallback.
-   - Useful for quick smoke tests or GGUF workflows, not the primary production
+   - Good for quick smoke tests or GGUF workflows, not the primary production
      route for this repository.
 
-## Safe Thresholds For RTX 3090 Ti
+## Safe thresholds for RTX 3090 Ti
 
 Start with:
 
 - `MAX_MODEL_LEN=24576`
 - `GPU_MEMORY_UTILIZATION=0.82`
-- `MAX_NUM_SEQS=1`
 - warning at `VRAM_WARN_FRACTION=0.92`
 - batch/concurrency: one request at a time until measured.
 - generation cap for agent repair tasks: 256-2048 tokens unless a task needs
   more.
 
-Escalate only after local manifests show stable behavior:
+Escalate only after benchmark evidence:
 
-- Move to `MAX_MODEL_LEN=32768` only after OOM count stays flat on real prompts.
+- Move to `MAX_MODEL_LEN=32768` when p95 latency and OOM count are stable.
 - Raise `GPU_MEMORY_UTILIZATION` toward 0.88 only if the desktop/session has
   enough free VRAM and no other CUDA workloads.
 - Avoid YaRN on 3090 Ti by default. Use it only for explicit long-context
-  experiments.
+  experiments; Qwen docs warn that static YaRN can affect shorter inputs.
 
 Degrade on instability:
 
 - OOM once: lower context to 16384 and restart.
 - Repeated OOM: switch to `Qwen/Qwen3-8B-AWQ`.
-- Slow normal prompts: lower context, lower max output, or use the fast local
-  model.
-- Local server 5xx or timeout with `LOCAL_ONLY=false`: record fallback
-  eligibility. Do not compare cloud quality, latency, or cost until comparable
-  manifests exist.
+- p95 latency above 60 s on normal prompts: lower context, lower max output, or
+  use fast model.
+- Local server 5xx or timeout with `LOCAL_ONLY=false`: allow cloud fallback.
 
-## Runtime Layout
+## Runtime layout
 
 Keep model weights and logs separate:
 
@@ -107,7 +114,7 @@ Keep model weights and logs separate:
 The service scripts refuse root execution. Use a normal Linux service account
 with read access to model weights and write access to logs.
 
-## Environment Probe
+## Environment probe
 
 The startup scripts probe:
 
@@ -120,7 +127,7 @@ The startup scripts probe:
 This keeps the deployment portable across WSL/Ubuntu systems whose exact driver
 and CUDA stack are not yet known.
 
-## Offline Service Policy
+## Offline service policy
 
 Downloading dependencies and model files may use the network during install or
 model acquisition. Normal service startup defaults to offline:
@@ -132,11 +139,11 @@ model acquisition. Normal service startup defaults to offline:
 If `QWEN_MODEL` is not a local directory and downloads are not allowed, the
 scripts exit rather than silently reaching the network.
 
-## Cloud Fallback
+## Cloud fallback
 
 Fallback must be opt-in:
 
-- `LOCAL_ONLY=true` hard-disables fallback.
+- `LOCAL_ONLY=true` disables fallback.
 - `LOCAL_ONLY=false` permits fallback only when environment variables provide
   the key and model.
 - API keys are read only from environment variables.
@@ -150,48 +157,38 @@ export CLOUD_OPENAI_API_KEY=...
 export CLOUD_OPENAI_MODEL=...
 ```
 
-Fallback conditions for calling agents:
+Fallback conditions:
 
 - local OpenAI-compatible endpoint returns 5xx.
 - local OpenAI-compatible endpoint is unavailable.
 - local request times out.
-- a new OOM is observed in the service log.
+- healthcheck observes a new OOM in the service log.
+- p95 latency exceeds `LATENCY_WARN_MS` only if explicitly enabled.
 
 Every fallback event should be recorded by the calling agent in the run
-manifest with provider, model, reason, and timestamp. The local healthcheck does
-not call cloud; it records only local availability and fallback policy.
+manifest with provider, model, reason, and timestamp.
 
-## JSON-Only Healthcheck
+## Monitoring
 
 Run:
 
 ```bash
 source ops/local-llm/.env
-python ops/local-llm/healthcheck.py
+python ops/local-llm/healthcheck.py --requests 5
 ```
 
-Recorded manifest fields:
+Recorded fields:
 
-- `model_name`
-- `quantization`
-- `backend`
-- `gpu_name`
-- `vram_gb`
-- `max_model_len`
-- `gpu_memory_utilization`
-- `max_num_seqs`
-- `LOCAL_ONLY`
-- `cloud_fallback_allowed`
-- `git_sha`
-- `prompt_version`
-- `schema_version`
-- local request status, including `local_unavailable` when the server is down.
+- GPU utilization.
+- VRAM used and total VRAM.
+- request latency min/mean/p95/max.
+- tokens/s when available.
+- OOM count from service logs.
+- fallback eligibility and reason.
 
-The healthcheck writes `reports/local_llm/qwen_health_<UTC>.json` and
-`reports/local_llm/run_manifest.json`. The JSONL output remains available for
-append-only ingestion.
+The JSONL output is suitable for Research/Eval ingestion.
 
-## OpenAI-Compatible Smoke Request
+## OpenAI-compatible smoke request
 
 ```bash
 curl http://127.0.0.1:8000/v1/chat/completions \
@@ -199,23 +196,23 @@ curl http://127.0.0.1:8000/v1/chat/completions \
   -d '{
     "model": "Qwen/Qwen3-14B-AWQ",
     "messages": [
-      {"role": "user", "content": "Return {\"status\":\"ok\"} as JSON."}
+      {"role": "user", "content": "Write one concise SystemVerilog assertion for a ready/valid buffer."}
     ],
-    "temperature": 0.0,
-    "max_tokens": 64
+    "temperature": 0.2,
+    "max_tokens": 256
   }'
 ```
 
-## Cross-Agent Messages
+## Cross-agent messages
 
 To Orchestrator:
 
 ```text
-ARTIFACT_READY: localhost:8000 provides a Qwen OpenAI-compatible endpoint; default profile is safe_profile.
+ARTIFACT_READY: localhost:8000 已提供 Qwen OpenAI-compatible endpoint；默认模型为 Qwen/Qwen3-14B-AWQ。
 ```
 
 To Research/Eval:
 
 ```text
-ARTIFACT_READY: local Qwen health manifest generated without cloud comparison.
+ARTIFACT_READY: local Qwen healthcheck manifest scaffold 已生成；未运行真实 Qwen benchmark。
 ```

@@ -7,9 +7,10 @@
   "coverage_context": {
     "coverage_goal": "cov_illegal_double_grant",
     "expected_reachable": false,
-    "jasper_cover_result": "unreachable",
+    "expected_cover_status": "unreachable",
     "related_signals": ["gnt0", "gnt1"]
   },
+  "label_source": "author_expected",
   "expected_issue_type": "unreachable_or_invalid_coverage_goal",
   "expected_next_action": "prove_unreachable_or_waive_coverage_goal",
   "root_cause": "The coverage goal contradicts the mutual exclusion requirement and should not be a positive coverage target."

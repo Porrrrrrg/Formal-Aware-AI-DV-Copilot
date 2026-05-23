@@ -1,0 +1,22 @@
+{
+  "schema_version": "stage11_rootcause_dry_run_fixture_v1",
+  "mode": "dry_run",
+  "rows": [
+    {
+      "case_id": "stage11_reset_clock_fixture",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "source": "local_dry_run_fixture",
+      "failure_category": "reset_clock_mismatch",
+      "reset_clock_mismatch": true,
+      "proof_metadata": {
+        "backend": "jaspergold",
+        "status": "not_run",
+        "syntax_status": "not_run",
+        "proof_status": null,
+        "vacuity_status": null
+      },
+      "root_cause_candidate": "reset_clock_mismatch"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Design2SVA Candidate",
+  "type": "object",
+  "required": [
+    "property_id",
+    "sva",
+    "helper_code",
+    "referenced_signals",
+    "intent_summary",
+    "source",
+    "repair_metadata",
+    "proof_metadata"
+  ],
+  "properties": {
+    "property_id": { "type": "string", "minLength": 1 },
+    "sva": { "type": "string", "minLength": 1 },
+    "helper_code": { "type": "string" },
+    "referenced_signals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "intent_summary": { "type": "string" },
+    "source": {
+      "type": "string",
+      "enum": ["structured_fallback", "replay", "llm", "repair", "reference_oracle", "unknown"]
+    },
+    "repair_metadata": {
+      "type": "object",
+      "required": [
+        "round",
+        "failure_category",
+        "feedback",
+        "changed_by_repair"
+      ],
+      "properties": {
+        "round": { "type": "integer", "minimum": 0 },
+        "failure_category": { "type": "string" },
+        "feedback": { "type": "string" },
+        "changed_by_repair": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "proof_metadata": {
+      "type": "object",
+      "required": [
+        "backend",
+        "status",
+        "syntax_status",
+        "proof_status",
+        "vacuity_status",
+        "report_dir"
+      ],
+      "properties": {
+        "backend": { "type": "string" },
+        "status": { "type": "string" },
+        "syntax_status": { "type": "string" },
+        "proof_status": { "type": ["string", "null"] },
+        "vacuity_status": { "type": ["string", "null"] },
+        "report_dir": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

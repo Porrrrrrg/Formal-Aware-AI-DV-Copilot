@@ -1,0 +1,40 @@
+version: 1
+name: triage_decision_rules
+description: Evidence-to-action rules for formal-aware DV triage.
+claim_boundaries:
+  - qwen_vs_codex_requires_manifest_parity
+  - replay_not_model_performance
+  - jasperloop_not_production_signoff
+decisions:
+  - issue_type: rtl_design_bug
+    evidence:
+      - property_matches_intent
+      - legal_stimulus
+      - cex_violates_requirement
+    recommended_next_action: fix_rtl
+  - issue_type: assertion_property_bug
+    evidence:
+      - property_differs_from_intent
+      - timing_guard_or_reset_mismatch
+    recommended_next_action: fix_assertion_property
+  - issue_type: assumption_constraint_bug
+    evidence:
+      - impossible_cex_allowed
+      - legal_trigger_blocked
+      - assumption_intent_mismatch
+    recommended_next_action: fix_assumption_constraint
+  - issue_type: testbench_stimulus_bug
+    evidence:
+      - stimulus_violates_test_intent
+      - replay_or_sim_setup_mismatch
+    recommended_next_action: fix_testbench_or_stimulus
+  - issue_type: reachable_coverage_gap
+    evidence:
+      - legal_unhit_goal
+      - witness_or_trace_available
+    recommended_next_action: add_directed_test_or_sequence
+  - issue_type: unreachable_or_invalid_coverage_goal
+    evidence:
+      - conflicts_with_spec_or_architecture
+      - proof_or_owner_rationale_available
+    recommended_next_action: prove_unreachable_or_waive_coverage_goal

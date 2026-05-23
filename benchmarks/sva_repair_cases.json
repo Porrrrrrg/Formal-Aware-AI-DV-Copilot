@@ -214,5 +214,65 @@
     "intent": "Invalid APB addresses assert pslverr during the access phase.",
     "broken_sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && paddr inside {8'h00, 8'h04} |-> pslverr);",
     "reference_sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);"
+  },
+  {
+    "case_id": "repair_fifo_no_underflow_wrong_guard",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_no_underflow",
+    "bug_type": "overbroad_property",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "empty", "pop_ready", "pop_fire"],
+    "intent": "No underflow means no completed pop from an empty FIFO.",
+    "broken_sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_ready));",
+    "reference_sva": "p_no_underflow: assert property (@(posedge clk) disable iff (rst) !(empty && pop_fire));"
+  },
+  {
+    "case_id": "repair_fifo_overflow_missing_pop_exception",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_no_overflow",
+    "bug_type": "temporal_or_semantic_error",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "full", "push_valid", "pop_ready", "push_ready"],
+    "intent": "A full FIFO may accept push only when a pop also happens.",
+    "broken_sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid |-> !push_ready);",
+    "reference_sva": "p_no_overflow: assert property (@(posedge clk) disable iff (rst) full && push_valid && !pop_ready |-> !push_ready);"
+  },
+  {
+    "case_id": "repair_fifo_pop_data_unknown_signal",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_pop_data_stable_when_stalled",
+    "bug_type": "unknown_signal",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "pop_valid", "pop_ready", "pop_data"],
+    "intent": "Pop data must remain stable while valid output is stalled.",
+    "broken_sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(data_out));",
+    "reference_sva": "p_pop_data_stable_when_stalled: assert property (@(posedge clk) disable iff (rst) pop_valid && !pop_ready |=> pop_valid && $stable(pop_data));"
+  },
+  {
+    "case_id": "repair_fifo_reset_wrong_polarity",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_reset_empty",
+    "bug_type": "reset_error",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "empty", "full", "level", "pop_valid"],
+    "intent": "Reset should leave the FIFO empty with no valid output.",
+    "broken_sva": "p_reset_empty: assert property (@(posedge clk) !rst |=> empty && !full && level == '0 && !pop_valid);",
+    "reference_sva": "p_reset_empty: assert property (@(posedge clk) rst |=> empty && !full && level == '0 && !pop_valid);"
+  },
+  {
+    "case_id": "repair_fifo_eventual_pop_too_fast",
+    "design_id": "fifo_1r1w",
+    "property_id": "p_eventual_pop",
+    "bug_type": "temporal_or_semantic_error",
+    "clock": "clk",
+    "reset": "rst",
+    "signals": ["clk", "rst", "pop_valid", "pop_fire"],
+    "intent": "Valid output should be accepted within the documented four-cycle fairness bound.",
+    "broken_sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:1] pop_fire);",
+    "reference_sva": "p_eventual_pop: assert property (@(posedge clk) disable iff (rst) pop_valid |-> ##[0:4] pop_fire);"
   }
 ]

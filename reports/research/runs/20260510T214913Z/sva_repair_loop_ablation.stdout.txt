@@ -1,0 +1,151 @@
+{
+  "num_cases": 18,
+  "systems": {
+    "no_repair_loop": {
+      "num_cases": 18,
+      "cases_by_design": {
+        "apb_regblock": 6,
+        "arbiter_rr2": 6,
+        "rv_buffer": 6
+      },
+      "cases_by_bug_type": {
+        "overbroad_property": 3,
+        "reset_error": 2,
+        "syntax_error": 3,
+        "temporal_or_semantic_error": 6,
+        "unknown_signal": 4
+      },
+      "cases_by_feedback_mode": {
+        "none": 18
+      },
+      "syntax_pass_round0": 0.8333333333333334,
+      "repair_success_rate": 0.0,
+      "exact_match_round0": 0.0,
+      "exact_match_final": 0.0,
+      "hallucinated_signal_rate": 0.2222222222222222,
+      "jasper_syntax_pass_final": 0.0,
+      "proven_final": 0.0,
+      "vacuous_final": 0.0,
+      "average_rounds_to_success": 0.0,
+      "source_counts": {},
+      "llm_success_rate": 0.0,
+      "fallback_rate": 0.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 0,
+      "label": "Round-0 only / no repair loop",
+      "variant": "no_repair_loop"
+    },
+    "repair_loop_no_feedback": {
+      "num_cases": 18,
+      "cases_by_design": {
+        "apb_regblock": 6,
+        "arbiter_rr2": 6,
+        "rv_buffer": 6
+      },
+      "cases_by_bug_type": {
+        "overbroad_property": 3,
+        "reset_error": 2,
+        "syntax_error": 3,
+        "temporal_or_semantic_error": 6,
+        "unknown_signal": 4
+      },
+      "cases_by_feedback_mode": {
+        "none": 18
+      },
+      "syntax_pass_round0": 0.8333333333333334,
+      "repair_success_rate": 1.0,
+      "exact_match_round0": 0.0,
+      "exact_match_final": 1.0,
+      "hallucinated_signal_rate": 0.0,
+      "jasper_syntax_pass_final": 0.0,
+      "proven_final": 0.0,
+      "vacuous_final": 0.0,
+      "average_rounds_to_success": 1.0,
+      "source_counts": {
+        "structured_fallback": 18
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 18,
+      "label": "Repair loop, no feedback",
+      "variant": "repair_loop_no_feedback"
+    },
+    "repair_loop_scaffold_feedback": {
+      "num_cases": 18,
+      "cases_by_design": {
+        "apb_regblock": 6,
+        "arbiter_rr2": 6,
+        "rv_buffer": 6
+      },
+      "cases_by_bug_type": {
+        "overbroad_property": 3,
+        "reset_error": 2,
+        "syntax_error": 3,
+        "temporal_or_semantic_error": 6,
+        "unknown_signal": 4
+      },
+      "cases_by_feedback_mode": {
+        "scaffold": 18
+      },
+      "syntax_pass_round0": 0.8333333333333334,
+      "repair_success_rate": 1.0,
+      "exact_match_round0": 0.0,
+      "exact_match_final": 1.0,
+      "hallucinated_signal_rate": 0.0,
+      "jasper_syntax_pass_final": 0.0,
+      "proven_final": 0.0,
+      "vacuous_final": 0.0,
+      "average_rounds_to_success": 1.0,
+      "source_counts": {
+        "structured_fallback": 18
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 18,
+      "label": "Repair loop, scaffold feedback",
+      "variant": "repair_loop_scaffold_feedback"
+    },
+    "repair_loop_jasper_feedback": {
+      "num_cases": 18,
+      "cases_by_design": {
+        "apb_regblock": 6,
+        "arbiter_rr2": 6,
+        "rv_buffer": 6
+      },
+      "cases_by_bug_type": {
+        "overbroad_property": 3,
+        "reset_error": 2,
+        "syntax_error": 3,
+        "temporal_or_semantic_error": 6,
+        "unknown_signal": 4
+      },
+      "cases_by_feedback_mode": {
+        "jasper": 18
+      },
+      "syntax_pass_round0": 0.8333333333333334,
+      "repair_success_rate": 1.0,
+      "exact_match_round0": 0.0,
+      "exact_match_final": 1.0,
+      "hallucinated_signal_rate": 0.0,
+      "jasper_syntax_pass_final": 0.0,
+      "proven_final": 0.0,
+      "vacuous_final": 0.0,
+      "average_rounds_to_success": 1.0,
+      "source_counts": {
+        "structured_fallback": 18
+      },
+      "llm_success_rate": 0.0,
+      "fallback_rate": 1.0,
+      "llm_error_rate": 0.0,
+      "llm_error_count": 0,
+      "num_outputs": 18,
+      "label": "Repair loop, JasperGold feedback",
+      "variant": "repair_loop_jasper_feedback"
+    }
+  }
+}

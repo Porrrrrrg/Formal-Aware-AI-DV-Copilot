@@ -1,0 +1,5 @@
+{
+  "explanation": "Replays the known repair by preserving the mutex intent and adding the missing assertion terminator.",
+  "property_id": "p_mutex",
+  "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));"
+}

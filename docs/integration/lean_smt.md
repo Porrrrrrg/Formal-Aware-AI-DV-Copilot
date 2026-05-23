@@ -3,7 +3,7 @@
 This integration adds the first verifier-centric loop for Lean, Z3, and cvc5:
 
 ```text
-ProblemSpec -> Candidate -> VerifierAdapter.verify -> VerifierOutcome -> diagnostics for repair
+ProblemSpec -> Candidate -> ToolAdapter.verify -> VerifierOutcome -> diagnostics for repair
 ```
 
 The adapter layer is intentionally separate from candidate generation. A caller
@@ -14,9 +14,9 @@ runs the external verifier, writes artifacts, and normalizes the result.
 
 The shared contracts live in:
 
-- `app/models/core.py`
-- `schemas/v1/core.schema.json`
-- `app/core/protocols.py`
+- `app.models.core`
+- `app.core.protocols`
+- `core/tool_adapter.py`, as a compatibility re-export of `app.core.protocols`
 
 `VerifierOutcome` always includes:
 
@@ -54,8 +54,8 @@ Each verifier run writes:
 - `<attempt_id>_<tool>.stdout.txt`
 - `<attempt_id>_<tool>.stderr.txt`
 
-Tool versions and solver status are stored in `VerifierOutcome.metadata`; raw
-stdout and stderr are referenced only through artifact keys.
+Detected tool versions are recorded in the `VerifierOutcome.metadata.toolchain`
+payload. Unknown or missing tools are recorded as `null`.
 
 ## Smoke Fixtures
 
@@ -119,7 +119,7 @@ cvc5 uses:
 cvc5 --lang smt2 <candidate.smt2>
 ```
 
-In JasperGold-capable environments, source the Cadence environment before running JasperGold workflows when the local installation requires it.
+On `moore`, source the Cadence environment before running JasperGold workflows.
 Lean/Z3/cvc5 are still discovered from `PATH` by these adapters.
 
 ## Repair-Friendly Diagnostics

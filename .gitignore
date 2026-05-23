@@ -10,9 +10,11 @@ env/
 
 # JasperGold and EDA outputs
 jasper/reports/*
+jasper/reports/**
 !jasper/reports/.gitkeep
 local_reports/
 artifacts/
+artifacts/**
 runs/
 logs/
 /reports/
@@ -32,12 +34,17 @@ copilot/baselines/*([0-9]).py
 *.wlf
 *.trace
 *.tmp
+**/traces/**
+**/trace/**
+**/trace_*/
+**/*_trace/
 INCA_libs/
 xcelium.d/
 .formal/
 jgproject/
 dist/
 htmlcov/
+.codex/runs/
 *.bundle
 *.zip
 *.tar
@@ -52,6 +59,17 @@ stage5-cli-validation/
 .env
 *.local.json
 *.local.yaml
+*.local.log
+*.llm.log
+llm_logs/
+raw_llm_logs/
+reports/local_llm/raw/**
+reports/llm/raw/**
+/models/
+.cache/
+hf_cache/
+transformers_cache/
+torch_cache/
 
 # OS/editor
 .DS_Store

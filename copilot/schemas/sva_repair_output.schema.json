@@ -9,13 +9,14 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["round", "sva", "jasper_status"],
+        "required": ["round", "sva", "jasper_status", "feedback"],
         "properties": {
           "round": { "type": "integer" },
           "sva": { "type": "string" },
           "jasper_status": { "type": "string" },
-          "feedback": { "type": "string" }
-        }
+          "feedback": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
       }
     },
     "final_status": { "type": "string" }

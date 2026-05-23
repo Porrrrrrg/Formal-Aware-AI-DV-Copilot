@@ -53,13 +53,14 @@ Schema checks must include every touched schema and representative payload:
 python tools/validate_json.py copilot/schemas/evidence_packet.schema.json <evidence_packet.json>
 ```
 
-JasperGold smoke must run on a JasperGold-capable formal runner for PRs touching `jasper`, formal flows,
+JasperGold smoke must run on `moore` for PRs touching `jasper`, formal flows,
 RTL benchmarks, SVA generation, SVA repair, coverage closure, or Jasper parsers:
 
 ```bash
+ssh moore
 cd /path/to/Formal-Aware-AI-DV-Copilot
-export JASPER_BIN=/path/to/jg
-bash scripts/run_jasper_smoke.sh
+source /vol/eecs391/cadence.env
+bash scripts/run_moore_smoke.sh
 ```
 
 Workflow PRs must also run `actionlint` when available and must explain any

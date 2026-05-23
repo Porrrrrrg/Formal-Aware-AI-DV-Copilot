@@ -1,0 +1,520 @@
+{
+  "summary": {
+    "num_cases": 3,
+    "k": 1,
+    "cases_by_design": {
+      "apb_regblock": 1,
+      "arbiter_rr2": 1,
+      "rv_buffer": 1
+    },
+    "syntax@1": 1.0,
+    "syntax@k": 1.0,
+    "proven@1": 0.0,
+    "proven@k": 0.0,
+    "non_vacuous@k": 0.0,
+    "antecedent_reachable@1": 0.3333333333333333,
+    "antecedent_reachable@k": 0.3333333333333333,
+    "cover_reachable@k": 0.0,
+    "proven_non_vacuous@k": 0.0,
+    "reference_proven@1": 0.0,
+    "reference_non_vacuous@1": 0.0,
+    "reference_antecedent_reachable@1": 0.3333333333333333,
+    "harness_reachability_status": "unreachable",
+    "harness_reachability_status_counts": {
+      "not_run": 1,
+      "unreachable": 2
+    },
+    "formal_metrics_status": "measured",
+    "hallucinated_signal_rate": 0.0,
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "average_rounds": 0.0,
+    "repair_success_after_feedback": 0.0,
+    "repaired_non_vacuous_success_after_feedback": 0.0,
+    "source_counts": {
+      "reference_oracle": 3
+    },
+    "failure_categories": {
+      "unreachable_antecedent": 2,
+      "unreachable_cover_goal": 1
+    },
+    "root_cause_candidates": {
+      "design2sva_embedding_bug": 3
+    },
+    "failure_taxonomy": [
+      "overstrong_assertion",
+      "proven_non_vacuous",
+      "reset_clock_mismatch",
+      "syntax_error",
+      "temporal_mismatch",
+      "unknown_signal",
+      "unreachable_antecedent",
+      "unreachable_cover_goal",
+      "unsupported_helper_code",
+      "weak_vacuous_assertion"
+    ],
+    "root_cause_taxonomy": [
+      "candidate_generation_failure",
+      "cover_generation_bug",
+      "design2sva_embedding_bug",
+      "jasper_parser_misclassification",
+      "native_harness_unreachable",
+      "reference_task_invalid",
+      "reset_clock_mismatch",
+      "unknown"
+    ],
+    "rows": [
+      {
+        "case_id": "design2sva_arbiter_mutex",
+        "design_id": "arbiter_rr2",
+        "property_id": "p_mutex",
+        "candidate_index": 0,
+        "round": 0,
+        "valid_json": true,
+        "syntax_ok": true,
+        "exact_match": true,
+        "source": "reference_oracle",
+        "failure_category": "unreachable_cover_goal",
+        "root_cause_candidate": "design2sva_embedding_bug",
+        "harness_reachability_status": "not_run",
+        "reset_release_reachable": "unreachable",
+        "post_reset_reachable": "unreachable",
+        "clock_event_assumed": "@(posedge clk)",
+        "reset_polarity_used": "active_high",
+        "disable_iff_used": true,
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "unreachable",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-harness-rootcause-v1/jasper/reports/design2sva/design2sva_c0_r0/design2sva_arbiter_mutex"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "no_antecedent",
+          "reason": "no_top_level_implication",
+          "antecedent": null,
+          "antecedent_kind": "invariant",
+          "trigger_kind": "invariant",
+          "has_antecedent": false,
+          "requires_antecedent_cover": false,
+          "cover_property_id": "",
+          "cover_sva": "",
+          "cover_status": "not_run",
+          "antecedent_reachability": "no_antecedent"
+        },
+        "native_reference_oracle": {
+          "native_reference_proves": true,
+          "native_proof_status": "proven",
+          "native_vacuity_status": "not_run",
+          "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
+          "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+          "backend_status": "passed"
+        },
+        "embedding_audit": {
+          "issues": [],
+          "issue_flags": {},
+          "artifact_paths": {}
+        }
+      },
+      {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "candidate_index": 0,
+        "round": 0,
+        "valid_json": true,
+        "syntax_ok": true,
+        "exact_match": true,
+        "source": "reference_oracle",
+        "failure_category": "unreachable_antecedent",
+        "root_cause_candidate": "design2sva_embedding_bug",
+        "harness_reachability_status": "unreachable",
+        "reset_release_reachable": "unreachable",
+        "post_reset_reachable": "unreachable",
+        "clock_event_assumed": "@(posedge clk)",
+        "reset_polarity_used": "active_high",
+        "disable_iff_used": true,
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "unreachable",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-harness-rootcause-v1/jasper/reports/design2sva/design2sva_c0_r0/design2sva_rv_buffer_ready_full"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "reason": "",
+          "antecedent": "full && out_ready",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "has_antecedent": true,
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+          "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+          "cover_status": "unreachable",
+          "antecedent_reachability": "unreachable"
+        },
+        "native_reference_oracle": {
+          "native_reference_proves": true,
+          "native_proof_status": "proven",
+          "native_vacuity_status": "not_run",
+          "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
+          "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+          "backend_status": "passed"
+        },
+        "embedding_audit": {
+          "issues": [],
+          "issue_flags": {},
+          "artifact_paths": {}
+        }
+      },
+      {
+        "case_id": "design2sva_apb_setup_enable",
+        "design_id": "apb_regblock",
+        "property_id": "p_setup_then_enable",
+        "candidate_index": 0,
+        "round": 0,
+        "valid_json": true,
+        "syntax_ok": true,
+        "exact_match": true,
+        "source": "reference_oracle",
+        "failure_category": "unreachable_antecedent",
+        "root_cause_candidate": "design2sva_embedding_bug",
+        "harness_reachability_status": "unreachable",
+        "reset_release_reachable": "unreachable",
+        "post_reset_reachable": "unreachable",
+        "clock_event_assumed": "@(posedge pclk)",
+        "reset_polarity_used": "active_low",
+        "disable_iff_used": true,
+        "proof_metadata": {
+          "backend": "jaspergold",
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "unreachable",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-harness-rootcause-v1/jasper/reports/design2sva/design2sva_c0_r0/design2sva_apb_setup_enable"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "reason": "",
+          "antecedent": "psel && !penable",
+          "antecedent_kind": "antecedent",
+          "trigger_kind": "antecedent",
+          "has_antecedent": true,
+          "requires_antecedent_cover": true,
+          "cover_property_id": "cov_p_setup_then_enable_antecedent",
+          "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+          "cover_status": "unreachable",
+          "antecedent_reachability": "unreachable"
+        },
+        "native_reference_oracle": {
+          "native_reference_proves": true,
+          "native_proof_status": "proven",
+          "native_vacuity_status": "not_run",
+          "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
+          "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+          "backend_status": "passed"
+        },
+        "embedding_audit": {
+          "issues": [],
+          "issue_flags": {},
+          "artifact_paths": {}
+        }
+      }
+    ]
+  },
+  "mode": "reference_oracle",
+  "formal_check_mode": "jasper",
+  "native_oracle_results": "evaluation/results/design2sva_native_reference_oracle_jasper.json",
+  "results": [
+    {
+      "case_id": "design2sva_arbiter_mutex",
+      "design_id": "arbiter_rr2",
+      "property_id": "p_mutex",
+      "native_reference_oracle": {
+        "native_reference_proves": true,
+        "native_proof_status": "proven",
+        "native_vacuity_status": "not_run",
+        "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
+        "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+        "backend_status": "passed"
+      },
+      "harness_reachability_audit": {
+        "reference_antecedent_reachable": true,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "not_run",
+        "cover_status": "not_run",
+        "cover_sva": ""
+      },
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_mutex",
+                "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+                "source": "reference_oracle",
+                "referenced_signals": [
+                  "clk",
+                  "gnt0",
+                  "gnt1",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata."
+              },
+              "metrics": {
+                "case_id": "design2sva_arbiter_mutex",
+                "design_id": "arbiter_rr2",
+                "property_id": "p_mutex",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "syntax_ok": true,
+                "exact_match": true,
+                "source": "reference_oracle",
+                "failure_category": "unreachable_cover_goal",
+                "root_cause_candidate": "design2sva_embedding_bug",
+                "harness_reachability_status": "not_run",
+                "reset_release_reachable": "unreachable",
+                "post_reset_reachable": "unreachable",
+                "clock_event_assumed": "@(posedge clk)",
+                "reset_polarity_used": "active_high",
+                "disable_iff_used": true,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "passed",
+                  "syntax_status": "passed",
+                  "proof_status": "unreachable",
+                  "vacuity_status": "not_flagged_vacuous",
+                  "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-harness-rootcause-v1/jasper/reports/design2sva/design2sva_c0_r0/design2sva_arbiter_mutex"
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "no_antecedent",
+                  "reason": "no_top_level_implication",
+                  "antecedent": null,
+                  "antecedent_kind": "invariant",
+                  "trigger_kind": "invariant",
+                  "has_antecedent": false,
+                  "requires_antecedent_cover": false,
+                  "cover_property_id": "",
+                  "cover_sva": "",
+                  "cover_status": "not_run",
+                  "antecedent_reachability": "no_antecedent"
+                },
+                "native_reference_oracle": {
+                  "native_reference_proves": true,
+                  "native_proof_status": "proven",
+                  "native_vacuity_status": "not_run",
+                  "native_property_path": "arbiter_rr2_harness.properties_i.p_mutex",
+                  "native_report_dir": "jasper/reports/arbiter_rr2_correct_prove",
+                  "backend_status": "passed"
+                },
+                "embedding_audit": {
+                  "issues": [],
+                  "issue_flags": {},
+                  "artifact_paths": {}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "design2sva_rv_buffer_ready_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "native_reference_oracle": {
+        "native_reference_proves": true,
+        "native_proof_status": "proven",
+        "native_vacuity_status": "not_run",
+        "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
+        "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+        "backend_status": "passed"
+      },
+      "harness_reachability_audit": {
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "unreachable",
+        "cover_status": "unreachable",
+        "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));"
+      },
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+                "source": "reference_oracle",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata."
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "syntax_ok": true,
+                "exact_match": true,
+                "source": "reference_oracle",
+                "failure_category": "unreachable_antecedent",
+                "root_cause_candidate": "design2sva_embedding_bug",
+                "harness_reachability_status": "unreachable",
+                "reset_release_reachable": "unreachable",
+                "post_reset_reachable": "unreachable",
+                "clock_event_assumed": "@(posedge clk)",
+                "reset_polarity_used": "active_high",
+                "disable_iff_used": true,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "passed",
+                  "syntax_status": "passed",
+                  "proof_status": "unreachable",
+                  "vacuity_status": "not_flagged_vacuous",
+                  "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-harness-rootcause-v1/jasper/reports/design2sva/design2sva_c0_r0/design2sva_rv_buffer_ready_full"
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "has_antecedent": true,
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "unreachable",
+                  "antecedent_reachability": "unreachable"
+                },
+                "native_reference_oracle": {
+                  "native_reference_proves": true,
+                  "native_proof_status": "proven",
+                  "native_vacuity_status": "not_run",
+                  "native_property_path": "rv_buffer_harness.properties_i.p_in_ready_when_full_and_out_ready",
+                  "native_report_dir": "jasper/reports/rv_buffer_correct_prove",
+                  "backend_status": "passed"
+                },
+                "embedding_audit": {
+                  "issues": [],
+                  "issue_flags": {},
+                  "artifact_paths": {}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "design2sva_apb_setup_enable",
+      "design_id": "apb_regblock",
+      "property_id": "p_setup_then_enable",
+      "native_reference_oracle": {
+        "native_reference_proves": true,
+        "native_proof_status": "proven",
+        "native_vacuity_status": "not_run",
+        "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
+        "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+        "backend_status": "passed"
+      },
+      "harness_reachability_audit": {
+        "reference_antecedent_reachable": false,
+        "reference_proven": false,
+        "reference_non_vacuous": false,
+        "harness_reachability_status": "unreachable",
+        "cover_status": "unreachable",
+        "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));"
+      },
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_setup_then_enable",
+                "sva": "p_setup_then_enable: assert property (@(posedge pclk) disable iff (!presetn) psel && !penable |=> psel && penable);",
+                "source": "reference_oracle",
+                "referenced_signals": [
+                  "pclk",
+                  "penable",
+                  "presetn",
+                  "psel"
+                ],
+                "intent_summary": "Reference oracle assertion from local fixture metadata."
+              },
+              "metrics": {
+                "case_id": "design2sva_apb_setup_enable",
+                "design_id": "apb_regblock",
+                "property_id": "p_setup_then_enable",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "syntax_ok": true,
+                "exact_match": true,
+                "source": "reference_oracle",
+                "failure_category": "unreachable_antecedent",
+                "root_cause_candidate": "design2sva_embedding_bug",
+                "harness_reachability_status": "unreachable",
+                "reset_release_reachable": "unreachable",
+                "post_reset_reachable": "unreachable",
+                "clock_event_assumed": "@(posedge pclk)",
+                "reset_polarity_used": "active_low",
+                "disable_iff_used": true,
+                "proof_metadata": {
+                  "backend": "jaspergold",
+                  "status": "passed",
+                  "syntax_status": "passed",
+                  "proof_status": "unreachable",
+                  "vacuity_status": "not_flagged_vacuous",
+                  "report_dir": "/home/esf2634/Formal-Aware-AI-DV-Copilot-harness-rootcause-v1/jasper/reports/design2sva/design2sva_c0_r0/design2sva_apb_setup_enable"
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "psel && !penable",
+                  "antecedent_kind": "antecedent",
+                  "trigger_kind": "antecedent",
+                  "has_antecedent": true,
+                  "requires_antecedent_cover": true,
+                  "cover_property_id": "cov_p_setup_then_enable_antecedent",
+                  "cover_sva": "cov_p_setup_then_enable_antecedent: cover property (@(posedge pclk) disable iff (!presetn) (psel && !penable));",
+                  "cover_status": "unreachable",
+                  "antecedent_reachability": "unreachable"
+                },
+                "native_reference_oracle": {
+                  "native_reference_proves": true,
+                  "native_proof_status": "proven",
+                  "native_vacuity_status": "not_run",
+                  "native_property_path": "apb_regblock_harness.properties_i.p_setup_then_enable",
+                  "native_report_dir": "jasper/reports/apb_regblock_correct_prove",
+                  "backend_status": "passed"
+                },
+                "embedding_audit": {
+                  "issues": [],
+                  "issue_flags": {},
+                  "artifact_paths": {}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "artifact_note": "Stage 11 compact result: heavyweight context, generated wrappers, and full diagnostics are represented by artifact path pointers in embedding_audit."
+}

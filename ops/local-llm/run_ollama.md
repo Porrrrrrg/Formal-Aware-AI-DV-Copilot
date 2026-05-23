@@ -48,8 +48,7 @@ Healthcheck against Ollama:
 ```bash
 LOCAL_BASE_URL=http://127.0.0.1:11434/v1 \
 SERVED_MODEL_NAME=qwen3:14b \
-SERVING_BACKEND=ollama \
-python ops/local-llm/healthcheck.py
+python ops/local-llm/healthcheck.py --requests 3
 ```
 
 ## GGUF Modelfile option

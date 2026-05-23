@@ -10,7 +10,8 @@ tokens.
 - `.github/workflows/ci.yml`
   - Runs on pull requests, pushes to `main`, and manual dispatch.
   - Gates PRs with workflow lint, Ruff, pytest, schema validation, deterministic
-    smoke tests, secret scanning, CodeQL, and a human review check.
+    smoke tests, secret scanning, CodeQL, and a maintainer-controlled review
+    label check for solo-repository operation.
   - Attests CI smoke artifacts on trusted non-PR events only.
 - `.github/workflows/nightly-bench.yml`
   - Runs nightly and on manual dispatch.
@@ -26,8 +27,10 @@ tokens.
 Configure `main` in GitHub branch protection or repository rulesets:
 
 - Require a pull request before merging.
-- Require at least one approving review from a non-bot reviewer.
-- Dismiss stale approvals when new commits are pushed.
+- Require approving reviews only when a real second reviewer is available.
+- For solo-repository operation, rely on the `MERGE_READY` label gate and do not
+  require approving reviews.
+- Dismiss stale approvals when approving reviews are required.
 - Block direct pushes to `main`; only admins may bypass in emergencies.
 - Require these status checks before merge:
   - `Review gate`
@@ -39,8 +42,10 @@ Configure `main` in GitHub branch protection or repository rulesets:
   - `CodeQL`
 - Require branches to be up to date before merging when practical.
 
-The `Review gate` workflow check is a CI-side backstop. Branch protection is
-still the source of truth for preventing direct pushes and merges without review.
+The `Review gate` workflow check is a CI-side backstop. In solo-repository mode
+it requires a non-draft PR, no active `CHANGES_REQUESTED` review, and the
+maintainer-controlled `MERGE_READY` label. Branch protection is still the source
+of truth for preventing direct pushes and merges outside the queue.
 
 ## Token Permissions
 
@@ -72,20 +77,21 @@ approval gate.
 
 ## Offline Runner Strategy
 
-Full JasperGold validation belongs on an isolated self-hosted formal runner, not on GitHub-hosted runners. The expected setup is repository-root based:
+Full JasperGold validation belongs on `moore` or another isolated self-hosted
+runner, not on GitHub-hosted runners. The expected lab setup is:
 
 ```bash
-export JASPER_BIN=/path/to/jg
-bash scripts/run_jasper_smoke.sh
+ssh moore
+source /vol/eecs391/cadence.env
 ```
 
 Recommended runner controls:
 
-- Use a dedicated runner label such as `self-hosted`, `linux`, `formal-runner`, `offline`.
+- Use a dedicated runner label such as `self-hosted`, `linux`, `moore`, `offline`.
 - Keep egress blocked except for the minimum GitHub runner control plane traffic,
   or use a pre-synced mirror/worktree if the runner is fully offline.
 - Do not place cloud credentials or hosted LLM credentials on the runner.
-- Source the local Cadence setup inside the job or runner wrapper when the installation requires it.
+- Source `/vol/eecs391/cadence.env` inside the job or runner wrapper.
 - Set `JASPER_BIN` to the local JasperGold binary when needed.
 - Upload only parsed reports, summaries, and redacted artifacts required for
   review. Do not upload license files, home directories, caches, or raw secrets.
@@ -115,11 +121,11 @@ Use labels to make review ownership explicit:
 - `schema`: JSON schemas, validators, evidence packet shape.
 - `benchmark`: evaluation entrypoints or result artifacts.
 - `jasper`: Cadence/JasperGold runner behavior.
-- `needs-formal-runner`: requires validation on a JasperGold-capable runner.
+- `needs-moore`: requires validation on the lab server.
 - `external-llm`: may send benchmark prompts or outputs outside the repo.
 - `docs`: documentation-only changes.
 
-Changes labeled `security`, `external-llm`, or `needs-formal-runner` should get explicit
+Changes labeled `security`, `external-llm`, or `needs-moore` should get explicit
 review from the CI/CD and DV owners before merge.
 
 ## Branch Naming

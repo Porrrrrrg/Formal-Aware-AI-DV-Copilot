@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 
 from copilot.json_utils import coerce_string_list
 from copilot.llm_client import call_llm_json, llm_configured
+from copilot.playbook_guidance import prompt_guidance_refs
 
 
 def recommend(
@@ -50,16 +51,16 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable", True))
     reachable = cover_status in {"reachable", "covered", "uncovered"}
 
-    if observed_status in {"syntax_error", "undetermined"}:
-        gap_type = "reachable_coverage_gap"
-        action = "rerun_jaspergold"
-        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
-        evidence.insert(0, f"Observed JasperGold status is {observed_status}; refresh or fix evidence before closure.")
-    elif observed_status == "covered":
+    if observed_status == "covered":
         gap_type = "reachable_coverage_gap"
         action = "rerun_jaspergold"
         evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
         evidence.insert(0, "Observed JasperGold status is already covered; refresh stale coverage accounting before adding stimulus.")
+    elif observed_status in {"syntax_error", "undetermined"}:
+        gap_type = "reachable_coverage_gap"
+        action = "rerun_jaspergold"
+        evidence = collect_structured_evidence(coverage, evidence_packet, reachable=True)
+        evidence.insert(0, f"Observed JasperGold status is {observed_status}; rerun or fix evidence before closure.")
     elif reachable and expected:
         gap_type = "reachable_coverage_gap"
         action = "add_directed_test_or_sequence"
@@ -104,13 +105,11 @@ def collect_structured_evidence(
     if expression:
         evidence.append(f"Coverage expression: {expression}")
     witness_events = evidence_packet.get("witness_events")
-    if not witness_events:
-        witness_events = coverage.get("witness_events")
     if isinstance(witness_events, list) and witness_events:
         evidence.append("Witness trace starts with: " + str(witness_events[0]))
     if not evidence:
         evidence.append(
-            "JasperGold cover evidence indicates the goal is reachable."
+            "Benchmark metadata labels the goal as reachable."
             if reachable
             else "Coverage goal is unreachable, invalid, or contradicts expected behavior."
         )
@@ -123,9 +122,17 @@ def build_prompt(packet: dict[str, object]) -> str:
         "Use cover reachability, coverage intent, assumptions, and related signals. "
         "When witness_events are present, prefer them over inferred stimulus. "
         "When observed JasperGold status exists, prefer it over expected benchmark metadata. "
-        "Use only coverage_gap_type and recommended_next_action values allowed by coverage_closure_output.schema.json. "
-        "Do not invent signals or local paths. Return only one JSON object with coverage_gap_type, "
-        "recommended_next_action, directed_sequence, and evidence; do not include Markdown.\n\n"
+        "Use only coverage_gap_type and recommended_next_action values allowed by "
+        "coverage_closure_output.schema.json. Do not invent signals or local paths. "
+        "Return only one JSON object with coverage_gap_type, recommended_next_action, "
+        "directed_sequence, and evidence; do not include Markdown.\n\n"
+        "PLAYBOOK_GUIDANCE:\n"
+        + prompt_guidance_refs(
+            "coverage closure decision checklist",
+            "assumption/vacuity review checklist",
+            "intent alignment review note",
+        )
+        + "\n\n"
         + json.dumps(sanitized_packet(packet), indent=2)
     )
 

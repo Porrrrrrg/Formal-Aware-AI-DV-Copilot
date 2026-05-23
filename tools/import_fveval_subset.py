@@ -135,11 +135,7 @@ def normalize_signal_list(value: object) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-dir", required=True, type=Path)
-    parser.add_argument(
-        "--out",
-        default=Path("benchmarks/external/fveval_subset/local_import_cases.json"),
-        type=Path,
-    )
+    parser.add_argument("--out", default=Path("benchmarks/fveval_subset/local_import_cases.json"), type=Path)
     parser.add_argument("--limit", type=int)
     args = parser.parse_args()
 

@@ -1,0 +1,59 @@
+version: 1
+name: sva_repair_patterns
+description: Evidence-grounded SVA repair patterns for backend-neutral DV workflows.
+claim_boundaries:
+  - proof_pass_not_intent_alignment
+  - not_flagged_vacuous_not_certificate
+  - jasperloop_not_production_signoff
+patterns:
+  - id: syntax_minimal_repair
+    when:
+      jasper_status: syntax_error
+    cues:
+      - parser_error
+      - missing_endproperty
+      - malformed_delay
+    action: make_minimal_syntax_edit
+    avoid:
+      - changing_property_intent
+      - adding_unreferenced_signals
+  - id: cex_timing_repair
+    when:
+      jasper_status: cex_fail
+    cues:
+      - off_by_one_cycle
+      - implication_mismatch
+      - past_or_stable_mismatch
+    action: align_temporal_operator_with_trace
+    avoid:
+      - hiding_failure_with_impossible_guard
+  - id: missing_protocol_guard
+    when:
+      jasper_status: cex_fail
+    cues:
+      - legal_idle_cycle
+      - antecedent_too_broad
+      - handshake_context_missing
+    action: add_evidence_backed_antecedent_guard
+    avoid:
+      - narrowing_beyond_intent
+  - id: reset_context_repair
+    when:
+      jasper_status: cex_fail
+    cues:
+      - failure_during_reset
+      - reset_polarity_mismatch
+      - disable_iff_missing_or_wrong
+    action: align_reset_disable_with_context
+    avoid:
+      - masking_post_reset_behavior
+  - id: vacuity_risk_review
+    when:
+      vacuity_hint: present
+    cues:
+      - antecedent_zero_hits
+      - trigger_unreachable
+      - assumption_risk
+    action: review_trigger_reachability_before_repair
+    avoid:
+      - strengthening_property_to_hide_overconstraint

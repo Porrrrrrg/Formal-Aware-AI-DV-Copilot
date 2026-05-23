@@ -1,4 +1,4 @@
-# Local Qwen Serving For JasperLoop-DV
+# Local Qwen serving for JasperLoop-DV
 
 This directory contains a local Qwen deployment route for a single NVIDIA RTX
 3090 Ti. The target is a localhost OpenAI-compatible endpoint usable by
@@ -8,35 +8,30 @@ Codex-style agents and by `JASPERLOOP_LLM_CMD` wrappers.
 
 - Preferred serving stack: vLLM.
 - Backend fallback: SGLang.
-- Low-friction local fallback: Ollama.
-- Default safe profile: `safe_profile` -> `Qwen/Qwen3-14B-AWQ`.
-- Larger MoE profile: `big_profile` -> `Qwen/Qwen3-30B-A3B-Instruct-2507`
-  or an explicitly configured local quantized 30B-A3B snapshot.
-- Dense experimental profile only: `experimental_dense_profile` ->
-  `Qwen/Qwen3-32B-AWQ`.
-- Fast development local fallback: `Qwen/Qwen3-8B-AWQ`.
-- `Qwen/Qwen3-32B-AWQ` is not used by safe or big profiles.
+- Low-friction fallback: Ollama.
+- Default main model: `Qwen/Qwen3-14B-AWQ`.
+- Fast development model: `Qwen/Qwen3-8B-AWQ`.
+- Larger models: experiment only on this 24 GB single-GPU target.
 
 The first-run defaults are intentionally conservative:
 
 - `MAX_MODEL_LEN=24576`
 - `GPU_MEMORY_UTILIZATION=0.82`
-- `MAX_NUM_SEQS=1`
 - `TENSOR_PARALLEL_SIZE=1`
 - localhost bind only: `127.0.0.1`
 
-Raise context length toward 32768 only after local manifests show no OOMs on
-real JasperLoop prompts.
+Raise context length toward 32768 only after the healthcheck benchmark shows no
+OOMs and acceptable p95 latency on real JasperLoop prompts.
 
 ## Files
 
-- `env.example`: configuration, profiles, and fallback policy.
+- `env.example`: configuration and fallback policy.
 - `run_vllm.sh`: environment probe plus vLLM OpenAI-compatible server.
 - `run_sglang.sh`: SGLang fallback server.
 - `run_ollama.md`: Ollama fallback notes.
-- `healthcheck.py`: JSON-only localhost healthcheck and reproducible manifest writer.
+- `healthcheck.py`: localhost healthcheck, latency probe, GPU/OOM logging.
 
-## Setup Flow
+## Setup flow
 
 Use WSL/Ubuntu with the NVIDIA driver visible inside Linux. Do not run the
 service as root.
@@ -52,8 +47,6 @@ Edit `ops/local-llm/.env`:
 - Set `LOG_DIR` to a writable log directory separate from model weights.
 - Keep `ALLOW_MODEL_DOWNLOAD=false` for normal service starts.
 - Set `ALLOW_MODEL_DOWNLOAD=true` only during model acquisition.
-- Keep `QWEN_PROFILE=safe_profile` unless you are explicitly testing another
-  profile.
 
 Install in a clean virtualenv that matches your local driver/CUDA capability:
 
@@ -96,39 +89,22 @@ Smoke request:
 curl http://127.0.0.1:8000/v1/models
 ```
 
-## JSON-Only Healthcheck
+## Healthcheck and Manifest
 
 ```bash
 source ops/local-llm/.env
-python ops/local-llm/healthcheck.py
+python ops/local-llm/healthcheck.py --requests 5
 ```
 
-The healthcheck sends one prompt to the local model and asks for schema-shaped
-JSON. It also writes:
+The healthcheck appends JSONL records to `HEALTHCHECK_LOG` with:
 
-- `reports/local_llm/qwen_health_<UTC>.json`
-- `reports/local_llm/run_manifest.json`
+- GPU utilization.
+- VRAM used and total VRAM.
+- request latency and p95 latency.
+- tokens/s when the server returns usage fields.
+- OOM count parsed from the service log.
 
-Both files include these manifest fields:
-
-- `model_name`
-- `quantization`
-- `backend`
-- `gpu_name`
-- `vram_gb`
-- `max_model_len`
-- `gpu_memory_utilization`
-- `max_num_seqs`
-- `LOCAL_ONLY`
-- `cloud_fallback_allowed`
-- `git_sha`
-- `prompt_version`
-- `schema_version`
-
-If the local server is down, the report records `local_unavailable` and still
-updates `run_manifest.json`.
-
-To audit cloud fallback policy without calling cloud:
+To test cloud fallback behavior without enabling it by accident:
 
 ```bash
 LOCAL_ONLY=false \
@@ -137,22 +113,19 @@ CLOUD_OPENAI_MODEL="$OPENAI_MODEL" \
 python ops/local-llm/healthcheck.py --check-cloud-fallback
 ```
 
-The healthcheck does not execute cloud fallback. Cloud fallback is hard-disabled
-while `LOCAL_ONLY=true`.
+Cloud fallback is disabled while `LOCAL_ONLY=true`.
 
-## Fallback Rules
+## Fallback rules
 
 Fallback to cloud is allowed only when `LOCAL_ONLY=false` and a cloud key/model
-are present in environment variables. Keys must never be committed. The
-healthcheck records fallback eligibility but does not call cloud, so it does not
-create quality, latency, or cost comparisons.
+are present in environment variables. Keys must never be committed.
 
-Recommended fallback triggers for calling agents:
+Recommended fallback triggers:
 
 - local server unavailable or returns 5xx.
 - local request timeout.
 - any new OOM observed in the service log.
-- latency policy only when an agent has comparable local/cloud manifests.
+- p95 latency above `LATENCY_WARN_MS`, only when `CLOUD_FALLBACK_ON_LATENCY_WARN=true`.
 
 Recommended local degradation before cloud:
 
@@ -161,7 +134,7 @@ Recommended local degradation before cloud:
 3. Switch `QWEN_MODEL` to `Qwen/Qwen3-8B-AWQ`.
 4. Use SGLang or Ollama if vLLM compatibility is blocked.
 
-## JasperLoop-DV Integration
+## JasperLoop-DV integration
 
 This repo already accepts any command that reads a prompt from stdin and writes
 JSON to stdout through `JASPERLOOP_LLM_CMD`. Use a small wrapper around the
@@ -176,16 +149,16 @@ LOCAL_API_KEY=EMPTY
 The wrapper should try local first. It may try cloud only when
 `LOCAL_ONLY=false` and `CLOUD_OPENAI_API_KEY` is present.
 
-## Agent Handoff Messages
+## Agent handoff messages
 
 For Orchestrator:
 
 ```text
-ARTIFACT_READY: localhost:8000 provides a Qwen OpenAI-compatible endpoint; default profile is safe_profile.
+ARTIFACT_READY: localhost:8000 已提供 Qwen OpenAI-compatible endpoint；默认模型为 Qwen/Qwen3-14B-AWQ。
 ```
 
 For Research/Eval:
 
 ```text
-ARTIFACT_READY: local Qwen health manifest generated without cloud comparison.
+ARTIFACT_READY: local Qwen healthcheck manifest scaffold 已生成；未运行真实 Qwen benchmark。
 ```

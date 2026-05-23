@@ -9,6 +9,7 @@
     "Address 0x00 selects reg0.",
     "Address 0x04 selects reg1."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The wrong-address bug swaps the address decode for reg0 and reg1."

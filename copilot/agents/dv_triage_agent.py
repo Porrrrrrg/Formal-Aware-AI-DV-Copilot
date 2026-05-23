@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 
 from copilot.json_utils import coerce_string_list
 from copilot.llm_client import call_llm_json, llm_configured
+from copilot.playbook_guidance import prompt_guidance_refs
 
 ACTION_BY_ISSUE = {
     "rtl_design_bug": "fix_rtl",
@@ -99,7 +100,7 @@ def infer_issue_type(packet: dict[str, object]) -> str:
 
     if isinstance(coverage, dict) and coverage:
         expected_reachable = coverage.get("expected_reachable")
-        cover_status = str(coverage.get("jasper_cover_result", "")).lower()
+        cover_status = str(coverage.get("expected_cover_status", "")).lower()
         if expected_reachable is False or cover_status == "unreachable":
             return "unreachable_or_invalid_coverage_goal"
         if task_type == "coverage_closure":
@@ -135,7 +136,7 @@ def infer_root_cause(packet: dict[str, object], issue_type: str) -> str:
     if issue_type == "testbench_stimulus_bug":
         return "The design behavior is reachable, but the stimulus does not exercise the required scenario."
     if issue_type == "reachable_coverage_gap":
-        return "Formal cover evidence says the goal is reachable, so closure needs directed stimulus."
+        return "Benchmark metadata labels the goal as reachable, so closure needs directed stimulus."
     return "The goal contradicts the design intent or is unreachable under valid constraints."
 
 
@@ -158,8 +159,8 @@ def collect_evidence(packet: dict[str, object], issue_type: str) -> list[str]:
 
     coverage = packet.get("coverage_context", {})
     if isinstance(coverage, dict) and coverage:
-        if coverage.get("jasper_cover_result"):
-            evidence.append(f"Jasper cover result: {coverage.get('jasper_cover_result')}")
+        if coverage.get("expected_cover_status"):
+            evidence.append(f"Expected cover status: {coverage.get('expected_cover_status')}")
         if coverage.get("expected_reachable") is not None:
             evidence.append(f"Expected reachable: {coverage.get('expected_reachable')}")
 
@@ -204,10 +205,17 @@ def build_prompt(packet: dict[str, object]) -> str:
     return (
         "You are JasperLoop-DV, a formal-aware DV triage assistant. "
         "Classify the issue using only the evidence packet. Do not invent signals. "
-        "Use only predicted_issue_type and recommended_next_action values allowed by diagnosis_output.schema.json. "
-        "suspect_rtl_signals must come from the packet signal_role_map, counterexample changed_signals, "
-        "or coverage related_signals. Return only one JSON object matching diagnosis_output.schema.json; "
-        "do not include Markdown.\n\n"
+        "Use only predicted_issue_type and recommended_next_action values allowed by "
+        "diagnosis_output.schema.json. suspect_rtl_signals must come from the packet "
+        "signal_role_map, counterexample changed_signals, or coverage related_signals. "
+        "Return only one JSON object matching diagnosis_output.schema.json; do not include Markdown.\n\n"
+        "PLAYBOOK_GUIDANCE:\n"
+        + prompt_guidance_refs(
+            "CEX debug checklist",
+            "assumption/vacuity review checklist",
+            "intent alignment review note",
+        )
+        + "\n\n"
         + json.dumps(payload, indent=2)
     )
 

@@ -1,0 +1,1113 @@
+{
+  "summary": {
+    "num_cases": 1,
+    "k": 1,
+    "cases_by_design": {
+      "rv_buffer": 1
+    },
+    "syntax@1": 1.0,
+    "syntax@k": 1.0,
+    "proven@1": 0.0,
+    "proven@k": 0.0,
+    "non_vacuous@k": 0.0,
+    "antecedent_reachable@1": 0.0,
+    "antecedent_reachable@k": 0.0,
+    "cover_reachable@k": 0.0,
+    "proven_non_vacuous@k": 1.0,
+    "formal_metrics_status": "replayed",
+    "hallucinated_signal_rate": 0.0,
+    "fallback_rate": 0.0,
+    "valid_json_rate": 1.0,
+    "average_rounds": 1.0,
+    "repair_success_after_feedback": 1.0,
+    "repaired_non_vacuous_success_after_feedback": 1.0,
+    "source_counts": {
+      "replay": 1
+    },
+    "failure_categories": {
+      "proven_non_vacuous": 1,
+      "unreachable_antecedent": 1
+    },
+    "failure_taxonomy": [
+      "overstrong_assertion",
+      "proven_non_vacuous",
+      "reset_clock_mismatch",
+      "syntax_error",
+      "temporal_mismatch",
+      "unknown_signal",
+      "unreachable_antecedent",
+      "unreachable_cover_goal",
+      "unsupported_helper_code",
+      "weak_vacuous_assertion"
+    ],
+    "rows": [
+      {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "candidate_index": 0,
+        "round": 0,
+        "valid_json": true,
+        "validation_error": "",
+        "syntax_ok": true,
+        "exact_match": false,
+        "has_hallucinated_signal": false,
+        "hallucinated_identifiers": [],
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "source": "replay",
+        "proof_metadata": {
+          "backend": "jaspergold_replay",
+          "status": "failed",
+          "syntax_status": "passed",
+          "proof_status": "unreachable",
+          "vacuity_status": null,
+          "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r0/assertion"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "reason": "",
+          "antecedent": "full && !full",
+          "event_control": "@(posedge clk)",
+          "disable_iff": "disable iff (rst)",
+          "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+          "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && !full));",
+          "cover_status": "unreachable",
+          "antecedent_reachability": "unreachable",
+          "cover_proof_metadata": {
+            "backend": "jaspergold_replay",
+            "status": "failed",
+            "syntax_status": "passed",
+            "proof_status": "unreachable",
+            "vacuity_status": null,
+            "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r0/cover"
+          }
+        },
+        "antecedent_reachable": false,
+        "cover_reachable": false,
+        "failure_category": "unreachable_antecedent"
+      },
+      {
+        "case_id": "design2sva_rv_buffer_ready_full",
+        "design_id": "rv_buffer",
+        "property_id": "p_in_ready_when_full_and_out_ready",
+        "candidate_index": 0,
+        "round": 1,
+        "valid_json": true,
+        "validation_error": "",
+        "syntax_ok": true,
+        "exact_match": true,
+        "has_hallucinated_signal": false,
+        "hallucinated_identifiers": [],
+        "reset_clock_mismatch": false,
+        "unsupported_helper_code_issue": false,
+        "source": "repair",
+        "proof_metadata": {
+          "backend": "jaspergold_replay",
+          "status": "passed",
+          "syntax_status": "passed",
+          "proof_status": "proven",
+          "vacuity_status": "not_flagged_vacuous",
+          "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/assertion"
+        },
+        "antecedent_metadata": {
+          "extraction_status": "extracted",
+          "reason": "",
+          "antecedent": "full && out_ready",
+          "event_control": "@(posedge clk)",
+          "disable_iff": "disable iff (rst)",
+          "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+          "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+          "cover_status": "covered",
+          "antecedent_reachability": "reachable",
+          "cover_proof_metadata": {
+            "backend": "jaspergold_replay",
+            "status": "passed",
+            "syntax_status": "passed",
+            "proof_status": "covered",
+            "vacuity_status": null,
+            "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/cover"
+          }
+        },
+        "antecedent_reachable": true,
+        "cover_reachable": true,
+        "failure_category": "proven_non_vacuous"
+      }
+    ]
+  },
+  "mode": "replay",
+  "formal_check_mode": "replay",
+  "results": [
+    {
+      "case_id": "design2sva_rv_buffer_ready_full",
+      "design_id": "rv_buffer",
+      "property_id": "p_in_ready_when_full_and_out_ready",
+      "context": {
+        "schema_version": "design2sva-context-v1",
+        "module": "rv_buffer",
+        "source_files": [
+          "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv"
+        ],
+        "interface": {
+          "module": "rv_buffer",
+          "ports": [
+            {
+              "name": "clk",
+              "direction": "input",
+              "type": "logic"
+            },
+            {
+              "name": "full",
+              "direction": "output",
+              "type": "logic"
+            },
+            {
+              "name": "in_data",
+              "direction": "input",
+              "type": "logic [WIDTH-1:0]"
+            },
+            {
+              "name": "in_ready",
+              "direction": "output",
+              "type": "logic"
+            },
+            {
+              "name": "in_valid",
+              "direction": "input",
+              "type": "logic"
+            },
+            {
+              "name": "out_data",
+              "direction": "output",
+              "type": "logic [WIDTH-1:0]"
+            },
+            {
+              "name": "out_ready",
+              "direction": "input",
+              "type": "logic"
+            },
+            {
+              "name": "out_valid",
+              "direction": "output",
+              "type": "logic"
+            },
+            {
+              "name": "rst",
+              "direction": "input",
+              "type": "logic"
+            }
+          ],
+          "source_range": {
+            "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+            "start_line": 1,
+            "end_line": 49
+          }
+        },
+        "clock_reset_candidates": {
+          "clocks": [
+            "clk"
+          ],
+          "resets": [
+            "rst"
+          ]
+        },
+        "hierarchy": {
+          "rv_buffer": [
+            {
+              "module": "i",
+              "instance": "f",
+              "source_range": {
+                "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                "start_line": 12,
+                "end_line": 12
+              }
+            },
+            {
+              "module": "unique",
+              "instance": "case",
+              "source_range": {
+                "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                "start_line": 16,
+                "end_line": 16
+              }
+            }
+          ]
+        },
+        "visible_signals": [
+          "clk",
+          "rst",
+          "in_valid",
+          "in_ready",
+          "out_valid",
+          "out_ready",
+          "full",
+          "in_data",
+          "out_data",
+          "data_q",
+          "input_fire",
+          "output_fire"
+        ],
+        "signal_budget": {
+          "limit": 24,
+          "used": 12,
+          "truncated": false
+        },
+        "assigns": [
+          {
+            "lhs": "out_valid",
+            "rhs": "full",
+            "dependencies": [
+              "full"
+            ],
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 5,
+              "end_line": 5
+            }
+          },
+          {
+            "lhs": "out_data",
+            "rhs": "data_q",
+            "dependencies": [
+              "data_q"
+            ],
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 6,
+              "end_line": 6
+            }
+          },
+          {
+            "lhs": "in_ready",
+            "rhs": "!full || out_ready",
+            "dependencies": [
+              "full",
+              "out_ready"
+            ],
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 7,
+              "end_line": 7
+            }
+          },
+          {
+            "lhs": "input_fire",
+            "rhs": "in_valid && in_ready",
+            "dependencies": [
+              "in_ready",
+              "in_valid"
+            ],
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 8,
+              "end_line": 8
+            }
+          },
+          {
+            "lhs": "output_fire",
+            "rhs": "out_valid && out_ready",
+            "dependencies": [
+              "out_ready",
+              "out_valid"
+            ],
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 9,
+              "end_line": 9
+            }
+          }
+        ],
+        "always_blocks": [
+          {
+            "id": "always_0",
+            "kind": "always_ff",
+            "assigned_signals": [
+              "data_q",
+              "full"
+            ],
+            "dependencies": [
+              "b0",
+              "b01",
+              "b1",
+              "b10",
+              "b11",
+              "clk",
+              "in_data",
+              "input_fire",
+              "output_fire",
+              "rst",
+              "unique"
+            ],
+            "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 25,
+              "end_line": 47
+            }
+          }
+        ],
+        "signal_logic": {
+          "clk": {
+            "signal": "clk",
+            "drivers": [],
+            "uses": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ]
+          },
+          "rst": {
+            "signal": "rst",
+            "drivers": [],
+            "uses": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ]
+          },
+          "in_valid": {
+            "signal": "in_valid",
+            "drivers": [],
+            "uses": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "input_fire",
+                "rhs": "in_valid && in_ready",
+                "dependencies": [
+                  "in_ready",
+                  "in_valid"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 8,
+                  "end_line": 8
+                }
+              }
+            ]
+          },
+          "in_ready": {
+            "signal": "in_ready",
+            "drivers": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "in_ready",
+                "rhs": "!full || out_ready",
+                "dependencies": [
+                  "full",
+                  "out_ready"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 7,
+                  "end_line": 7
+                }
+              }
+            ],
+            "uses": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "input_fire",
+                "rhs": "in_valid && in_ready",
+                "dependencies": [
+                  "in_ready",
+                  "in_valid"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 8,
+                  "end_line": 8
+                }
+              }
+            ]
+          },
+          "out_valid": {
+            "signal": "out_valid",
+            "drivers": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "out_valid",
+                "rhs": "full",
+                "dependencies": [
+                  "full"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 5,
+                  "end_line": 5
+                }
+              }
+            ],
+            "uses": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "output_fire",
+                "rhs": "out_valid && out_ready",
+                "dependencies": [
+                  "out_ready",
+                  "out_valid"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 9,
+                  "end_line": 9
+                }
+              }
+            ]
+          },
+          "out_ready": {
+            "signal": "out_ready",
+            "drivers": [],
+            "uses": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "in_ready",
+                "rhs": "!full || out_ready",
+                "dependencies": [
+                  "full",
+                  "out_ready"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 7,
+                  "end_line": 7
+                }
+              },
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "output_fire",
+                "rhs": "out_valid && out_ready",
+                "dependencies": [
+                  "out_ready",
+                  "out_valid"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 9,
+                  "end_line": 9
+                }
+              }
+            ]
+          },
+          "full": {
+            "signal": "full",
+            "drivers": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ],
+            "uses": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "out_valid",
+                "rhs": "full",
+                "dependencies": [
+                  "full"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 5,
+                  "end_line": 5
+                }
+              },
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "in_ready",
+                "rhs": "!full || out_ready",
+                "dependencies": [
+                  "full",
+                  "out_ready"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 7,
+                  "end_line": 7
+                }
+              }
+            ]
+          },
+          "in_data": {
+            "signal": "in_data",
+            "drivers": [],
+            "uses": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ]
+          },
+          "out_data": {
+            "signal": "out_data",
+            "drivers": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "out_data",
+                "rhs": "data_q",
+                "dependencies": [
+                  "data_q"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 6,
+                  "end_line": 6
+                }
+              }
+            ],
+            "uses": []
+          },
+          "data_q": {
+            "signal": "data_q",
+            "drivers": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ],
+            "uses": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "out_data",
+                "rhs": "data_q",
+                "dependencies": [
+                  "data_q"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 6,
+                  "end_line": 6
+                }
+              }
+            ]
+          },
+          "input_fire": {
+            "signal": "input_fire",
+            "drivers": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "input_fire",
+                "rhs": "in_valid && in_ready",
+                "dependencies": [
+                  "in_ready",
+                  "in_valid"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 8,
+                  "end_line": 8
+                }
+              }
+            ],
+            "uses": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ]
+          },
+          "output_fire": {
+            "signal": "output_fire",
+            "drivers": [
+              {
+                "kind": "assign",
+                "module": "rv_buffer",
+                "lhs": "output_fire",
+                "rhs": "out_valid && out_ready",
+                "dependencies": [
+                  "out_ready",
+                  "out_valid"
+                ],
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 9,
+                  "end_line": 9
+                }
+              }
+            ],
+            "uses": [
+              {
+                "kind": "always_ff",
+                "module": "rv_buffer",
+                "id": "always_0",
+                "assigned_signals": [
+                  "data_q",
+                  "full"
+                ],
+                "dependencies": [
+                  "b0",
+                  "b01",
+                  "b1",
+                  "b10",
+                  "b11",
+                  "clk",
+                  "in_data",
+                  "input_fire",
+                  "output_fire",
+                  "rst",
+                  "unique"
+                ],
+                "text": "always_ff @(posedge clk) begin\n    if (rst) begin\n      full <= 1'b0;\n      data_q <= '0;\n    end else begin\n      unique case ({input_fire, output_fire})\n        2'b10: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        2'b01: begin\n          full <= 1'b0;\n        end\n        2'b11: begin\n          full <= 1'b1;\n          data_q <= in_data;\n        end\n        default: begin\n          full <= full;\n        end\n      endcase\n    end\n  end",
+                "source_range": {
+                  "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                  "start_line": 25,
+                  "end_line": 47
+                }
+              }
+            ]
+          }
+        },
+        "reset_behavior": {
+          "reset_candidates": [
+            "rst"
+          ],
+          "observed_reset_branches": [
+            {
+              "reset": "rst",
+              "active_condition": "rst",
+              "polarity": "active_high",
+              "always_block": "always_0",
+              "assigned_values": [
+                {
+                  "signal": "full",
+                  "value": "1'b0"
+                },
+                {
+                  "signal": "data_q",
+                  "value": "'0"
+                }
+              ],
+              "affected_signals": [
+                "data_q",
+                "full"
+              ],
+              "source_range": {
+                "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+                "start_line": 25,
+                "end_line": 47
+              }
+            }
+          ]
+        },
+        "handshake_fire_conditions": [
+          {
+            "name": "input_fire",
+            "condition": "in_valid && in_ready",
+            "dependencies": [
+              "in_ready",
+              "in_valid"
+            ],
+            "source": "assign",
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 8,
+              "end_line": 8
+            }
+          },
+          {
+            "name": "output_fire",
+            "condition": "out_valid && out_ready",
+            "dependencies": [
+              "out_ready",
+              "out_valid"
+            ],
+            "source": "assign",
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 9,
+              "end_line": 9
+            }
+          }
+        ],
+        "state_update_conditions": [
+          {
+            "always_block": "always_0",
+            "assigned_signals": [
+              "data_q",
+              "full"
+            ],
+            "conditions": [
+              "{input_fire, output_fire} == 2'b10",
+              "{input_fire, output_fire} == 2'b01",
+              "{input_fire, output_fire} == 2'b11",
+              "{input_fire, output_fire} default"
+            ],
+            "reset_values": {
+              "data_q": "'0",
+              "full": "1'b0"
+            },
+            "source_range": {
+              "path": "D:\\AI-DV\\Formal-Aware-AI-DV-Copilot-anti-vacuity-v1\\benchmarks\\rv_buffer\\rtl\\rv_buffer_correct.sv",
+              "start_line": 25,
+              "end_line": 47
+            },
+            "precision": "block_level_conservative"
+          }
+        ],
+        "limitations": [
+          "RTL context was extracted by the lightweight regex fallback parser."
+        ]
+      },
+      "candidate_paths": [
+        {
+          "candidate_index": 0,
+          "rounds": [
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) (full && !full) |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "rst"
+                ],
+                "intent_summary": "A deliberately unreachable full/not-full trigger for replaying anti-vacuity repair.",
+                "source": "replay",
+                "repair_metadata": {
+                  "round": 0,
+                  "failure_category": "unreachable_antecedent",
+                  "feedback": "Candidate trigger is unreachable. Weaken or correct the antecedent, remove impossible state assumptions, align reset polarity, or use a simpler interface-level safety invariant.",
+                  "changed_by_repair": false
+                },
+                "proof_metadata": {
+                  "backend": "jaspergold_replay",
+                  "status": "failed",
+                  "syntax_status": "passed",
+                  "proof_status": "unreachable",
+                  "vacuity_status": null,
+                  "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r0/assertion"
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 0,
+                "round": 0,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": false,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "replay",
+                "proof_metadata": {
+                  "backend": "jaspergold_replay",
+                  "status": "failed",
+                  "syntax_status": "passed",
+                  "proof_status": "unreachable",
+                  "vacuity_status": null,
+                  "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r0/assertion"
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && !full",
+                  "event_control": "@(posedge clk)",
+                  "disable_iff": "disable iff (rst)",
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && !full));",
+                  "cover_status": "unreachable",
+                  "antecedent_reachability": "unreachable",
+                  "cover_proof_metadata": {
+                    "backend": "jaspergold_replay",
+                    "status": "failed",
+                    "syntax_status": "passed",
+                    "proof_status": "unreachable",
+                    "vacuity_status": null,
+                    "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r0/cover"
+                  }
+                },
+                "antecedent_reachable": false,
+                "cover_reachable": false,
+                "failure_category": "unreachable_antecedent"
+              }
+            },
+            {
+              "candidate": {
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "sva": "p_in_ready_when_full_and_out_ready: assert property (@(posedge clk) disable iff (rst) full && out_ready |-> in_ready);",
+                "helper_code": "",
+                "referenced_signals": [
+                  "clk",
+                  "full",
+                  "in_ready",
+                  "out_ready",
+                  "rst"
+                ],
+                "intent_summary": "A reachable full-and-output-ready trigger should make the buffer input-ready.",
+                "source": "repair",
+                "repair_metadata": {
+                  "round": 1,
+                  "failure_category": "proven_non_vacuous",
+                  "feedback": "No repair feedback was required.",
+                  "changed_by_repair": true
+                },
+                "proof_metadata": {
+                  "backend": "jaspergold_replay",
+                  "status": "passed",
+                  "syntax_status": "passed",
+                  "proof_status": "proven",
+                  "vacuity_status": "not_flagged_vacuous",
+                  "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/assertion"
+                }
+              },
+              "metrics": {
+                "case_id": "design2sva_rv_buffer_ready_full",
+                "design_id": "rv_buffer",
+                "property_id": "p_in_ready_when_full_and_out_ready",
+                "candidate_index": 0,
+                "round": 1,
+                "valid_json": true,
+                "validation_error": "",
+                "syntax_ok": true,
+                "exact_match": true,
+                "has_hallucinated_signal": false,
+                "hallucinated_identifiers": [],
+                "reset_clock_mismatch": false,
+                "unsupported_helper_code_issue": false,
+                "source": "repair",
+                "proof_metadata": {
+                  "backend": "jaspergold_replay",
+                  "status": "passed",
+                  "syntax_status": "passed",
+                  "proof_status": "proven",
+                  "vacuity_status": "not_flagged_vacuous",
+                  "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/assertion"
+                },
+                "antecedent_metadata": {
+                  "extraction_status": "extracted",
+                  "reason": "",
+                  "antecedent": "full && out_ready",
+                  "event_control": "@(posedge clk)",
+                  "disable_iff": "disable iff (rst)",
+                  "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+                  "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+                  "cover_status": "covered",
+                  "antecedent_reachability": "reachable",
+                  "cover_proof_metadata": {
+                    "backend": "jaspergold_replay",
+                    "status": "passed",
+                    "syntax_status": "passed",
+                    "proof_status": "covered",
+                    "vacuity_status": null,
+                    "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/cover"
+                  }
+                },
+                "antecedent_reachable": true,
+                "cover_reachable": true,
+                "failure_category": "proven_non_vacuous"
+              }
+            }
+          ],
+          "final_metrics": {
+            "case_id": "design2sva_rv_buffer_ready_full",
+            "design_id": "rv_buffer",
+            "property_id": "p_in_ready_when_full_and_out_ready",
+            "candidate_index": 0,
+            "round": 1,
+            "valid_json": true,
+            "validation_error": "",
+            "syntax_ok": true,
+            "exact_match": true,
+            "has_hallucinated_signal": false,
+            "hallucinated_identifiers": [],
+            "reset_clock_mismatch": false,
+            "unsupported_helper_code_issue": false,
+            "source": "repair",
+            "proof_metadata": {
+              "backend": "jaspergold_replay",
+              "status": "passed",
+              "syntax_status": "passed",
+              "proof_status": "proven",
+              "vacuity_status": "not_flagged_vacuous",
+              "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/assertion"
+            },
+            "antecedent_metadata": {
+              "extraction_status": "extracted",
+              "reason": "",
+              "antecedent": "full && out_ready",
+              "event_control": "@(posedge clk)",
+              "disable_iff": "disable iff (rst)",
+              "cover_property_id": "cov_p_in_ready_when_full_and_out_ready_antecedent",
+              "cover_sva": "cov_p_in_ready_when_full_and_out_ready_antecedent: cover property (@(posedge clk) disable iff (rst) (full && out_ready));",
+              "cover_status": "covered",
+              "antecedent_reachability": "reachable",
+              "cover_proof_metadata": {
+                "backend": "jaspergold_replay",
+                "status": "passed",
+                "syntax_status": "passed",
+                "proof_status": "covered",
+                "vacuity_status": null,
+                "report_dir": "replay://design2sva_rv_buffer_ready_full/c0/r1/cover"
+              }
+            },
+            "antecedent_reachable": true,
+            "cover_reachable": true,
+            "failure_category": "proven_non_vacuous"
+          }
+        }
+      ]
+    }
+  ]
+}

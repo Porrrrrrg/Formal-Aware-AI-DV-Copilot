@@ -1,0 +1,2623 @@
+{
+  "run_id": "run_20260511T000415Z_0b7d76718814_2e9785",
+  "benchmark": "local_dv",
+  "split": "all",
+  "metrics": {
+    "correctness": {
+      "query_success_rate": 1.0,
+      "mean_recall_at_k": 0.408788,
+      "mean_mrr": 1.0
+    },
+    "latency": {
+      "avg_ms": 0.066,
+      "p50_ms": 0.059,
+      "p95_ms": 0.102,
+      "timeout_ms": 1000.0
+    },
+    "cost": {
+      "external_calls": 0,
+      "llm_tokens": 0,
+      "estimated_usd": 0.0,
+      "indexed_documents": 39,
+      "indexed_bytes": 28839
+    },
+    "failure_buckets": {
+      "syntax_error": 0,
+      "missing_premise": 0,
+      "timeout": 0,
+      "solver_fail": 0,
+      "schema_drift": 0
+    }
+  },
+  "rows": [
+    {
+      "item_id": "local_dv:arbiter_A2",
+      "case_id": "arbiter_A2",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.101,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 98.324031,
+          "matched_symbols": [
+            "arbiter",
+            "asserted",
+            "client",
+            "cycle",
+            "grant",
+            "its",
+            "one",
+            "only",
+            "req0",
+            "request",
+            "that"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+          "score": 50.873356,
+          "matched_symbols": [
+            "arbiter",
+            "asserted",
+            "cycle",
+            "grant",
+            "remains",
+            "req0",
+            "within"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 49.05931,
+          "matched_symbols": [
+            "client",
+            "grant",
+            "req0",
+            "request"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "score": 21.417123,
+          "matched_symbols": [
+            "req0"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assumption_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assumption_manifest.yaml",
+          "score": 10.519747,
+          "matched_symbols": [
+            "arbiter",
+            "fairness",
+            "req0"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A5",
+      "case_id": "arbiter_A5",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.079,
+      "gold_doc_count": 10,
+      "matched_doc_count": 3,
+      "recall_at_k": 0.3,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 70.430846,
+          "matched_symbols": [
+            "after",
+            "contested",
+            "grant",
+            "grants",
+            "only",
+            "priority",
+            "request",
+            "robin",
+            "round",
+            "turn"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 32.370511,
+          "matched_symbols": [
+            "grant",
+            "priority",
+            "request",
+            "robin",
+            "round",
+            "turn"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+          "score": 28.372425,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "turn"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_spurious_grant.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_spurious_grant.sv",
+          "score": 28.14645,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "turn"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_correct.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv",
+          "score": 27.705129,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "turn"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A6",
+      "case_id": "arbiter_A6",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.051,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+          "score": 41.062525,
+          "matched_symbols": [
+            "bounded",
+            "contention",
+            "p_persistent_fairness0",
+            "window",
+            "within"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 17.179629,
+          "matched_symbols": [
+            "client",
+            "contention",
+            "persistent"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 16.063122,
+          "matched_symbols": [
+            "client"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+          "path": "benchmarks/arbiter_rr2/coverage/coverage_plan.yaml",
+          "score": 11.82965,
+          "matched_symbols": [
+            "contention",
+            "persistent",
+            "should"
+          ],
+          "kind": "coverage",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+          "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A7",
+      "case_id": "arbiter_A7",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.053,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 32.228144,
+          "matched_symbols": [
+            "after",
+            "arbiter",
+            "both",
+            "grant",
+            "never",
+            "reset"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+          "score": 23.923568,
+          "matched_symbols": [
+            "arbiter",
+            "both",
+            "clients",
+            "grant",
+            "never",
+            "p_mutex",
+            "reset"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+          "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+          "score": 11.330169,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "reset"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 9.459842,
+          "matched_symbols": [
+            "grant",
+            "reset"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_assumptions.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_assumptions.sv",
+          "score": 3.980784,
+          "matched_symbols": [
+            "reset"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A3",
+      "case_id": "arbiter_A3",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.052,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+          "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+          "path": "benchmarks/arbiter_rr2/coverage/coverage_plan.yaml",
+          "score": 3.883392,
+          "matched_symbols": [
+            "cov_illegal_double_grant"
+          ],
+          "kind": "coverage",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "score": 2.882539,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "score": 2.668,
+          "matched_symbols": [
+            "cov_illegal_double_grant"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+          "score": 2.589399,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A9",
+      "case_id": "arbiter_A9",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.045,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+          "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+          "path": "benchmarks/arbiter_rr2/coverage/coverage_plan.yaml",
+          "score": 3.883392,
+          "matched_symbols": [
+            "cov_alternating_grants"
+          ],
+          "kind": "coverage",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "score": 2.882539,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_properties.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_properties.sv",
+          "score": 2.668,
+          "matched_symbols": [
+            "cov_alternating_grants"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+          "score": 2.589399,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A10",
+      "case_id": "arbiter_A10",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.033,
+      "gold_doc_count": 10,
+      "matched_doc_count": 2,
+      "recall_at_k": 0.2,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+          "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:arbiter_rr2_harness.sv",
+          "path": "benchmarks/arbiter_rr2/formal/arbiter_rr2_harness.sv",
+          "score": 2.882539,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+          "score": 2.589399,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_spurious_grant.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_spurious_grant.sv",
+          "score": 2.568776,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_double_grant.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_double_grant.sv",
+          "score": 2.541783,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A1",
+      "case_id": "arbiter_A1",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.084,
+      "gold_doc_count": 11,
+      "matched_doc_count": 3,
+      "recall_at_k": 0.272727,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 98.234532,
+          "matched_symbols": [
+            "arbiter",
+            "at",
+            "both",
+            "client",
+            "contention",
+            "cycle",
+            "grant",
+            "granted",
+            "most",
+            "never",
+            "one",
+            "robin",
+            "round",
+            "turn"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+          "score": 43.670968,
+          "matched_symbols": [
+            "arbiter",
+            "both",
+            "clients",
+            "contention",
+            "cycle",
+            "grant",
+            "never",
+            "p_mutex",
+            "same",
+            "turn"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 41.213341,
+          "matched_symbols": [
+            "client",
+            "grant",
+            "robin",
+            "round",
+            "turn"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+          "score": 15.480912,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "turn"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_spurious_grant.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_spurious_grant.sv",
+          "score": 15.357613,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "turn"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A4",
+      "case_id": "arbiter_A4",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.066,
+      "gold_doc_count": 11,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.454545,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 84.3974,
+          "matched_symbols": [
+            "after",
+            "alternate",
+            "client",
+            "contention",
+            "contested",
+            "grant",
+            "grants",
+            "persistent",
+            "turn",
+            "two"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 57.992787,
+          "matched_symbols": [
+            "client",
+            "grant",
+            "turn"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+          "path": "benchmarks/arbiter_rr2/coverage/coverage_plan.yaml",
+          "score": 27.542693,
+          "matched_symbols": [
+            "contention",
+            "grants",
+            "persistent",
+            "should"
+          ],
+          "kind": "coverage",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+          "score": 23.431478,
+          "matched_symbols": [
+            "contention",
+            "grant",
+            "p_persistent_fairness1",
+            "turn"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:rtl:arbiter_rr2_bug_turn_update.sv",
+          "path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_turn_update.sv",
+          "score": 15.480912,
+          "matched_symbols": [
+            "arbiter_rr2",
+            "turn"
+          ],
+          "kind": "rtl",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:arbiter_A8",
+      "case_id": "arbiter_A8",
+      "design_id": "arbiter_rr2",
+      "split": "train",
+      "top_k": 5,
+      "latency_ms": 0.058,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+        "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:arbiter_rr2:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:coverage:coverage_plan.yaml",
+          "path": "benchmarks/arbiter_rr2/coverage/coverage_plan.yaml",
+          "score": 27.542693,
+          "matched_symbols": [
+            "alternating",
+            "contention",
+            "cov_alternating_grants",
+            "exercise",
+            "grants",
+            "persistent",
+            "should"
+          ],
+          "kind": "coverage",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:spec.md",
+          "path": "benchmarks/arbiter_rr2/spec.md",
+          "score": 24.305707,
+          "matched_symbols": [
+            "client",
+            "contention",
+            "grants",
+            "persistent",
+            "two"
+          ],
+          "kind": "spec",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:signal_role_map.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/signal_role_map.yaml",
+          "score": 16.063122,
+          "matched_symbols": [
+            "client"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:formal:run_jg.tcl",
+          "path": "benchmarks/arbiter_rr2/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "arbiter_rr2"
+          ],
+          "kind": "formal",
+          "design_id": "arbiter_rr2"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:arbiter_rr2:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/arbiter_rr2/manifests/assertion_manifest.yaml",
+          "score": 6.283184,
+          "matched_symbols": [
+            "contention"
+          ],
+          "kind": "manifest",
+          "design_id": "arbiter_rr2"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B2",
+      "case_id": "rv_B2",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.093,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "score": 55.872962,
+          "matched_symbols": [
+            "in_data",
+            "in_ready",
+            "in_valid",
+            "input",
+            "out_data"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+          "path": "benchmarks/rv_buffer/spec.md",
+          "score": 55.688876,
+          "matched_symbols": [
+            "buffer",
+            "high",
+            "in_ready",
+            "input",
+            "ready",
+            "valid"
+          ],
+          "kind": "spec",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+          "path": "benchmarks/rv_buffer/manifests/signal_role_map.yaml",
+          "score": 35.115069,
+          "matched_symbols": [
+            "high",
+            "in_data",
+            "in_ready",
+            "in_valid",
+            "input",
+            "out_data",
+            "ready",
+            "valid"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "score": 33.519008,
+          "matched_symbols": [
+            "in_data",
+            "in_ready",
+            "in_valid",
+            "input",
+            "out_data",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_inready.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_inready.sv",
+          "score": 32.995396,
+          "matched_symbols": [
+            "in_data",
+            "in_ready",
+            "in_valid",
+            "input",
+            "out_data",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B5",
+      "case_id": "rv_B5",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.081,
+      "gold_doc_count": 10,
+      "matched_doc_count": 3,
+      "recall_at_k": 0.3,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "score": 56.655524,
+          "matched_symbols": [
+            "out_data",
+            "out_ready",
+            "out_valid"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/rv_buffer/manifests/assertion_manifest.yaml",
+          "score": 36.107977,
+          "matched_symbols": [
+            "data",
+            "out_data",
+            "out_ready",
+            "out_valid",
+            "output",
+            "while"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_bad_full_update.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_bad_full_update.sv",
+          "score": 35.671502,
+          "matched_symbols": [
+            "out_data",
+            "out_ready",
+            "out_valid",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+          "score": 34.954868,
+          "matched_symbols": [
+            "out_data",
+            "out_ready",
+            "out_valid",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "score": 34.516988,
+          "matched_symbols": [
+            "out_data",
+            "out_ready",
+            "out_valid",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B6",
+      "case_id": "rv_B6",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.063,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+          "path": "benchmarks/rv_buffer/spec.md",
+          "score": 36.075151,
+          "matched_symbols": [
+            "data",
+            "output",
+            "stable",
+            "stalled",
+            "valid",
+            "while"
+          ],
+          "kind": "spec",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/rv_buffer/manifests/assertion_manifest.yaml",
+          "score": 27.142245,
+          "matched_symbols": [
+            "data",
+            "output",
+            "p_data_stable_while_stalled",
+            "stalled",
+            "valid",
+            "while"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assumption_manifest.yaml",
+          "path": "benchmarks/rv_buffer/manifests/assumption_manifest.yaml",
+          "score": 19.603471,
+          "matched_symbols": [
+            "data",
+            "output",
+            "stable",
+            "stalled",
+            "valid",
+            "while"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+          "path": "benchmarks/rv_buffer/manifests/signal_role_map.yaml",
+          "score": 11.475012,
+          "matched_symbols": [
+            "output",
+            "valid"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+          "path": "benchmarks/rv_buffer/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B7",
+      "case_id": "rv_B7",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.059,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+          "path": "benchmarks/rv_buffer/spec.md",
+          "score": 26.593316,
+          "matched_symbols": [
+            "dequeue",
+            "enqueue",
+            "full",
+            "simultaneous",
+            "while"
+          ],
+          "kind": "spec",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+          "path": "benchmarks/rv_buffer/coverage/coverage_plan.yaml",
+          "score": 26.193608,
+          "matched_symbols": [
+            "cov_simultaneous_enqueue_dequeue",
+            "dequeue",
+            "enqueue",
+            "exercise",
+            "full"
+          ],
+          "kind": "coverage",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/rv_buffer/manifests/assertion_manifest.yaml",
+          "score": 24.456022,
+          "matched_symbols": [
+            "dequeue",
+            "enqueue",
+            "full",
+            "simultaneous",
+            "while"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "score": 21.100196,
+          "matched_symbols": [
+            "cov_simultaneous_enqueue_dequeue",
+            "full"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "score": 19.698058,
+          "matched_symbols": [
+            "full",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B10",
+      "case_id": "rv_B10",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.028,
+      "gold_doc_count": 10,
+      "matched_doc_count": 2,
+      "recall_at_k": 0.2,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+          "path": "benchmarks/rv_buffer/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "score": 2.873977,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+          "score": 2.589399,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_inready.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_inready.sv",
+          "score": 2.528499,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_bad_full_update.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_bad_full_update.sv",
+          "score": 2.489465,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B3",
+      "case_id": "rv_B3",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.037,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+          "path": "benchmarks/rv_buffer/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+          "path": "benchmarks/rv_buffer/coverage/coverage_plan.yaml",
+          "score": 3.883392,
+          "matched_symbols": [
+            "cov_simultaneous_enqueue_dequeue"
+          ],
+          "kind": "coverage",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "score": 2.873977,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "score": 2.794591,
+          "matched_symbols": [
+            "cov_simultaneous_enqueue_dequeue"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+          "score": 2.589399,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B9",
+      "case_id": "rv_B9",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.033,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+          "path": "benchmarks/rv_buffer/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+          "path": "benchmarks/rv_buffer/coverage/coverage_plan.yaml",
+          "score": 3.883392,
+          "matched_symbols": [
+            "cov_stall_then_dequeue"
+          ],
+          "kind": "coverage",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_harness.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_harness.sv",
+          "score": 2.873977,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "score": 2.794591,
+          "matched_symbols": [
+            "cov_stall_then_dequeue"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+          "score": 2.589399,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B4",
+      "case_id": "rv_B4",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.095,
+      "gold_doc_count": 11,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.363636,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_inready.sv",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+          "path": "benchmarks/rv_buffer/spec.md",
+          "score": 124.294762,
+          "matched_symbols": [
+            "buffer",
+            "cycle",
+            "dequeue",
+            "enqueue",
+            "entry",
+            "full",
+            "in_ready",
+            "input",
+            "new",
+            "output",
+            "ready",
+            "same",
+            "side",
+            "simultaneous",
+            "single",
+            "while"
+          ],
+          "kind": "spec",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:rv_buffer_properties.sv",
+          "path": "benchmarks/rv_buffer/formal/rv_buffer_properties.sv",
+          "score": 96.128459,
+          "matched_symbols": [
+            "full",
+            "in_ready",
+            "input",
+            "out_ready",
+            "p_in_ready_when_full_and_out_ready"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "score": 79.21374,
+          "matched_symbols": [
+            "full",
+            "in_ready",
+            "input",
+            "out_ready",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_bad_full_update.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_bad_full_update.sv",
+          "score": 63.995809,
+          "matched_symbols": [
+            "full",
+            "in_ready",
+            "input",
+            "out_ready",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_inready.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_inready.sv",
+          "score": 62.901175,
+          "matched_symbols": [
+            "full",
+            "in_ready",
+            "input",
+            "out_ready",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B1",
+      "case_id": "rv_B1",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.102,
+      "gold_doc_count": 11,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.363636,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+        "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+          "path": "benchmarks/rv_buffer/spec.md",
+          "score": 75.866028,
+          "matched_symbols": [
+            "data",
+            "high",
+            "out_valid",
+            "output",
+            "stable",
+            "stalled",
+            "stored",
+            "valid",
+            "while"
+          ],
+          "kind": "spec",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/rv_buffer/manifests/assertion_manifest.yaml",
+          "score": 62.453576,
+          "matched_symbols": [
+            "change",
+            "data",
+            "out_ready",
+            "out_valid",
+            "output",
+            "p_data_stable_while_stalled",
+            "stalled",
+            "stored",
+            "valid",
+            "while"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_bad_full_update.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_bad_full_update.sv",
+          "score": 34.013212,
+          "matched_symbols": [
+            "out_ready",
+            "out_valid",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_bug_overwrite.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+          "score": 33.23001,
+          "matched_symbols": [
+            "out_ready",
+            "out_valid",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:rtl:rv_buffer_correct.sv",
+          "path": "benchmarks/rv_buffer/rtl/rv_buffer_correct.sv",
+          "score": 32.91237,
+          "matched_symbols": [
+            "out_ready",
+            "out_valid",
+            "output",
+            "rv_buffer"
+          ],
+          "kind": "rtl",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:rv_B8",
+      "case_id": "rv_B8",
+      "design_id": "rv_buffer",
+      "split": "dev",
+      "top_k": 5,
+      "latency_ms": 0.055,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+        "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:rv_buffer:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:coverage:coverage_plan.yaml",
+          "path": "benchmarks/rv_buffer/coverage/coverage_plan.yaml",
+          "score": 23.448908,
+          "matched_symbols": [
+            "cov_stall_then_dequeue",
+            "dequeue",
+            "exercise",
+            "followed",
+            "output"
+          ],
+          "kind": "coverage",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:spec.md",
+          "path": "benchmarks/rv_buffer/spec.md",
+          "score": 23.277261,
+          "matched_symbols": [
+            "dequeue",
+            "output",
+            "stalled",
+            "valid"
+          ],
+          "kind": "spec",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/rv_buffer/manifests/assertion_manifest.yaml",
+          "score": 13.452333,
+          "matched_symbols": [
+            "dequeue",
+            "output",
+            "stalled",
+            "valid"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:manifests:signal_role_map.yaml",
+          "path": "benchmarks/rv_buffer/manifests/signal_role_map.yaml",
+          "score": 11.475012,
+          "matched_symbols": [
+            "output",
+            "valid"
+          ],
+          "kind": "manifest",
+          "design_id": "rv_buffer"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:rv_buffer:formal:run_jg.tcl",
+          "path": "benchmarks/rv_buffer/formal/run_jg.tcl",
+          "score": 9.611644,
+          "matched_symbols": [
+            "rv_buffer"
+          ],
+          "kind": "formal",
+          "design_id": "rv_buffer"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C6",
+      "case_id": "apb_C6",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.074,
+      "gold_doc_count": 10,
+      "matched_doc_count": 3,
+      "recall_at_k": 0.3,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 57.988904,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "phase",
+            "prdata",
+            "read",
+            "register",
+            "response"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 45.048911,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "block",
+            "during",
+            "phase",
+            "register",
+            "state",
+            "this",
+            "wait",
+            "zero"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_read_latency.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_read_latency.sv",
+          "score": 29.531616,
+          "matched_symbols": [
+            "access",
+            "apb_regblock",
+            "prdata"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_wrong_addr.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_wrong_addr.sv",
+          "score": 27.767666,
+          "matched_symbols": [
+            "access",
+            "apb_regblock",
+            "prdata"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "score": 27.767666,
+          "matched_symbols": [
+            "access",
+            "apb_regblock",
+            "prdata"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C5",
+      "case_id": "apb_C5",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.163,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "score": 73.373589,
+          "matched_symbols": [
+            "penable",
+            "psel",
+            "pwrite"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 61.607351,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "low",
+            "penable",
+            "phase",
+            "psel",
+            "pwrite",
+            "register",
+            "write"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 45.954576,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "high",
+            "low",
+            "penable",
+            "phase",
+            "psel",
+            "pwrite",
+            "register",
+            "selected",
+            "state",
+            "write"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+          "score": 44.002115,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "penable",
+            "phase",
+            "psel",
+            "pwrite",
+            "write"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_assumptions.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_assumptions.sv",
+          "score": 28.921963,
+          "matched_symbols": [
+            "penable",
+            "psel",
+            "pwrite"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C7",
+      "case_id": "apb_C7",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.057,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 19.202518,
+          "matched_symbols": [
+            "reads",
+            "register",
+            "return",
+            "selected"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 13.707257,
+          "matched_symbols": [
+            "data",
+            "register"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+          "path": "benchmarks/apb_regblock/formal/run_jg.tcl",
+          "score": 9.587833,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+          "score": 3.612709,
+          "matched_symbols": [
+            "p_read_returns_reg0"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "score": 2.917303,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C2",
+      "case_id": "apb_C2",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.063,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 28.669663,
+          "matched_symbols": [
+            "apb",
+            "pslverr"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "score": 25.790621,
+          "matched_symbols": [
+            "assert",
+            "cov_invalid_address",
+            "pslverr"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+          "score": 21.881481,
+          "matched_symbols": [
+            "addresses",
+            "apb",
+            "assert",
+            "invalid",
+            "pslverr"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 17.451287,
+          "matched_symbols": [
+            "addresses",
+            "apb",
+            "assert",
+            "invalid",
+            "pslverr"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+          "path": "benchmarks/apb_regblock/coverage/coverage_plan.yaml",
+          "score": 12.265939,
+          "matched_symbols": [
+            "apb",
+            "cov_invalid_address",
+            "invalid",
+            "pslverr"
+          ],
+          "kind": "coverage",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C10",
+      "case_id": "apb_C10",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.029,
+      "gold_doc_count": 10,
+      "matched_doc_count": 3,
+      "recall_at_k": 0.3,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+        "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+          "path": "benchmarks/apb_regblock/formal/run_jg.tcl",
+          "score": 9.587833,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "score": 2.917303,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_write_enable.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_write_enable.sv",
+          "score": 2.464106,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_wrong_addr.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_wrong_addr.sv",
+          "score": 2.373439,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_correct.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_correct.sv",
+          "score": 2.373439,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C9",
+      "case_id": "apb_C9",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.041,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+          "path": "benchmarks/apb_regblock/formal/run_jg.tcl",
+          "score": 9.587833,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+          "path": "benchmarks/apb_regblock/coverage/coverage_plan.yaml",
+          "score": 3.860254,
+          "matched_symbols": [
+            "cov_invalid_address"
+          ],
+          "kind": "coverage",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "score": 2.917303,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "score": 2.603667,
+          "matched_symbols": [
+            "cov_invalid_address"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_write_enable.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_write_enable.sv",
+          "score": 2.464106,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C8",
+      "case_id": "apb_C8",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.04,
+      "gold_doc_count": 10,
+      "matched_doc_count": 4,
+      "recall_at_k": 0.4,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:run_jg.tcl",
+          "path": "benchmarks/apb_regblock/formal/run_jg.tcl",
+          "score": 9.587833,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+          "path": "benchmarks/apb_regblock/coverage/coverage_plan.yaml",
+          "score": 3.860254,
+          "matched_symbols": [
+            "cov_write_reg0_then_read"
+          ],
+          "kind": "coverage",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_harness.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_harness.sv",
+          "score": 2.917303,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "score": 2.603667,
+          "matched_symbols": [
+            "cov_write_reg0_then_read"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:rtl:apb_regblock_bug_write_enable.sv",
+          "path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_write_enable.sv",
+          "score": 2.464106,
+          "matched_symbols": [
+            "apb_regblock"
+          ],
+          "kind": "rtl",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C4",
+      "case_id": "apb_C4",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.085,
+      "gold_doc_count": 11,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.454545,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 98.19278,
+          "matched_symbols": [
+            "access",
+            "address",
+            "apb",
+            "data",
+            "phase",
+            "read",
+            "reg0",
+            "x00"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+          "score": 71.52903,
+          "matched_symbols": [
+            "access",
+            "address",
+            "apb",
+            "during",
+            "p_read_returns_reg0",
+            "phase",
+            "read",
+            "reg0",
+            "returns",
+            "valid",
+            "x00"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 61.940489,
+          "matched_symbols": [
+            "access",
+            "address",
+            "apb",
+            "block",
+            "during",
+            "phase",
+            "reg0",
+            "state",
+            "tiny",
+            "wait",
+            "x00",
+            "zero"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+          "path": "benchmarks/apb_regblock/coverage/coverage_plan.yaml",
+          "score": 44.771527,
+          "matched_symbols": [
+            "access",
+            "address",
+            "apb",
+            "read",
+            "reg0",
+            "x00"
+          ],
+          "kind": "coverage",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assumption_manifest.yaml",
+          "score": 30.567473,
+          "matched_symbols": [
+            "access",
+            "address",
+            "apb",
+            "phase",
+            "valid"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C1",
+      "case_id": "apb_C1",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.071,
+      "gold_doc_count": 11,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.454545,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+          "score": 79.570029,
+          "matched_symbols": [
+            "address",
+            "apb",
+            "p_write_updates_reg0",
+            "pwdata",
+            "reg0",
+            "updates",
+            "valid",
+            "with",
+            "write",
+            "x00"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 78.407334,
+          "matched_symbols": [
+            "address",
+            "apb",
+            "pwdata",
+            "reg0",
+            "reg1",
+            "write",
+            "x00",
+            "x04"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 66.075406,
+          "matched_symbols": [
+            "address",
+            "apb",
+            "reg0",
+            "reg1",
+            "selects",
+            "write",
+            "x00",
+            "x04"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:coverage:coverage_plan.yaml",
+          "path": "benchmarks/apb_regblock/coverage/coverage_plan.yaml",
+          "score": 40.961692,
+          "matched_symbols": [
+            "address",
+            "apb",
+            "reg0",
+            "write",
+            "x00"
+          ],
+          "kind": "coverage",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "score": 36.349908,
+          "matched_symbols": [
+            "p_write_updates_reg0",
+            "pwdata",
+            "reg0",
+            "reg1"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    },
+    {
+      "item_id": "local_dv:apb_C3",
+      "case_id": "apb_C3",
+      "design_id": "apb_regblock",
+      "split": "test",
+      "top_k": 5,
+      "latency_ms": 0.085,
+      "gold_doc_count": 10,
+      "matched_doc_count": 5,
+      "recall_at_k": 0.5,
+      "mrr": 1.0,
+      "matched_doc_ids": [
+        "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+        "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+        "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+        "local_dv:benchmarks:apb_regblock:spec.md"
+      ],
+      "top_hits": [
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:signal_role_map.yaml",
+          "path": "benchmarks/apb_regblock/manifests/signal_role_map.yaml",
+          "score": 74.564887,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "low",
+            "penable",
+            "phase",
+            "psel"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:formal:apb_regblock_properties.sv",
+          "path": "benchmarks/apb_regblock/formal/apb_regblock_properties.sv",
+          "score": 63.4239,
+          "matched_symbols": [
+            "p_setup_then_enable",
+            "penable",
+            "psel"
+          ],
+          "kind": "formal",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assertion_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assertion_manifest.yaml",
+          "score": 51.101902,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "penable",
+            "phase",
+            "psel",
+            "with"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:manifests:assumption_manifest.yaml",
+          "path": "benchmarks/apb_regblock/manifests/assumption_manifest.yaml",
+          "score": 41.393023,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "followed",
+            "phase",
+            "setup",
+            "testbench"
+          ],
+          "kind": "manifest",
+          "design_id": "apb_regblock"
+        },
+        {
+          "doc_id": "local_dv:benchmarks:apb_regblock:spec.md",
+          "path": "benchmarks/apb_regblock/spec.md",
+          "score": 32.153533,
+          "matched_symbols": [
+            "access",
+            "apb",
+            "high",
+            "low",
+            "penable",
+            "phase",
+            "psel"
+          ],
+          "kind": "spec",
+          "design_id": "apb_regblock"
+        }
+      ],
+      "failure_bucket": null,
+      "schema_error": null
+    }
+  ],
+  "vector_backend": {
+    "backend": "qdrant",
+    "status": "unspecified",
+    "reason": "QDRANT_URL and QDRANT_COLLECTION are not configured."
+  }
+}

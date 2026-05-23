@@ -1,0 +1,77 @@
+{
+  "LOCAL_ONLY": true,
+  "backend": "vllm",
+  "cloud_fallback_allowed": false,
+  "fallback_policy": {
+    "LOCAL_ONLY": true,
+    "cloud_fallback_allowed": false,
+    "cloud_not_called": true,
+    "fallback_reasons": [],
+    "note": "healthcheck records local manifest state only; it never executes cloud fallback"
+  },
+  "finished_at": "2026-05-10T22:21:56Z",
+  "git_sha": "3bb6821e687db39d384abd7f6fcb00cee6f7c6c1",
+  "gpu_after": {
+    "available": false,
+    "error": ""
+  },
+  "gpu_before": {
+    "available": false,
+    "error": ""
+  },
+  "gpu_memory_utilization": 0.82,
+  "gpu_name": "unknown",
+  "healthcheck_path": "reports\\local_llm\\qwen_health_20260510T222155Z.json",
+  "healthcheck_prompt": "Return exactly one JSON object and no prose. The JSON object must contain these exact keys and values:\n{\n  \"LOCAL_ONLY\": true,\n  \"backend\": \"vllm\",\n  \"cloud_fallback_allowed\": false,\n  \"git_sha\": \"3bb6821e687db39d384abd7f6fcb00cee6f7c6c1\",\n  \"gpu_memory_utilization\": 0.82,\n  \"gpu_name\": \"unknown\",\n  \"max_model_len\": 24576,\n  \"max_num_seqs\": 1,\n  \"model_name\": \"Qwen/Qwen3-14B-AWQ\",\n  \"prompt_version\": \"qwen-health-json-v1\",\n  \"quantization\": \"AWQ\",\n  \"schema_version\": \"local-qwen-health/v1\",\n  \"vram_gb\": 24.0\n}",
+  "local": {
+    "base_url": "http://127.0.0.1:9/v1",
+    "error": "URLError(TimeoutError('timed out'))",
+    "http_status": 0,
+    "json_error": "empty_response",
+    "json_valid": false,
+    "latency_ms": 1013.33,
+    "model_json": null,
+    "schema_errors": [
+      "missing_model_json"
+    ],
+    "status": "local_unavailable"
+  },
+  "max_model_len": 24576,
+  "max_num_seqs": 1,
+  "model_name": "Qwen/Qwen3-14B-AWQ",
+  "oom_after": 0,
+  "oom_before": 0,
+  "oom_delta": 0,
+  "profiles": {
+    "big_profile": {
+      "model_name": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+      "name": "big_profile",
+      "notes": "Use only after confirming the exact local snapshot fits the 24 GB target.",
+      "quantization": "native_or_local_quantized",
+      "role": "larger_moe_candidate"
+    },
+    "experimental_dense_profile": {
+      "model_name": "Qwen/Qwen3-32B-AWQ",
+      "name": "experimental_dense_profile",
+      "notes": "Qwen3-32B-AWQ is not a safe or big default for this host.",
+      "quantization": "AWQ",
+      "role": "experimental_dense_only"
+    },
+    "safe_profile": {
+      "model_name": "Qwen/Qwen3-14B-AWQ",
+      "name": "safe_profile",
+      "notes": "Default single RTX 3090 Ti local profile.",
+      "quantization": "AWQ",
+      "role": "default_safe"
+    }
+  },
+  "prompt_version": "qwen-health-json-v1",
+  "quantization": "AWQ",
+  "response_format_requested": true,
+  "run_id": "qwen_health_20260510T222155Z",
+  "run_manifest_path": "reports\\local_llm\\run_manifest.json",
+  "schema_version": "local-qwen-health/v1",
+  "selected_profile": "safe_profile",
+  "started_at": "2026-05-10T22:21:55Z",
+  "vram_gb": 24.0
+}

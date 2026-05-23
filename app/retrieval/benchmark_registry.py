@@ -18,6 +18,7 @@ LOCAL_DV_DESIGN_SPLITS = {
     "arbiter_rr2": "train",
     "rv_buffer": "dev",
     "apb_regblock": "test",
+    "fifo_1r1w": "test",
 }
 PUBLIC_SOURCE_NAMES = ["miniF2F", "ProofNet", "SMT-LIB", "traced_repos"]
 
@@ -215,7 +216,7 @@ def build_local_dv_registry() -> dict[str, Any]:
         {
             "name": "local_rtl_dv",
             "status": "present",
-            "path": "benchmarks/{arbiter_rr2,rv_buffer,apb_regblock}",
+            "path": "benchmarks/{arbiter_rr2,rv_buffer,apb_regblock,fifo_1r1w}",
             "notes": "Repo-local SVA/RTL DV benchmark assets.",
         }
     ]
@@ -273,14 +274,14 @@ def write_local_dv_registry(out_dir: Path | str = Path("benchmarks/local_dv")) -
                 "# local_dv Benchmark Overlay",
                 "",
                 "This directory is a repo-local benchmark registry for the checked-in RTL/SVA DV",
-                "cases under `benchmarks/arbiter_rr2`, `benchmarks/rv_buffer`, and",
-                "`benchmarks/apb_regblock`.",
+                "cases under `benchmarks/arbiter_rr2`, `benchmarks/rv_buffer`,",
+                "`benchmarks/apb_regblock`, and `benchmarks/fifo_1r1w`.",
                 "",
                 "Split policy:",
                 "",
                 "- `train`: `arbiter_rr2`",
                 "- `dev`: `rv_buffer`",
-                "- `test`: `apb_regblock`",
+                "- `test`: `apb_regblock`, `fifo_1r1w`",
                 "",
                 "The split is by design family, so case IDs and design IDs do not overlap across",
                 "train/dev/test. The retrieval corpus excludes `cases/*.json` and top-level",

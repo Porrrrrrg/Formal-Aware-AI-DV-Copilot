@@ -8,6 +8,11 @@ import json
 import re
 from pathlib import Path
 
+try:
+    from copilot.retrieval.rtl_index import build_rtl_index
+except ModuleNotFoundError:
+    build_rtl_index = None
+
 MODULE_RE = re.compile(r"\bmodule\s+(?P<name>[A-Za-z_][A-Za-z0-9_$]*)\s*(?P<header>.*?)\);", re.S)
 PORT_RE = re.compile(
     r"\b(?P<dir>input|output|inout)\b\s*(?P<type>logic|wire|reg)?\s*"
@@ -49,11 +54,14 @@ def extract_context(paths: list[Path], max_lines: int = 120) -> dict[str, object
                         }
                     )
 
-    return {
+    context = {
         "files": files,
         "modules": sorted(set(modules)),
         "ports": ports,
     }
+    if build_rtl_index is not None:
+        context["rtl_index"] = build_rtl_index(paths)
+    return context
 
 
 def main() -> int:

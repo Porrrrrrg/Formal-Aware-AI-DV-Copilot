@@ -9,6 +9,7 @@
     "The turn bit only changes after contested grants.",
     "Single-request grants do not need to consume round-robin priority."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The property incorrectly requires turn updates for uncontested single-client grants."

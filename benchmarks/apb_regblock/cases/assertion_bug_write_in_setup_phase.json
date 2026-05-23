@@ -9,6 +9,7 @@
     "APB writes occur in the access phase.",
     "The setup phase has psel high and penable low but must not update state."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "assertion_property_bug",
   "expected_next_action": "fix_assertion_property",
   "root_cause": "The property omits penable and incorrectly expects writes during APB setup instead of access."

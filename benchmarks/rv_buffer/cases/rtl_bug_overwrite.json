@@ -9,6 +9,7 @@
     "When out_valid is high and out_ready is low, the consumer has not accepted the data.",
     "The buffered output data must remain stable until the handshake completes."
   ],
+  "label_source": "author_expected",
   "expected_issue_type": "rtl_design_bug",
   "expected_next_action": "fix_rtl",
   "root_cause": "The overwrite bug accepts new input while full and stalled, replacing out_data before output handshake."

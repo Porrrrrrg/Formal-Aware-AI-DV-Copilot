@@ -1,0 +1,32 @@
+version: 1
+name: coverage_gap_rules
+description: Coverage gap classification rules for closure recommendations.
+claim_boundaries:
+  - replay_not_model_performance
+  - jasperloop_not_production_signoff
+classifications:
+  - id: reachable_coverage_gap
+    conditions:
+      - legal_goal
+      - witness_exists_or_plausible_legal_path
+      - no_assumption_blocks_goal
+    recommended_next_action: add_directed_test_or_sequence
+  - id: constraint_blocked_gap
+    conditions:
+      - legal_goal
+      - assumption_or_random_constraint_blocks_goal
+    recommended_next_action: fix_assumption_constraint
+  - id: unreachable_by_design
+    conditions:
+      - goal_conflicts_with_architecture
+      - owner_review_available
+    recommended_next_action: prove_unreachable_or_waive_coverage_goal
+  - id: invalid_coverage_goal
+    conditions:
+      - illegal_bin_or_bad_sampling_semantics
+    recommended_next_action: prove_unreachable_or_waive_coverage_goal
+  - id: stale_or_mismatched_evidence
+    conditions:
+      - missing_manifest_parity
+      - stale_coverage_report
+    recommended_next_action: rerun_jaspergold

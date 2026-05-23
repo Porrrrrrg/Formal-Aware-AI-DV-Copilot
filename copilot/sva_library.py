@@ -39,8 +39,15 @@ SVA_TEMPLATES = {
 
 SVA_KEYWORDS = {
     "assert",
+    "assume",
+    "begin",
     "property",
+    "endproperty",
+    "sequence",
+    "endsequence",
     "cover",
+    "end",
+    "endmodule",
     "posedge",
     "negedge",
     "disable",

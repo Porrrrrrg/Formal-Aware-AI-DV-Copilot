@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Exercise simultaneous enqueue and dequeue while full.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The assumption forbids the input side from presenting data while full, making simultaneous enqueue/dequeue coverage unreachable."

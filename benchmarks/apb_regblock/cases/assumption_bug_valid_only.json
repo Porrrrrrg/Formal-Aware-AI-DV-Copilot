@@ -11,6 +11,7 @@
     }
   ],
   "property_intent": "Invalid APB addresses should assert pslverr.",
+  "label_source": "author_expected",
   "expected_issue_type": "assumption_constraint_bug",
   "expected_next_action": "fix_assumption_constraint",
   "root_cause": "The valid-address-only assumption overconstrains invalid-address error coverage."
