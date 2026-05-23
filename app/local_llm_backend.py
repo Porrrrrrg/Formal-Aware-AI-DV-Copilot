@@ -340,4 +340,3 @@ def strip_extra(payload: dict[str, Any], schema_path: Path) -> dict[str, Any]:
 def validate_against_schema(payload: dict[str, Any], schema_path: Path) -> None:
     schema = json.loads(schema_path.read_text(encoding="utf-8-sig"))
     Draft202012Validator(schema).validate(payload)
-

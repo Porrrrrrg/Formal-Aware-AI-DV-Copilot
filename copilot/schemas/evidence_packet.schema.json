@@ -38,6 +38,10 @@
     },
     "coverage_context": { "type": "object" },
     "coverage_evidence": { "type": "object" },
+    "witness_events": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "vacuity_context": { "type": "object" },
     "rtl_context": { "type": "object" },
     "assertion_intent": { "type": "object" },

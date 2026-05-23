@@ -102,4 +102,3 @@ Raw local full-pass artifacts are ignored generated outputs and were not selecte
 | `evaluation/results/sva_repair_codex_full.json` | `D8B66A5E8C7BE4CCEA2D2EB1A0FD78EA9A4FD83745DA0BC98015AC2F0706E867` | 60648 bytes |
 | `evaluation/results/agent_eval_codex_full.json` | `CD9FEA5BC03B96BB75242308B7518B57DED73E7D23CF3B5CDEDF01D676A8679D` | 106667 bytes |
 | `evaluation/results/coverage_eval_codex_full.json` | `63F858DCF4E5ADB07434811503DD81546744F5E8DC397D79DD6DF38E27708EF0` | 25692 bytes |
-

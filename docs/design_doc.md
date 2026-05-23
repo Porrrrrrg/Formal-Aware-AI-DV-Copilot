@@ -12,7 +12,7 @@ The LLM is not the verification oracle. JasperGold is the source of truth for sy
 
 | Claim | Supported Today | Unsupported Claim | Next Evidence Required |
 | --- | --- | --- | --- |
-| JasperGold proof | Supported only for checked harnesses, properties, assumptions, and imported Moore summaries | Full design signoff or intent correctness | Per-property proof, vacuity, harness, assumptions, and tool-version manifests |
+| JasperGold proof | Supported only for checked harnesses, properties, assumptions, and imported JasperGold summaries | Full design signoff or intent correctness | Per-property proof, vacuity, harness, assumptions, and tool-version manifests |
 | Vacuity | Vacuity status is parsed when report data exists | `not_flagged_vacuous` as an explicit non-vacuity certificate | Explicit vacuity runs with parsed property-level status |
 | Codex results | Real runs may be reported only when source/error/fallback fields show Codex was used | Deterministic fallback accuracy as Codex accuracy | Valid JSON, fallback, source, error, and hallucinated-signal metrics |
 | FVEval subset | Local-compatible subset plumbing and prompt-sanitization checks | Official FVEval reproduction or commercial equivalence results | FVEval-compatible harnesses and FV tool scoring |

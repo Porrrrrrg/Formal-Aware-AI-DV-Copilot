@@ -10,7 +10,7 @@ placeholder sections for the project result. The final report and result tables
 retain the current claim boundaries:
 
 - JasperGold proof is scoped to checked harnesses, assumptions, properties, and
-  imported Moore summaries.
+  imported JasperGold summaries.
 - Deterministic scaffold and replay results validate workflow plumbing, not
   hosted LLM performance.
 - FVEval-compatible local subset results are not official FVEval reproduction

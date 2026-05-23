@@ -56,19 +56,19 @@ Allowed claims are limited to the recorded subset, model snapshot, prompt
 version, source counts, valid JSON rate, fallback rate, error rate, and
 hallucinated-signal rate.
 
-## Moore/JasperGold Evaluation
+## JasperGold Evaluation
 
 ```bash
-jasperloop moore-handoff prepare evidence-packets --dry-run --out-dir artifacts/moore_handoff/evidence
-jasperloop moore-handoff prepare codex-repair-final-proof --dry-run --out-dir artifacts/moore_handoff/codex_final
-jasperloop moore-handoff prepare sva-repair-ablation-proof --dry-run --out-dir artifacts/moore_handoff/ablation_final
-jasperloop moore-handoff validate --manifest artifacts/moore_handoff/codex_final/handoff_manifest.json --dry-run
+python -m app.cli workflow repair --dry-run --out-dir artifacts/jasper_handoff/repair
+bash scripts/run_jasper_smoke.sh
+bash scripts/run_jasper_sva_eval.sh
+bash scripts/run_jasper_sva_repair_eval.sh
 ```
 
-Moore-side example:
+Configured JasperGold host example:
 
 ```bash
-tcsh -fc 'source /vol/eecs391/cadence.env; setenv JASPER_BIN /vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg; bash scripts/run_moore_codex_repair_final_proof.sh --dry-run'
+bash scripts/run_jasper_smoke.sh
 ```
 
 ## Roadmap
@@ -84,4 +84,4 @@ Scaffold success, deterministic fallback, replay output, dry-run manifests, and
 local-compatible subset completion must not be described as real LLM quality,
 JasperGold proof, or production readiness. Real LLM results require recorded
 backend/source/error/fallback fields. Real formal claims require imported
-Moore/JasperGold summaries tied to checked harnesses and assumptions.
+JasperGold summaries tied to checked harnesses and assumptions.

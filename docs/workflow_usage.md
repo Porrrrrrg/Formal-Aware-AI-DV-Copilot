@@ -66,4 +66,3 @@ Typical repair dry-run outputs:
 - `candidate_stub.json`: local typed candidate stub.
 - `intent_alignment_result.json`: optional, when requested and inputs are available.
 - `moore_handoff_manifest.json`: optional, when requested.
-

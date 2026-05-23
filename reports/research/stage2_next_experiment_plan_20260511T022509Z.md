@@ -174,4 +174,3 @@ Every future claim should state:
 - Whether final JasperGold proof was run.
 - Whether raw artifacts are committed, local-only, or hash-referenced.
 - Which claims remain unsupported.
-

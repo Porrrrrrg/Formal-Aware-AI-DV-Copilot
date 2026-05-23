@@ -107,4 +107,3 @@ Validation for this report branch should include:
 | `python -m pytest -q` | Pass |
 | `python -m ruff check .` | Pass |
 | `git diff --check` | Pass |
-

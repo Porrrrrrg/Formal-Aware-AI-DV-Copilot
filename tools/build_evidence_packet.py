@@ -102,6 +102,13 @@ def build_packet(
     rtl_context = extract_context(rtl_paths or []) if rtl_paths else {}
     coverage_context = enrich_coverage_context(case_path, case)
 
+    coverage_evidence = build_coverage_evidence(
+        coverage_context,
+        trace_summaries,
+        property_results,
+        result_summary,
+    )
+
     packet = {
         "case_id": case["case_id"],
         "design_id": case["design_id"],
@@ -125,12 +132,10 @@ def build_packet(
         "trace_summaries": trace_summaries,
         "signal_role_map": signal_roles,
         "coverage_context": coverage_context,
-        "coverage_evidence": build_coverage_evidence(
-            coverage_context,
-            trace_summaries,
-            property_results,
-            result_summary,
-        ),
+        "coverage_evidence": coverage_evidence,
+        "witness_events": coverage_evidence.get("witness_events", [])
+        if isinstance(coverage_evidence, dict)
+        else [],
         "vacuity_context": build_vacuity_context(case, property_results, result_summary),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),

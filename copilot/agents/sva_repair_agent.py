@@ -102,7 +102,8 @@ def build_prompt(
     return (
         "You are JasperLoop-DV in SVA repair mode. "
         "Repair exactly one SystemVerilog assertion using only the property intent, allowed signals, "
-        "and JasperGold feedback. Do not invent signals. Return JSON with property_id, sva, and explanation.\n\n"
+        "and JasperGold feedback. Do not invent signals or local paths. "
+        "Return only one JSON object with property_id, sva, and explanation; do not include Markdown.\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(
             "CEX debug checklist",

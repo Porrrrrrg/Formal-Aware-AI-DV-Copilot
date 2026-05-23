@@ -49,4 +49,3 @@ No coverage gap/action misses were observed in the full pass.
 - LLM error count: 0
 - Fallback count: 0
 - Full-pass source counts: `llm`: 71
-

@@ -39,4 +39,3 @@ def test_split_payloads_reference_registry_items() -> None:
     assert len(payloads["train"]["item_ids"]) == 12
     assert len(payloads["dev"]["item_ids"]) == 12
     assert len(payloads["test"]["item_ids"]) == 29
-

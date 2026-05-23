@@ -25,4 +25,3 @@ Smoke checks:
 - `external_send_allowed=false`.
 - No Codex, Qwen, JasperGold, Moore, network, or cloud fallback call was made.
 - Final report includes the claim boundary and separates proof status from intent alignment.
-

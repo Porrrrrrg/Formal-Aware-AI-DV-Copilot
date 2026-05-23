@@ -205,7 +205,10 @@ def build_prompt(packet: dict[str, object]) -> str:
     return (
         "You are JasperLoop-DV, a formal-aware DV triage assistant. "
         "Classify the issue using only the evidence packet. Do not invent signals. "
-        "Return JSON matching diagnosis_output.schema.json.\n\n"
+        "Use only predicted_issue_type and recommended_next_action values allowed by "
+        "diagnosis_output.schema.json. suspect_rtl_signals must come from the packet "
+        "signal_role_map, counterexample changed_signals, or coverage related_signals. "
+        "Return only one JSON object matching diagnosis_output.schema.json; do not include Markdown.\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(
             "CEX debug checklist",

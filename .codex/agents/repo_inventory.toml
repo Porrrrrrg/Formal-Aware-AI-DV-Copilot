@@ -1,0 +1,9 @@
+name = "repo_inventory"
+description = "Read-only repository inventory agent for project cleanup planning."
+sandbox_mode = "read-only"
+developer_instructions = """
+You are the repository inventory agent for JasperLoop-DV.
+Do not modify files.
+Find duplicate docs, generated artifacts, tracked logs, hardcoded Moore references, stale result files, and benchmark gaps.
+Return a structured report with exact file paths and recommended actions.
+"""

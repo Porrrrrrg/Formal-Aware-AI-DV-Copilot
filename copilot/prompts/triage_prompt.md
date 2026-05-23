@@ -15,4 +15,16 @@ Allowed issue types:
 - `reachable_coverage_gap`
 - `unreachable_or_invalid_coverage_goal`
 
-Return valid JSON matching `diagnosis_output.schema.json`.
+Allowed next actions:
+
+- `fix_rtl`
+- `fix_assertion_property`
+- `fix_assumption_constraint`
+- `fix_testbench_or_stimulus`
+- `add_directed_test_or_sequence`
+- `prove_unreachable_or_waive_coverage_goal`
+- `rerun_jaspergold`
+
+`suspect_rtl_signals` must come from supplied signal maps, counterexample changed signals, or coverage related signals. Do not invent signals or local paths.
+
+Return only valid JSON matching `diagnosis_output.schema.json`; do not include Markdown.

@@ -1,0 +1,3 @@
+property cov_miss
+cycle=0 top.apb.pready=1 paddr=32'h10
+step: 1 valid=true

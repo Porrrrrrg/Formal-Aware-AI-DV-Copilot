@@ -69,4 +69,3 @@ Every future Stage 3 PR must include:
 - Verify commands and test results are present and reproducible enough for the claimed scope.
 - Classify evidence as scaffold, formal, or real LLM before accepting claims.
 - Require rebase/retest when prior Stage 3 PRs land first.
-

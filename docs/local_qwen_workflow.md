@@ -112,4 +112,3 @@ No Qwen-vs-Codex comparison is claimed from this workflow path. A dry-run proves
 only that manifest and artifact plumbing is safe. A successful 3+3+3 subset
 proves only that the configured local endpoint returned parseable, schema-valid
 JSON for those nine explicit cases.
-

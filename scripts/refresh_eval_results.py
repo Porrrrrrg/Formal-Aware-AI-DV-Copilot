@@ -229,7 +229,7 @@ def ensure_actual_packets(packet_root: Path, allow_rebuild_packets: bool) -> Non
         sys.stderr.write(
             "Warning: refreshing scaffold result tables with packets that do not all contain "
             f"formal report evidence ({formal}/{expected} formal packets). "
-            "Do not cite this refresh as Moore/JasperGold performance.\n"
+            "Do not cite this refresh as JasperGold-backed performance.\n"
         )
         return
     if allow_rebuild_packets:
@@ -242,7 +242,7 @@ def ensure_actual_packets(packet_root: Path, allow_rebuild_packets: bool) -> Non
         "Missing actual evidence packets: "
         f"found {actual} packets and {formal} with formal evidence, expected {expected} "
         f"under {packet_root_display}. "
-        "Run this on moore after Jasper packet generation, or pass "
+        "Run this in a configured JasperGold environment after packet generation, or pass "
         "--allow-rebuild-packets for a local scaffold refresh."
     )
 

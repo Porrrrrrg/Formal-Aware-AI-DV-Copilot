@@ -32,4 +32,3 @@ Freeze:
 - Qwen versus Codex comparisons.
 - Production readiness or full signoff automation claims.
 - Formal repair success claims for Codex until final JasperGold validation is run on model-produced repairs.
-

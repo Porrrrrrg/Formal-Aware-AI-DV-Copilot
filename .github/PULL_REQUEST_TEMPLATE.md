@@ -8,8 +8,8 @@
 - [ ] `python -m pytest`
 - [ ] `python scripts/build_all_evidence_packets.py --out-dir artifacts/schema/case_packets`
 - [ ] `python evaluation/run_agent_eval.py --all-systems --packet-source minimal`
-- [ ] JasperGold/moore validation is not required for this PR.
-- [ ] JasperGold/moore validation is required and tracked separately.
+- [ ] JasperGold validation is not required for this PR.
+- [ ] JasperGold validation is required and tracked separately.
 
 ## Security Checklist
 
@@ -21,7 +21,7 @@
 
 ## Labels
 
-Suggested labels: `ci`, `security`, `schema`, `benchmark`, `jasper`, `needs-moore`, `external-llm`, `docs`.
+Suggested labels: `ci`, `security`, `schema`, `benchmark`, `jasper`, `needs-formal-runner`, `external-llm`, `docs`.
 
 ## Cross-Agent Review
 

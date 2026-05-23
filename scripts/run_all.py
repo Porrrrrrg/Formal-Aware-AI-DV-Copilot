@@ -19,6 +19,7 @@ def main() -> int:
             "benchmarks/arbiter_rr2/cases",
             "benchmarks/rv_buffer/cases",
             "benchmarks/apb_regblock/cases",
+            "benchmarks/fifo_1r1w/cases",
         ],
         [sys.executable, "scripts/build_all_evidence_packets.py"],
     ]

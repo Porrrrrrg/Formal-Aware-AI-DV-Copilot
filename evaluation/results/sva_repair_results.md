@@ -1,9 +1,15 @@
 # SVA Repair Results
 
-| System | Cases | Round-0 Syntax | Final Exact Match | Repair Success | Avg Rounds |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Structured fallback + JasperGold feedback | 18 | 0.611 | 1.000 | 1.000 | 1.000 |
+Local scaffold run:
 
-JasperGold re-check was run on `moore` with `evaluation/run_sva_repair_eval.py --jasper-check`. The 18 repair cases cover syntax errors, unknown signals, reset mistakes, overbroad assertions, and temporal/semantic assertion bugs across the arbiter, ready/valid buffer, and APB-lite benchmarks.
+```bash
+python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_local.json
+```
 
-The low round-0 syntax rate is expected: the repair set intentionally injects malformed or tool-rejected assertions. The final repair success rate demonstrates that the loop plumbing can consume JasperGold feedback and converge to the known-good SVA template in the deterministic fallback mode.
+| System | Cases | Round-0 Syntax | Final Exact Match | Repair Success | Avg Rounds | Result Source |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Structured fallback repair loop | 18 | 0.833 | 1.000 | 1.000 | 1.000 | deterministic scaffold |
+
+JasperGold syntax/proof/vacuity re-check was not run in the current local environment. The repair set covers syntax errors, unknown signals, reset mistakes, overbroad assertions, and temporal/semantic assertion bugs across the arbiter, ready/valid buffer, and APB-lite benchmarks.
+
+The final repair success rate demonstrates deterministic scaffold convergence to known-good templates. It is not Codex performance and not production signoff evidence.

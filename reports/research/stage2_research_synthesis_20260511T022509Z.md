@@ -113,4 +113,3 @@ No Qwen subset was run. Therefore there is no local Qwen quality claim, no Qwen 
 Stage 2 now supports a narrower but useful conclusion: the evaluation stack can distinguish deterministic scaffolds, formal-tool-backed evidence validation, real Codex JSON behavior, and blocked local Qwen readiness. The strongest real-model evidence is Codex schema/output reliability across 71 outputs and high triage/coverage accuracy on this benchmark. The weakest real-model task is SVA repair, where 7/18 cases remain behaviorally unresolved under scaffold checks.
 
 The dominant technical direction is not additional headline scoring. The next work should isolate why SVA repair fails, distinguish syntax repair from semantic/temporal repair, and test whether counterexample-aware prompts or repair-loop ablations improve behavior under real model outputs and final formal checks.
-

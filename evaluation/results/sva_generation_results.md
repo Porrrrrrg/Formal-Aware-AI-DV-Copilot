@@ -1,8 +1,14 @@
 # SVA Generation Results
 
-| System | Cases | Syntax Scaffold | Exact Template Match | Hallucinated Signal Rate | JG Syntax | JG Proven | JG Vacuous |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Direct fallback | 27 | 1.000 | 0.222 | 0.000 | 1.000 | 1.000 | 0.000 |
-| Structured fallback | 27 | 1.000 | 1.000 | 0.000 | 1.000 | 1.000 | 0.000 |
+Local scaffold run:
 
-JasperGold re-check was run on `moore` with `evaluation/run_sva_eval.py --jasper-check`. The direct fallback's low exact-match rate despite full JasperGold proof pass is a useful sanity warning: formal proof of a generated assertion on correct RTL is necessary, but not sufficient to establish semantic equivalence to the requested intent.
+```bash
+python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
+```
+
+| System | Cases | Syntax Scaffold | Exact Template Match | Hallucinated Signal Rate | Result Source |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Direct fallback | 27 | 1.000 | 0.222 | 0.000 | deterministic scaffold |
+| Structured fallback | 27 | 1.000 | 1.000 | 0.000 | deterministic scaffold |
+
+JasperGold syntax/proof/vacuity re-check was not run in the current local environment. A proof pass, when available, is necessary evidence for a generated assertion but is not sufficient to establish semantic equivalence to the requested intent.

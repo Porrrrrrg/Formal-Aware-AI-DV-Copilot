@@ -141,4 +141,3 @@ This branch should pass:
 | `python -m pytest -q` | Pass |
 | `python -m ruff check .` | Pass |
 | `git diff --check` | Pass |
-

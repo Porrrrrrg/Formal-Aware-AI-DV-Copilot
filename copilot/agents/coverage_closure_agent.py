@@ -42,7 +42,9 @@ def structured_fallback(packet: dict[str, object]) -> dict[str, object]:
     observed_status = str(evidence_packet.get("observed_cover_status") or "").lower()
     cover_status = str(
         observed_status
+        or evidence_packet.get("formal_cover_status")
         or evidence_packet.get("expected_cover_status")
+        or coverage.get("jasper_cover_result")
         or coverage.get("expected_cover_status")
         or ""
     ).lower()
@@ -87,12 +89,15 @@ def collect_structured_evidence(
     goal = evidence_packet.get("coverage_goal") or coverage.get("coverage_goal")
     if goal:
         evidence.append(f"Coverage goal: {goal}")
-    status = evidence_packet.get("expected_cover_status") or coverage.get("expected_cover_status")
+    status = (
+        evidence_packet.get("observed_cover_status")
+        or evidence_packet.get("formal_cover_status")
+        or evidence_packet.get("expected_cover_status")
+        or coverage.get("jasper_cover_result")
+        or coverage.get("expected_cover_status")
+    )
     if status:
-        evidence.append(f"Expected cover status: {status}")
-    observed_status = evidence_packet.get("observed_cover_status")
-    if observed_status:
-        evidence.append(f"Observed cover status: {observed_status}")
+        evidence.append(f"Cover status: {status}")
     expected = evidence_packet.get("expected_reachable", coverage.get("expected_reachable"))
     if expected is not None:
         evidence.append(f"Expected reachable: {expected}")
@@ -115,8 +120,12 @@ def build_prompt(packet: dict[str, object]) -> str:
     return (
         "You are JasperLoop-DV, a formal-aware coverage closure assistant. "
         "Use cover reachability, coverage intent, assumptions, and related signals. "
+        "When witness_events are present, prefer them over inferred stimulus. "
         "When observed JasperGold status exists, prefer it over expected benchmark metadata. "
-        "Return JSON with coverage_gap_type, recommended_next_action, directed_sequence, and evidence.\n\n"
+        "Use only coverage_gap_type and recommended_next_action values allowed by "
+        "coverage_closure_output.schema.json. Do not invent signals or local paths. "
+        "Return only one JSON object with coverage_gap_type, recommended_next_action, "
+        "directed_sequence, and evidence; do not include Markdown.\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(
             "coverage closure decision checklist",
