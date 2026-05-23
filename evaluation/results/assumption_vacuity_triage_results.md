@@ -57,10 +57,18 @@ addresses the previously observed label/action inconsistency.
 
 ## Backend Status
 
-No real Qwen rerun was performed in this Windows shell because no
-`JASPERLOOP_LLM_CMD` backend is configured. `doctor_llm_backend.py --json`
-still reports the Windows Codex app executable as subprocess-blocked with
-`permission_denied`.
+No real Qwen rerun was performed in this Windows shell. A preflight with
+`JASPERLOOP_LLM_CMD=python D:\AI-DV\qwen_json_backend.py` selected the generic
+command backend, but the local OpenAI-compatible endpoint was unavailable:
+
+```text
+backend_error: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+```
+
+Without a passing backend doctor and contract test, the assumption/vacuity
+real-model gate did not run. The Windows Codex app executable also remains
+subprocess-blocked with `permission_denied`, so the current evidence is limited
+to structured fallback regression plus a saved-output normalization replay.
 
 The next real-model gate should rerun only the triage assumption/vacuity subset
 with the same local vLLM `Qwen/Qwen3-14B-AWQ` backend used for v1.1.2, then
