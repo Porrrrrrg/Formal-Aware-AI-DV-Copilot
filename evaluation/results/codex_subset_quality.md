@@ -1,35 +1,35 @@
 # Codex/LLM Subset Quality Gate
 
-Subset commands:
+This file is a curated gate summary. It separates real LLM success from deterministic fallback behavior.
 
-```bash
-python scripts/run_codex_llm_eval.py --task sva_repair --limit 3 --out evaluation/results/sva_repair_codex_subset.json --acknowledge-external-send --timeout 600
-python scripts/run_codex_llm_eval.py --task triage --limit 3 --packet-source actual --out evaluation/results/agent_eval_codex_subset.json --acknowledge-external-send --timeout 600
-python scripts/run_codex_llm_eval.py --task coverage --limit 3 --packet-source actual --out evaluation/results/coverage_eval_codex_subset.json --acknowledge-external-send --timeout 600
-```
+Gate result: failed. The 3+3+3 subset reached a real local Qwen backend through `JASPERLOOP_LLM_CMD`, but failure-triage quality did not satisfy the full-run gate.
 
-Gate result: **failed; full Codex/LLM run was not executed**.
+Backend route:
 
-The evaluator result JSON files are valid, but no Codex model JSON was produced. Every LLM attempt failed before model execution because the local Codex CLI executable returned `Access is denied`. The backend doctor now classifies this as `permission_denied` before benchmark execution.
+- Codex CLI route: unavailable on this Windows subprocess path because the Windows app package `codex.exe` still reports `permission_denied`.
+- Generic command route: passed doctor and contract using `JASPERLOOP_LLM_CMD=python D:\AI-DV\qwen_json_backend.py`.
+- Model endpoint: local vLLM OpenAI-compatible server at `http://127.0.0.1:8000/v1`, served model `Qwen/Qwen3-14B-AWQ`.
+- Result type: real local Qwen subset result, not Codex CLI performance and not JasperGold-backed performance.
 
-| Task | Cases | LLM JSON Validity | LLM Success | Fallback Rate | LLM Error Rate | Hallucinated Signal Rate | Accuracy Metric |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| SVA repair | 3 | 0/3 | 0.000 | 1.000 | 1.000 | 0.000 | final exact match 1.000, fallback only |
-| Failure triage | 3 | 0/3 | 0.000 | 1.000 | 1.000 | 0.000 | issue/action 1.000, fallback only |
-| Coverage closure | 3 | 0/3 | 0.000 | 1.000 | 1.000 | n/a | gap/action 1.000, fallback only |
+| Task | Cases | LLM Success | Fallback Rate | LLM Error Rate | Hallucinated Signal Rate | Accuracy Metric |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| SVA repair | 3 | 1.000 | 0.000 | 0.000 | 0.000 | final exact match 0.667 |
+| Failure triage | 3 | 0.667 | 0.333 | 0.333 | 0.333 | issue/action 0.667/0.667 |
+| Coverage closure | 3 | 1.000 | 0.000 | 0.000 | n/a | gap/action 1.000/1.000 |
 
 Gate policy:
 
 - JSON validity below 0.90: stop full run.
 - Fallback rate above 0.25: stop full run.
-- Hallucinated signal rate could not be measured on actual model outputs because no model outputs were produced.
+- Hallucinated signal rate above 0.10: stop full run.
+- Fallback-only results are failed environment gates, not model performance.
 
-Failed cases:
+Real LLM performance requires outputs with `source`/`output_source` equivalent to `llm` and no fallback error.
 
-- `repair_arbiter_mutex_syntax`, `repair_arbiter_spurious_unknown_signal`, `repair_arbiter_single_req1_wrong_grant`: Codex CLI invocation failed; structured repair fallback produced valid local scaffold outputs.
-- `apb_C6`, `apb_C5`, `apb_C11`: Codex CLI invocation failed; structured triage fallback was scored.
-- `apb_C10`, `apb_C12`, `apb_C9`: Codex CLI invocation failed; structured coverage fallback was scored.
+Failure-triage gate status:
 
-These metrics must not be reported as Codex performance. They are a failed real-LLM gate plus deterministic fallback behavior.
+- JSON validity was 0.667, below the 0.90 threshold.
+- Fallback rate was 0.333, above the 0.25 threshold.
+- Hallucinated signal rate was 0.333, above the 0.10 threshold.
 
-For rerun recovery, use `scripts/run_real_llm_subset_gate.sh` or `scripts/run_real_llm_subset_gate.ps1`. Those scripts stop before benchmark execution when the backend doctor or contract test fails.
+Full benchmark status: not allowed from this run. The next step is to improve the noninteractive JSON backend behavior for triage or use a stronger subprocess-callable local/backend model, then rerun only the subset gate.
