@@ -55,21 +55,36 @@ This is not a real Qwen rerun and should not be reported as new model
 performance; it only verifies that the new evidence and normalization path
 addresses the previously observed label/action inconsistency.
 
-## Backend Status
+## Real Local Qwen Assumption/Vacuity Gate
 
-No real Qwen rerun was performed in this Windows shell. A preflight with
-`JASPERLOOP_LLM_CMD=python D:\AI-DV\qwen_json_backend.py` selected the generic
-command backend, but the local OpenAI-compatible endpoint was unavailable:
+After restarting the local WSL/vLLM endpoint, backend preflight passed with:
 
-```text
-backend_error: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+```powershell
+$env:JASPERLOOP_LLM_CMD="python D:\AI-DV\qwen_json_backend.py"
+$env:LOCAL_BASE_URL="http://127.0.0.1:8000/v1"
+$env:SERVED_MODEL_NAME="Qwen/Qwen3-14B-AWQ"
+python scripts/doctor_llm_backend.py --json
+python scripts/test_llm_backend_contract.py
 ```
 
-Without a passing backend doctor and contract test, the assumption/vacuity
-real-model gate did not run. The Windows Codex app executable also remains
-subprocess-blocked with `permission_denied`, so the current evidence is limited
-to structured fallback regression plus a saved-output normalization replay.
+The assumption/vacuity-only real-model triage run then used the 12 gold
+`assumption_constraint_bug` cases only:
 
-The next real-model gate should rerun only the triage assumption/vacuity subset
-with the same local vLLM `Qwen/Qwen3-14B-AWQ` backend used for v1.1.2, then
-compare against the 3/12 baseline before any full benchmark is considered.
+```powershell
+python evaluation/run_agent_eval.py --systems structured --llm --cases <12 assumption_constraint_bug case files> --out evaluation/results/agent_eval_qwen_assumption_vacuity.json
+```
+
+Result:
+
+| Scope | Cases | Source | Valid JSON | Fallback rate | LLM error rate | Hallucinated signal rate | Issue accuracy | Action accuracy |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Assumption/constraint gold cases | 12 | local Qwen/Qwen3-14B-AWQ via vLLM | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 | 1.000 |
+
+Compared with the v1.1.2 full local Qwen baseline of 3/12 correct
+`assumption_constraint_bug` classifications, this assumption-focused gate
+reached 12/12 on the same gold issue class. This remains a scoped subset result,
+not a full benchmark rerun and not JasperGold-backed triage validation.
+
+The Windows Codex app executable remains subprocess-blocked with
+`permission_denied`; this result uses the generic `JASPERLOOP_LLM_CMD` route and
+must not be reported as Codex CLI performance.
