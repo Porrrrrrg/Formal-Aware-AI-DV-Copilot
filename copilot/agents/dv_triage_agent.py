@@ -187,6 +187,38 @@ def infer_suspect_signals(packet: dict[str, object]) -> list[str]:
     return []
 
 
+def allowed_signal_names(packet: dict[str, object]) -> set[str]:
+    allowed: set[str] = set()
+    signal_role_map = packet.get("signal_role_map")
+    if isinstance(signal_role_map, dict):
+        allowed.update(str(signal) for signal in signal_role_map)
+
+    cex = packet.get("counterexample_summary")
+    if isinstance(cex, dict):
+        allowed.update(coerce_string_list(cex.get("changed_signals")))
+
+    coverage = packet.get("coverage_context")
+    if isinstance(coverage, dict):
+        allowed.update(coerce_string_list(coverage.get("related_signals")))
+
+    coverage_evidence = packet.get("coverage_evidence")
+    if isinstance(coverage_evidence, dict):
+        allowed.update(coerce_string_list(coverage_evidence.get("related_signals")))
+    return allowed
+
+
+def filter_allowed_signals(packet: dict[str, object], signals: object) -> tuple[list[str], list[str]]:
+    allowed = allowed_signal_names(packet)
+    kept: list[str] = []
+    dropped: list[str] = []
+    for signal in coerce_string_list(signals):
+        if signal in allowed:
+            kept.append(signal)
+        elif signal:
+            dropped.append(signal)
+    return kept, dropped
+
+
 def infer_suspect_properties(packet: dict[str, object]) -> list[str]:
     suspects = []
     failing_property = packet.get("failing_property", {})
@@ -202,13 +234,24 @@ def infer_suspect_properties(packet: dict[str, object]) -> list[str]:
 
 def build_prompt(packet: dict[str, object]) -> str:
     payload = sanitized_packet(packet)
+    allowed_signals = sorted(allowed_signal_names(packet))
     return (
         "You are JasperLoop-DV, a formal-aware DV triage assistant. "
         "Classify the issue using only the evidence packet. Do not invent signals. "
         "Use only predicted_issue_type and recommended_next_action values allowed by "
-        "diagnosis_output.schema.json. suspect_rtl_signals must come from the packet "
-        "signal_role_map, counterexample changed_signals, or coverage related_signals. "
-        "Return only one JSON object matching diagnosis_output.schema.json; do not include Markdown.\n\n"
+        "diagnosis_output.schema.json. suspect_rtl_signals must come from the allowed "
+        "signal list below. If no allowed signal is directly supported by evidence, "
+        "return an empty suspect_rtl_signals list. Do not use natural-language labels, "
+        "coverage concepts, helper names, or inferred protocol phases as signal names; "
+        "for example, do not emit access or valid_addr unless they are in ALLOWED_SIGNALS. "
+        "If the RTL variant is marked correct and the property intent contradicts the "
+        "design intent, prefer assertion_property_bug over rtl_design_bug unless the "
+        "packet provides concrete RTL signal evidence. Return exactly one JSON object "
+        "matching diagnosis_output.schema.json; no Markdown, comments, code fences, "
+        "or explanations outside the JSON object.\n\n"
+        "ALLOWED_SIGNALS:\n"
+        + json.dumps(allowed_signals, indent=2)
+        + "\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(
             "CEX debug checklist",
@@ -248,18 +291,24 @@ def normalize_diagnosis(packet: dict[str, object], output: dict[str, object]) ->
     roots = output.get("root_cause_ranked")
     if not isinstance(roots, list) or not roots:
         roots = structured_fallback(packet)["root_cause_ranked"]
+    suspect_signals, dropped_signals = filter_allowed_signals(packet, output.get("suspect_rtl_signals"))
+    debug_checklist = coerce_string_list(output.get("debug_checklist")) or structured_fallback(packet)["debug_checklist"]
+    if dropped_signals:
+        debug_checklist = [
+            *debug_checklist,
+            "Dropped unsupported suspect_rtl_signals: " + ", ".join(sorted(dropped_signals)),
+        ]
     return {
         "source": "llm",
         "case_id": str(output.get("case_id", packet.get("case_id", "unknown"))),
         "predicted_issue_type": issue,
         "root_cause_ranked": roots,
-        "suspect_rtl_signals": coerce_string_list(output.get("suspect_rtl_signals")),
+        "suspect_rtl_signals": suspect_signals,
         "suspect_assertions_or_assumptions": coerce_string_list(
             output.get("suspect_assertions_or_assumptions")
         ),
         "recommended_next_action": action,
-        "debug_checklist": coerce_string_list(output.get("debug_checklist"))
-        or structured_fallback(packet)["debug_checklist"],
+        "debug_checklist": debug_checklist,
     }
 
 

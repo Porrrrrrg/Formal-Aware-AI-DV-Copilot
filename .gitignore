@@ -63,6 +63,7 @@ stage5-cli-validation/
 *.llm.log
 llm_logs/
 raw_llm_logs/
+reports/local_llm/**
 reports/local_llm/raw/**
 reports/llm/raw/**
 /models/
