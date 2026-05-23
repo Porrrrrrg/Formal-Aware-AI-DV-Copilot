@@ -31,4 +31,8 @@ Do not invent signals, local paths, helper names, natural-language labels, cover
 
 If the RTL variant is marked correct and the property intent contradicts design intent, prefer `assertion_property_bug` over `rtl_design_bug` unless the packet provides concrete RTL signal evidence.
 
+When `ASSUMPTION_VACUITY_TRIAGE_HINTS` or `vacuity_context` contains blocking assumptions, reset-stuck assumptions, missing environment constraints, or vacuous properties, review `assumption_constraint_bug` before `assertion_property_bug`.
+
+If your hypothesis or evidence says an assumption or constraint removes, blocks, forbids, forces, allows impossible behavior, underconstrains environment behavior, or makes the trigger/coverage goal unreachable, then `predicted_issue_type` must be `assumption_constraint_bug` and `recommended_next_action` must be `fix_assumption_constraint`.
+
 Return exactly one valid JSON object matching `diagnosis_output.schema.json`; do not include Markdown, comments, code fences, or explanations outside the JSON object.
