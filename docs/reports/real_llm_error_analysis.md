@@ -71,6 +71,30 @@ The real local Qwen scoped gate covered all 18 stimulus/coverage/invalid triage 
 
 This is a scoped local Qwen result, not a full benchmark rerun. The next validation step is a separate full local Qwen triage rerun to check transfer and non-target-label regressions.
 
+## Full Local Qwen Triage Rerun After Stimulus-vs-Coverage Improvement
+
+Date: 2026-05-25.
+
+After v1.1.7 added structured stimulus-vs-coverage cues, the full 53-case local Qwen triage benchmark was rerun with the same generic backend route:
+
+```text
+JASPERLOOP_LLM_CMD=python D:\AI-DV\qwen_json_backend.py
+LOCAL_BASE_URL=http://127.0.0.1:8000/v1
+SERVED_MODEL_NAME=Qwen/Qwen3-14B-AWQ
+```
+
+This rerun did not include SVA repair, coverage closure, Codex CLI, or JasperGold. Raw JSON stayed local and ignored.
+
+| Triage run | Cases | Valid JSON | LLM Success | Fallback | LLM Error | Hallucinated Signals | Issue/Action |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v1.1.2 full local Qwen | 53 | 0.981 | 0.981 | 0.019 | 0.019 | 0.000 | 0.811 / 0.811 |
+| v1.1.6 after assumption/vacuity rerun | 53 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.962 / 0.962 |
+| v1.1.7 after stimulus-vs-coverage rerun | 53 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 1.000 / 1.000 |
+
+The scoped stimulus-vs-coverage improvement transferred to the full triage setting. `rv_B8` and `fifo_D17` remained fixed as `testbench_stimulus_bug` / `fix_testbench_or_stimulus`, while `reachable_coverage_gap` stayed at 9/9 and `unreachable_or_invalid_coverage_goal` stayed at 5/5. The previous assumption/vacuity improvement also held: `assumption_constraint_bug` remained 12/12.
+
+No new non-target regressions were observed in this rerun. The result supports the current structured evidence, prompt, and normalization pipeline for the 53-case local triage benchmark, but it is still not Codex CLI performance, JasperGold-backed triage validation, official FVEval performance, or production signoff.
+
 ## JasperGold Re-check Metrics
 
 Source checkpoint: `v1.1.2-local-qwen-full-benchmark`.
@@ -91,12 +115,12 @@ One candidate, `repair_arbiter_single_req1_wrong_grant`, proved under JasperGold
 
 1. JSON/schema failures: fixed for the subset rerun. The initial `apb_C5` response included extra prompt/evidence text after JSON-like content; first-valid-JSON extraction now prevents this from becoming a fallback when a valid object is present.
 2. Hallucinated signals: fixed for the subset rerun and controlled in full triage. Full SVA repair still reported one hallucinated signal, `out_valid`, in `repair_fifo_reset_wrong_polarity`; JasperGold re-check reported this candidate as a syntax failure.
-3. Wrong issue type: still present. The full triage run systematically under-detected assumption/constraint bugs, often classifying them as `assertion_property_bug`.
-4. Wrong recommended action: still present. The corresponding wrong action was usually `fix_assertion_property` instead of `fix_assumption_constraint`.
+3. Wrong issue type: historical v1.1.2 issue. The original full triage run systematically under-detected assumption/constraint bugs, often classifying them as `assertion_property_bug`; the v1.1.6 and v1.1.7 reruns corrected this class in the local Qwen benchmark.
+4. Wrong recommended action: historical v1.1.2 issue. The corresponding wrong action was usually `fix_assertion_property` instead of `fix_assumption_constraint`; the v1.1.6 and v1.1.7 reruns corrected these actions for the tracked assumption/constraint cases.
 5. Syntactically valid but intent-wrong SVA: SVA repair produced valid JSON and no fallback, but `repair_arbiter_single_req1_wrong_grant` and `repair_fifo_reset_wrong_polarity` did not reach scaffold exact match after 3 rounds.
 6. Property proves but is too weak: `repair_arbiter_single_req1_wrong_grant` proved under JasperGold despite failing exact-template match, so it needs human intent review rather than automatic acceptance.
-7. Vacuity or overconstraint cases: still the main weakness. Full triage correctly classified only 3 of 12 gold assumption/constraint cases; examples include `apb_C11`, `apb_C7`, `arbiter_A11`, `fifo_D10`, and `rv_B6`.
-8. Coverage goal incorrectly treated as reachable: not observed in the full coverage run. Gap/action accuracy was 14/14, including 5 unreachable or invalid coverage goals.
+7. Vacuity or overconstraint cases: historical v1.1.2 weakness. Full triage originally classified only 3 of 12 gold assumption/constraint cases, but the post-v1.1.5 full reruns classified 12/12.
+8. Coverage goal incorrectly treated as reachable: not observed in the full coverage run. In triage, v1.1.6 still confused `rv_B8` and `fifo_D17` stimulus bugs with reachable coverage gaps; the v1.1.7 full rerun corrected both while preserving 9/9 `reachable_coverage_gap` and 5/5 `unreachable_or_invalid_coverage_goal`.
 9. Raw-log vs structured LLM comparison: not run; only structured subset paths were evaluated.
 10. JasperGold feedback helped repair: not evaluated as an iterative repair loop in this run. JasperGold was used as a post-hoc re-check of saved local Qwen final candidates.
 
@@ -110,7 +134,7 @@ One candidate, `repair_arbiter_single_req1_wrong_grant`, proved under JasperGold
 
 ## Next Step
 
-The full local Qwen run clears the local output mechanics gate, and the SVA repair outputs now have a JasperGold-backed re-check for the saved final candidates. The next experiment should focus on assumption/vacuity triage quality or on running JasperGold-backed checks for SVA generation if a saved Qwen SVA generation artifact is produced.
+The local Qwen triage path now has two focused improvement chains: assumption/vacuity triage and stimulus-vs-coverage triage both transferred from scoped gates to the full 53-case rerun. The next experiment should be a deliberate ablation or formal-evidence expansion rather than another broad prompt edit. Useful directions are separating the contributions of derived evidence cues, prompt wording, and normalization, or running JasperGold-backed checks for SVA generation if a saved Qwen SVA generation artifact is produced.
 
 Recommended next constraints:
 
@@ -119,4 +143,4 @@ Recommended next constraints:
 - Do not treat JasperGold proof as full semantic intent equivalence.
 - If Codex CLI performance is required, set `CODEX_BIN` to a real subprocess-callable CLI binary rather than the Windows app package alias.
 
-The main residual model error is assumption/vacuity triage, not backend invocation.
+The main residual risk is no longer backend invocation for the local Qwen route; it is whether the current evidence/prompt/normalization improvements generalize beyond the current 53-case triage benchmark.
