@@ -97,6 +97,14 @@ def infer_issue_type(packet: dict[str, object]) -> str:
     if "overconstrain" in text or "unreachable antecedent" in text:
         return "assumption_constraint_bug"
 
+    stimulus_direction = stimulus_coverage_direction(packet)
+    if stimulus_direction == "testbench_stimulus_bug":
+        return "testbench_stimulus_bug"
+    if stimulus_direction == "unreachable_or_invalid_coverage_goal":
+        return "unreachable_or_invalid_coverage_goal"
+    if stimulus_direction == "reachable_coverage_gap":
+        return "reachable_coverage_gap"
+
     if isinstance(coverage, dict) and coverage:
         expected_reachable = coverage.get("expected_reachable")
         cover_status = str(coverage.get("expected_cover_status", "")).lower()
@@ -162,6 +170,17 @@ def collect_evidence(packet: dict[str, object], issue_type: str) -> list[str]:
             evidence.append(f"Expected cover status: {coverage.get('expected_cover_status')}")
         if coverage.get("expected_reachable") is not None:
             evidence.append(f"Expected reachable: {coverage.get('expected_reachable')}")
+
+    stimulus = packet.get("stimulus_context", {})
+    if issue_type in {"testbench_stimulus_bug", "reachable_coverage_gap", "unreachable_or_invalid_coverage_goal"} and isinstance(stimulus, dict):
+        reason = stimulus.get("reason")
+        if reason:
+            evidence.append(str(reason))
+        cues = stimulus.get("risk_cues")
+        if isinstance(cues, list):
+            for cue in cues[:2]:
+                if isinstance(cue, dict) and cue.get("interpretation"):
+                    evidence.append(str(cue["interpretation"]))
 
     assumptions = packet.get("active_assumptions", [])
     if isinstance(assumptions, list) and assumptions:
@@ -246,6 +265,7 @@ def build_prompt(packet: dict[str, object]) -> str:
     payload = sanitized_packet(packet)
     allowed_signals = sorted(allowed_signal_names(packet))
     assumption_hints = assumption_vacuity_prompt_hints(packet)
+    stimulus_hints = stimulus_vs_coverage_prompt_hints(packet)
     return (
         "You are JasperLoop-DV, a formal-aware DV triage assistant. "
         "Classify the issue using only the evidence packet. Do not invent signals. "
@@ -263,7 +283,13 @@ def build_prompt(packet: dict[str, object]) -> str:
         "assertion_property_bug. When your hypothesis or evidence says an assumption "
         "or constraint removes, blocks, allows impossible, or underconstrains required "
         "behavior, predicted_issue_type must be assumption_constraint_bug and "
-        "recommended_next_action must be fix_assumption_constraint. Return exactly one JSON object "
+        "recommended_next_action must be fix_assumption_constraint. If STIMULUS_VS_COVERAGE_HINTS "
+        "indicates missing or insufficient stimulus, prefer testbench_stimulus_bug and "
+        "fix_testbench_or_stimulus. If formal cover/witness or a directed sequence shows "
+        "a reachable goal with a valid environment, prefer reachable_coverage_gap and "
+        "add_directed_test_or_sequence. If the goal is illegal, invalid, or unreachable, "
+        "prefer unreachable_or_invalid_coverage_goal. Do not classify a stimulus bug as "
+        "coverage closure merely because a coverage goal is unhit. Return exactly one JSON object "
         "matching diagnosis_output.schema.json; no Markdown, comments, code fences, "
         "or explanations outside the JSON object.\n\n"
         "ALLOWED_SIGNALS:\n"
@@ -271,6 +297,9 @@ def build_prompt(packet: dict[str, object]) -> str:
         + "\n\n"
         "ASSUMPTION_VACUITY_TRIAGE_HINTS:\n"
         + json.dumps(assumption_hints, indent=2)
+        + "\n\n"
+        "STIMULUS_VS_COVERAGE_HINTS:\n"
+        + json.dumps(stimulus_hints, indent=2)
         + "\n\n"
         "PLAYBOOK_GUIDANCE:\n"
         + prompt_guidance_refs(
@@ -315,6 +344,13 @@ def normalize_diagnosis(packet: dict[str, object], output: dict[str, object]) ->
         normalized_notes.append(
             "Aligned issue/action with assumption/vacuity evidence: use "
             "assumption_constraint_bug and fix_assumption_constraint."
+        )
+    if should_normalize_to_testbench_stimulus(packet, output, issue, action):
+        issue = "testbench_stimulus_bug"
+        action = ACTION_BY_ISSUE[issue]
+        normalized_notes.append(
+            "Aligned issue/action with stimulus-vs-coverage evidence: use "
+            "testbench_stimulus_bug and fix_testbench_or_stimulus."
         )
     roots = output.get("root_cause_ranked")
     if not isinstance(roots, list) or not roots:
@@ -375,6 +411,46 @@ def assumption_vacuity_prompt_hints(packet: dict[str, object]) -> dict[str, obje
     }
 
 
+def stimulus_coverage_direction(packet: dict[str, object]) -> str:
+    stimulus = packet.get("stimulus_context")
+    if not isinstance(stimulus, dict):
+        return "unknown"
+    direction = str(stimulus.get("triage_direction", "unknown"))
+    if direction in {
+        "testbench_stimulus_bug",
+        "reachable_coverage_gap",
+        "unreachable_or_invalid_coverage_goal",
+    }:
+        return direction
+    return "unknown"
+
+
+def stimulus_vs_coverage_prompt_hints(packet: dict[str, object]) -> dict[str, object]:
+    stimulus = packet.get("stimulus_context")
+    if not isinstance(stimulus, dict):
+        return {
+            "requires_stimulus_review": False,
+            "triage_direction": "unknown",
+            "risk_cues": [],
+        }
+    return {
+        "requires_stimulus_review": bool(stimulus.get("requires_stimulus_review")),
+        "triage_direction": stimulus.get("triage_direction", "unknown"),
+        "coverage_goal": stimulus.get("coverage_goal"),
+        "expected_test_hits": stimulus.get("expected_test_hits"),
+        "expected_reachable": stimulus.get("expected_reachable"),
+        "has_suggested_sequence": stimulus.get("has_suggested_sequence", False),
+        "has_witness_events": stimulus.get("has_witness_events", False),
+        "reason": stimulus.get("reason", ""),
+        "risk_cues": stimulus.get("risk_cues", []),
+        "classification_rule": (
+            "Missing stimulus or environment driving maps to testbench_stimulus_bug. "
+            "Reachable cover with a valid environment maps to reachable_coverage_gap. "
+            "Illegal or unreachable cover maps to unreachable_or_invalid_coverage_goal."
+        ),
+    }
+
+
 def should_normalize_to_assumption_constraint(
     packet: dict[str, object],
     output: dict[str, object],
@@ -409,6 +485,36 @@ def should_normalize_to_assumption_constraint(
         "forces",
         "missing environment",
         "environment contract",
+    )
+    return any(term in output_text for term in evidence_terms)
+
+
+def should_normalize_to_testbench_stimulus(
+    packet: dict[str, object],
+    output: dict[str, object],
+    issue: str,
+    action: str,
+) -> bool:
+    if issue == "testbench_stimulus_bug" and action == ACTION_BY_ISSUE["testbench_stimulus_bug"]:
+        return False
+    if stimulus_coverage_direction(packet) != "testbench_stimulus_bug":
+        return False
+    if issue not in {"reachable_coverage_gap", "assertion_property_bug"}:
+        return False
+    output_text = json.dumps(output, sort_keys=True).lower()
+    evidence_terms = (
+        "stimulus",
+        "testbench",
+        "sequence",
+        "drive",
+        "drives",
+        "assert",
+        "asserts",
+        "ready",
+        "valid",
+        "unhit",
+        "not hit",
+        "not exercise",
     )
     return any(term in output_text for term in evidence_terms)
 
