@@ -32,10 +32,10 @@ def test_stage17_ablation_summary_uses_existing_artifacts(tmp_path: Path) -> Non
     } <= set(rows)
 
     current = rows["codex_design2sva_current"]
-    assert current["metrics"]["cases"] == 12
-    assert current["metrics"]["k"] == 3
-    assert current["metrics"]["proven@1"] == 0.75
-    assert current["metrics"]["proven_non_vacuous@k"] == 1.0
+    assert current["status"] == "missing_artifact"
+    assert current["metrics"]["cases"] == "not_run"
+    assert current["metrics"]["proven@1"] == "not_run"
+    assert current["metrics"]["proven_non_vacuous@k"] == "not_run"
     assert current["llm_prompts_sent"] is False
 
     placeholder = rows["direct_prompt_placeholder"]
