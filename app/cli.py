@@ -43,8 +43,8 @@ CLAIM_BOUNDARY = (
 )
 
 MOORE_CLAIM_BOUNDARY = (
-    "Stage 5B Moore handoff automation records sanitized local handoff metadata only. "
-    "It does not run Moore, JasperGold, Codex, Qwen, or new experiments, and it does "
+    "Stage 5B JasperGold host handoff automation records sanitized local handoff metadata only. "
+    "It does not run a host environment, JasperGold, Codex, Qwen, or new experiments, and it does "
     "not change benchmark labels or Stage 2/3/4 result semantics."
 )
 
@@ -128,9 +128,9 @@ COMMANDS: dict[str, CommandSpec] = {
     ),
     "moore-handoff": CommandSpec(
         evidence_type="stage5a_moore_handoff_plan",
-        planned_runner="scripts/run_moore_codex_repair_final_proof.sh",
-        planned_args=("--dry-run",),
-        description="Plan Moore handoff without invoking Moore, JasperGold, or model calls.",
+        planned_runner="scripts/run_jasper_sva_repair_eval.sh",
+        planned_args=(),
+        description="Plan a JasperGold host handoff without invoking JasperGold or model calls.",
     ),
 }
 
@@ -158,8 +158,8 @@ def build_parser() -> argparse.ArgumentParser:
             moore_subparsers = subparser.add_subparsers(dest="moore_action")
             prepare = moore_subparsers.add_parser(
                 "prepare",
-                description="Prepare a sanitized Moore handoff manifest.",
-                help="Prepare a sanitized Moore handoff manifest.",
+                description="Prepare a sanitized JasperGold host handoff manifest.",
+                help="Prepare a sanitized JasperGold host handoff manifest.",
             )
             prepare.add_argument("task_type", choices=MOORE_TASK_TYPES)
             prepare.add_argument(
@@ -172,8 +172,8 @@ def build_parser() -> argparse.ArgumentParser:
 
             validate = moore_subparsers.add_parser(
                 "validate",
-                description="Validate a Moore handoff manifest without Moore access.",
-                help="Validate a Moore handoff manifest without Moore access.",
+                description="Validate a JasperGold host handoff manifest without host access.",
+                help="Validate a JasperGold host handoff manifest without host access.",
             )
             validate.add_argument("--manifest", type=Path, required=True)
             validate.add_argument("--out-dir", type=Path)
@@ -181,15 +181,15 @@ def build_parser() -> argparse.ArgumentParser:
 
             import_result = moore_subparsers.add_parser(
                 "import-result",
-                description="Import a sanitized Moore-produced summary manifest.",
-                help="Import a sanitized Moore-produced summary manifest.",
+                description="Import a sanitized JasperGold host summary manifest.",
+                help="Import a sanitized JasperGold host summary manifest.",
             )
             import_result.add_argument("summary_manifest", type=Path, nargs="?")
             import_result.add_argument("--manifest", type=Path, dest="summary_manifest_option")
             import_result.add_argument(
                 "--out-dir",
                 type=Path,
-                default=Path("reports") / "jasper",
+                default=Path("artifacts") / "jasper_import",
                 help="Directory for imported lightweight summaries.",
             )
             import_result.add_argument("--dry-run", action="store_true")
@@ -203,7 +203,7 @@ def build_parser() -> argparse.ArgumentParser:
     align.add_argument(
         "--out-dir",
         type=Path,
-        default=Path("reports") / "alignment",
+        default=Path("artifacts") / "alignment",
         help="Directory for intent-alignment reports.",
     )
     align.add_argument(
@@ -215,7 +215,7 @@ def build_parser() -> argparse.ArgumentParser:
     align.add_argument(
         "--candidates",
         type=Path,
-        default=Path("reports") / "repair" / "artifacts" / "codex_repair_outputs_20260511T035613Z.jsonl",
+        default=Path("artifacts") / "alignment" / "candidates.jsonl",
         help="Optional JSON or JSONL repaired/generated candidate records.",
     )
     align.add_argument("--limit", type=int, default=None, help="Limit cases for smoke runs.")
@@ -563,8 +563,8 @@ def planned_internal_command(spec: CommandSpec, out_dir: Path) -> list[str] | No
     elif spec.planned_runner.endswith("run_fveval_subset.py"):
         command.extend(["--markdown", str(out_dir / "fveval_subset_results.md")])
         command.extend(["--out", str(out_dir / "runner_output.json")])
-    elif spec.planned_runner.endswith("run_moore_codex_repair_final_proof.sh"):
-        command.extend(["--manifest-out", str(out_dir / "moore_handoff_manifest.json")])
+    elif spec.planned_runner.startswith("scripts/run_jasper_"):
+        pass
     else:
         command.extend(["--out", str(out_dir / "runner_output.json")])
     return command
@@ -588,59 +588,40 @@ def moore_task_spec(task_type: str, out_dir: Path) -> dict[str, Any]:
                 ),
             ],
             "expected_outputs": [
-                "reports/jasper/moore_evidence_summary_<timestamp>.md",
-                "reports/jasper/moore_run_manifest_<timestamp>.json",
+                "jasper/reports/case_packets/<design>/<case>/evidence_packet.json",
+                "artifacts/jasper_handoff/evidence_packet_summary_<timestamp>.md",
             ],
         }
     if task_type == "codex-repair-final-proof":
-        artifact = "reports/repair/artifacts/codex_repair_outputs_20260511T035613Z.jsonl"
+        artifact = "artifacts/qwen_jasper_recheck/sva_repair_qwen_full.json"
         return {
             "input_artifacts": [
                 Path(artifact),
-                Path("scripts/run_moore_codex_repair_final_proof.sh"),
-                Path("tools/run_codex_repair_final_proof.py"),
+                Path("scripts/run_jasper_sva_repair_eval.sh"),
             ],
             "command_to_run_on_moore": [
-                "tcsh",
-                "-fc",
-                (
-                    "source /vol/eecs391/cadence.env; "
-                    "setenv JASPER_BIN "
-                    "/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg; "
-                    "bash scripts/run_moore_codex_repair_final_proof.sh "
-                    f"--artifact {artifact} --manifest-out {manifest_out.as_posix()}"
-                ),
+                "bash",
+                "scripts/run_jasper_sva_repair_eval.sh",
             ],
             "expected_outputs": [
-                "reports/jasper/codex_repair_final_proof_summary_<timestamp>.md",
-                "reports/jasper/codex_repair_final_proof_manifest_<timestamp>.json",
+                "evaluation/results/sva_repair_jasper_local.json",
+                "jasper/reports/sva_repair/<case>/",
             ],
         }
     if task_type == "sva-repair-ablation-proof":
-        artifact = "reports/repair/artifacts/sva_repair_ablation_candidates_20260511T064252Z.jsonl"
+        artifact = "artifacts/sva_repair_ablation/candidates.jsonl"
         return {
             "input_artifacts": [
                 Path(artifact),
-                Path("reports/repair/sva_repair_ablation_manifest_20260511T064252Z.json"),
-                Path("scripts/run_moore_codex_repair_final_proof.sh"),
-                Path("tools/run_codex_repair_final_proof.py"),
+                Path("scripts/run_jasper_sva_repair_eval.sh"),
             ],
             "command_to_run_on_moore": [
-                "tcsh",
-                "-fc",
-                (
-                    "source /vol/eecs391/cadence.env; "
-                    "setenv JASPER_BIN "
-                    "/vol/cadence2018/XCELIUM1809/tools.lnx86/jasper/bin/jg; "
-                    "bash scripts/run_moore_codex_repair_final_proof.sh "
-                    f"--artifact {artifact} --no-hash-check "
-                    "--out-root jasper/reports/sva_repair_ablation_final_proof "
-                    f"--manifest-out {manifest_out.as_posix()}"
-                ),
+                "bash",
+                "scripts/run_jasper_sva_repair_eval.sh",
             ],
             "expected_outputs": [
-                "reports/jasper/sva_repair_ablation_final_proof_summary_<timestamp>.md",
-                "reports/jasper/sva_repair_ablation_final_proof_manifest_<timestamp>.json",
+                "artifacts/sva_repair_ablation/jasper_summary_<timestamp>.md",
+                "jasper/reports/sva_repair_ablation/",
             ],
         }
     raise ValueError(f"unsupported Moore handoff task type: {task_type}")
@@ -699,8 +680,15 @@ def validate_expected_outputs(manifest: dict[str, Any]) -> list[str]:
             continue
         normalized = item.replace("\\", "/")
         name = Path(normalized).name
-        if not normalized.startswith("reports/") and not normalized.startswith("artifacts/"):
-            failures.append(f"expected output must stay under reports/ or artifacts/: {item}")
+        if not (
+            normalized.startswith("artifacts/")
+            or normalized.startswith("evaluation/results/")
+            or normalized.startswith("jasper/reports/")
+        ):
+            failures.append(
+                "expected output must stay under artifacts/, evaluation/results/, "
+                f"or jasper/reports/: {item}"
+            )
         if " " in name:
             failures.append(f"expected output filename contains spaces: {item}")
         if not (name.endswith(".json") or name.endswith(".md")):
