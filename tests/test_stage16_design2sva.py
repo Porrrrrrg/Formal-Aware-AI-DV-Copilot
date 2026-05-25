@@ -121,7 +121,7 @@ def test_stage16_design2sva_summary_reports_real_llm_accounting(
             "--max-repair-rounds",
             "0",
             "--replay",
-            "evaluation/results/design2sva_eval_codex_subset.json",
+            "evaluation/fixtures/design2sva_eval_codex_subset_fixture.json",
             "--out",
             str(out),
             "--markdown",

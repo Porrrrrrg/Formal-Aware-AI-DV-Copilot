@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Write the curated Codex/LLM subset gate summary."""
+"""Write a local LLM subset gate summary.
+
+The subset gate is an operational diagnostic, not a final curated result. Its
+summary is written under ignored artifacts by default so the final repository
+keeps only evaluation/results/final_results.md as the committed result table.
+"""
 
 from __future__ import annotations
 
@@ -12,18 +17,20 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evaluation" / "results"
+DEFAULT_OUT = ROOT / "artifacts" / "llm_subset_gate" / "quality.md"
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--gate-failed", action="store_true")
     parser.add_argument("--reason", default="")
+    parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = parser.parse_args()
 
     payloads = load_payloads()
     gate = gate_status(payloads)
     lines = [
-        "# Codex/LLM Subset Quality Gate",
+        "# LLM Subset Quality Gate",
         "",
         "This file is a curated gate summary. It separates real LLM success from deterministic fallback behavior.",
         "",
@@ -81,7 +88,9 @@ def main() -> int:
             "Real LLM performance requires outputs with `source`/`output_source` equivalent to `llm` and no fallback error.",
         ]
     )
-    (RESULTS / "codex_subset_quality.md").write_text("\n".join(lines) + "\n")
+    out_path = args.out if args.out.is_absolute() else ROOT / args.out
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text("\n".join(lines) + "\n")
     return 0
 
 

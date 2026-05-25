@@ -1,21 +1,20 @@
 # JasperGold Environment
 
-JasperLoop-DV expects JasperGold to be provided by the runtime environment. The repository does not require a host-specific path.
+JasperGold checks require a shell where the Cadence/JasperGold environment is available.
 
-Set these variables when needed:
+Set either a direct executable:
 
 ```bash
 export JASPER_BIN=/path/to/jg
-export PYTHON_BIN=python3.11
 ```
 
-If the Cadence installation requires an environment script, either source it before running commands or set:
+or source the site-specific environment:
 
 ```bash
-export JASPER_ENV=/path/to/cadence.env
+source /path/to/cadence_or_jasper_env.sh
 ```
 
-Generic wrappers:
+Then run:
 
 ```bash
 bash scripts/run_jasper_smoke.sh
@@ -23,4 +22,4 @@ bash scripts/run_jasper_sva_eval.sh
 bash scripts/run_jasper_sva_repair_eval.sh
 ```
 
-The wrappers keep raw reports under `jasper/reports/`, which is local-only by default.
+Raw outputs are written under ignored `jasper/reports/` paths. Commit only curated Markdown summaries when a real JasperGold run completed.

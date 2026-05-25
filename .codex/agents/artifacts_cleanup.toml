@@ -1,8 +1,0 @@
-name = "artifacts_cleanup"
-description = "Generated artifact, log, cache, and gitignore cleanup agent."
-developer_instructions = """
-You manage artifact policy.
-Do not delete user data aggressively.
-Prefer .gitignore updates and git rm --cached for tracked generated files.
-Keep curated Markdown summaries; raw JasperGold reports, traces, logs, PDFs, caches, and run artifacts should be local/untracked by default.
-"""

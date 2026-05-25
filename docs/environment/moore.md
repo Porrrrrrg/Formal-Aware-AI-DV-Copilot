@@ -1,8 +1,8 @@
 # Moore Environment
 
-Moore is one possible JasperGold/Cadence host environment. It is not part of the project architecture, implementation identity, or repository structure.
+Moore is one possible JasperGold host environment. It is not part of the project architecture, implementation identity, or repository structure.
 
-Example setup on Moore:
+Example:
 
 ```bash
 ssh moore
@@ -13,4 +13,4 @@ export PYTHON_BIN=python3.11
 bash scripts/run_jasper_smoke.sh
 ```
 
-Compatibility wrappers named `scripts/run_moore_smoke.sh`, `scripts/run_moore_sva_eval.sh`, and `scripts/run_moore_sva_repair_eval.sh` may remain for older notes, but they call the generic `scripts/run_jasper_smoke.sh`, `scripts/run_jasper_sva_eval.sh`, and `scripts/run_jasper_sva_repair_eval.sh` scripts and print that Moore is only one possible JasperGold host.
+After the environment is configured, use the generic `scripts/run_jasper_*.sh` scripts. Moore-specific paths should stay in this environment note or in local operator notes, not in the project architecture narrative.

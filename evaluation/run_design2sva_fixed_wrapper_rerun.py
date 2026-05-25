@@ -28,10 +28,10 @@ from evaluation.run_design2sva_eval import (  # noqa: E402
 )
 
 DEFAULT_CASES = Path("benchmarks/design2sva_cases.json")
-DEFAULT_ORIGINAL_SOURCE = Path("evaluation/results/design2sva_eval_codex_subset.json")
-DEFAULT_ANTIVACUITY_SOURCE = Path(
-    "evaluation/results/design2sva_eval_antivacuity_codex_new_subset.json"
+DEFAULT_ORIGINAL_SOURCE = Path(
+    "evaluation/fixtures/design2sva_eval_codex_subset_fixture.json"
 )
+DEFAULT_ANTIVACUITY_SOURCE = DEFAULT_ORIGINAL_SOURCE
 DEFAULT_ORIGINAL_OUT = Path(
     "evaluation/results/design2sva_eval_codex_fixed_wrapper_rerun.json"
 )

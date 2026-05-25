@@ -499,7 +499,7 @@ def main() -> int:
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--timeout-ms", type=float, default=1000.0)
     parser.add_argument("--run-id", default=None)
-    parser.add_argument("--out-root", type=Path, default=Path("reports/eval"))
+    parser.add_argument("--out-root", type=Path, default=Path("artifacts/eval"))
     parser.add_argument("--write-index", action="store_true")
     args = parser.parse_args()
 

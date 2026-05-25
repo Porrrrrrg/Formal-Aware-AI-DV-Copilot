@@ -20,7 +20,7 @@ Core principle:
 Allowed:
 
 - `docs/environment/moore.md`
-- Compatibility wrapper scripts that explain Moore is one possible JasperGold host
+- Local operator notes for running generic JasperGold scripts on that host
 
 Not allowed:
 
@@ -65,16 +65,18 @@ Keep the canonical docs clear and non-duplicative:
 
 - `README.md`: high-level quickstart and project summary
 - `docs/architecture.md`: system architecture and dataflow
-- `docs/methods.md`: structured evidence, manifests, JasperGold re-check, repair loop
-- `docs/benchmark_catalog.md`: benchmark designs, cases, sources, and limitations
-- `docs/evaluation.md`: runners, metrics, local/JasperGold/Codex results
+- `docs/evaluation.md`: runners, metrics, and final result interpretation
 - `docs/limitations_and_claims.md`: current claims, non-claims, caveats
 - `docs/artifact_policy.md`: generated artifact handling
 - `docs/environment/jaspergold.md`: generic JasperGold setup
+- `docs/environment/llm_backend.md`: generic model backend setup
 - `docs/environment/moore.md`: Moore-specific instructions only
-- `docs/codex/`: Codex usage, prompt audit, replay
+- `docs/reports/final_research_summary.md`: final research narrative
+- `docs/reports/experiment_history.md`: concise version/tag history
+- `evaluation/results/final_results.md`: canonical final curated result table
 
-When removing duplicated text, preserve important details by moving them to the canonical doc and replacing old files with short redirect notes if needed.
+Do not add new per-version reports unless a new checkpoint genuinely needs a
+curated summary. Prefer updating the final summary and experiment history.
 
 ## Claims Policy
 
@@ -101,7 +103,7 @@ python evaluation/run_agent_eval.py --all-systems --out evaluation/results/agent
 python evaluation/run_coverage_eval.py --all-systems --out evaluation/results/coverage_eval_local.json
 python evaluation/run_sva_eval.py --out evaluation/results/sva_eval_local.json
 python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_local.json
-python scripts/refresh_eval_results.py
+python scripts/refresh_eval_results.py --allow-rebuild-packets
 ```
 
 If pytest exists:
