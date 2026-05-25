@@ -36,6 +36,29 @@ The follow-up full local Qwen benchmark used the same backend route and complete
 
 The full local Qwen run passed the output mechanics gate: JSON validity >= 0.90, fallback rate <= 0.25, and hallucinated signal rate <= 0.10 where measured. This is a gate result, not formal signoff.
 
+## Full Local Qwen Triage Rerun After Assumption/Vacuity Improvement
+
+Date: 2026-05-25.
+
+After v1.1.5 added structured assumption/vacuity triage cues, the full 53-case local Qwen triage benchmark was rerun with the same generic backend route:
+
+```text
+JASPERLOOP_LLM_CMD=python D:\AI-DV\qwen_json_backend.py
+LOCAL_BASE_URL=http://127.0.0.1:8000/v1
+SERVED_MODEL_NAME=Qwen/Qwen3-14B-AWQ
+```
+
+This rerun did not include SVA repair, coverage closure, Codex CLI, or JasperGold. Raw JSON stayed local and ignored.
+
+| Triage run | Cases | Valid JSON | LLM Success | Fallback | LLM Error | Hallucinated Signals | Issue/Action |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| v1.1.2 full local Qwen | 53 | 0.981 | 0.981 | 0.019 | 0.019 | 0.000 | 0.811 / 0.811 |
+| v1.1.5 after-triage rerun | 53 | 1.000 | 1.000 | 0.000 | 0.000 | 0.000 | 0.962 / 0.962 |
+
+The scoped assumption/vacuity improvement transferred to the full triage setting: gold `assumption_constraint_bug` cases improved from 3/12 to 12/12. The corrected cases were `apb_C11`, `apb_C2`, `apb_C7`, `arbiter_A11`, `arbiter_A6`, `arbiter_A7`, `fifo_D10`, `rv_B6`, and `rv_B7`.
+
+The main side effect was a one-case regression in `testbench_stimulus_bug`: `rv_B8` changed from the correct `testbench_stimulus_bug` / `fix_testbench_or_stimulus` classification to `reachable_coverage_gap` / `add_directed_test_or_sequence`. The pre-existing `fifo_D17` stimulus miss remained. These two misses suggest that the next triage iteration should focus on distinguishing stimulus incompleteness from reachable coverage closure opportunities.
+
 ## JasperGold Re-check Metrics
 
 Source checkpoint: `v1.1.2-local-qwen-full-benchmark`.
