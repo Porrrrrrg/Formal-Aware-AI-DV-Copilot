@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from copilot.agents.dv_triage_agent import build_prompt, normalize_diagnosis
+from copilot.agents.dv_triage_agent import build_prompt, normalize_diagnosis, structured_fallback
 from copilot.json_utils import extract_json_object
 from evaluation.output_quality import hallucinated_signals, source_summary
 from tools.build_evidence_packet import build_packet
@@ -52,6 +52,7 @@ def test_triage_prompt_renders_explicit_signal_constraints() -> None:
 
     assert "ALLOWED_SIGNALS" in prompt
     assert "ASSUMPTION_VACUITY_TRIAGE_HINTS" in prompt
+    assert "STIMULUS_VS_COVERAGE_HINTS" in prompt
     assert '"pready"' in prompt
     assert "natural-language labels" in prompt
     assert "valid_addr" in prompt
@@ -177,3 +178,101 @@ def test_normalize_diagnosis_does_not_relabel_benign_active_assumption() -> None
 
     assert normalized["predicted_issue_type"] == "assertion_property_bug"
     assert normalized["recommended_next_action"] == "fix_assertion_property"
+
+
+def test_evidence_packet_marks_rv_stimulus_absence_without_gold_label() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "rv_buffer" / "cases" / "testbench_bug_never_dequeues.json"
+    )
+
+    assert "gold_label" not in packet
+    stimulus = packet["stimulus_context"]
+    assert stimulus["triage_direction"] == "testbench_stimulus_bug"
+    assert any(cue["kind"] == "missing_required_stimulus" for cue in stimulus["risk_cues"])
+
+    prediction = structured_fallback(packet)
+
+    assert prediction["predicted_issue_type"] == "testbench_stimulus_bug"
+    assert prediction["recommended_next_action"] == "fix_testbench_or_stimulus"
+
+
+def test_evidence_packet_marks_fifo_never_pop_stimulus_absence_without_gold_label() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "fifo_1r1w" / "cases" / "testbench_bug_never_pops.json"
+    )
+
+    assert "gold_label" not in packet
+    stimulus = packet["stimulus_context"]
+    assert stimulus["triage_direction"] == "testbench_stimulus_bug"
+    assert any(cue["kind"] == "stimulus_never_drives_condition" for cue in stimulus["risk_cues"])
+
+    prediction = structured_fallback(packet)
+
+    assert prediction["predicted_issue_type"] == "testbench_stimulus_bug"
+    assert prediction["recommended_next_action"] == "fix_testbench_or_stimulus"
+
+
+def test_true_reachable_coverage_gap_stays_reachable() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "rv_buffer" / "cases" / "coverage_reachable_stall_then_dequeue.json"
+    )
+
+    stimulus = packet["stimulus_context"]
+    assert stimulus["triage_direction"] == "reachable_coverage_gap"
+
+    prediction = structured_fallback(packet)
+
+    assert prediction["predicted_issue_type"] == "reachable_coverage_gap"
+    assert prediction["recommended_next_action"] == "add_directed_test_or_sequence"
+
+
+def test_invalid_coverage_goal_stays_unreachable_or_invalid() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "rv_buffer" / "cases" / "coverage_invalid_dequeue_when_empty.json"
+    )
+
+    stimulus = packet["stimulus_context"]
+    assert stimulus["triage_direction"] == "unreachable_or_invalid_coverage_goal"
+
+    prediction = structured_fallback(packet)
+
+    assert prediction["predicted_issue_type"] == "unreachable_or_invalid_coverage_goal"
+    assert prediction["recommended_next_action"] == "prove_unreachable_or_waive_coverage_goal"
+
+
+def test_normalize_diagnosis_aligns_reachable_gap_with_stimulus_priority() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "rv_buffer" / "cases" / "testbench_bug_never_dequeues.json"
+    )
+    output = {
+        "case_id": "rv_B8",
+        "predicted_issue_type": "reachable_coverage_gap",
+        "root_cause_ranked": [
+            {
+                "rank": 1,
+                "hypothesis": "The reachable goal is unhit because the stimulus does not release ready.",
+                "evidence": ["The scenario is reachable but not exercised by the testbench."],
+            }
+        ],
+        "suspect_rtl_signals": [],
+        "suspect_assertions_or_assumptions": [],
+        "recommended_next_action": "add_directed_test_or_sequence",
+        "debug_checklist": ["Review coverage stimulus."],
+    }
+
+    normalized = normalize_diagnosis(packet, output)
+
+    assert normalized["predicted_issue_type"] == "testbench_stimulus_bug"
+    assert normalized["recommended_next_action"] == "fix_testbench_or_stimulus"
+    assert any("stimulus-vs-coverage" in item for item in normalized["debug_checklist"])
+
+
+def test_assumption_constraint_priority_does_not_regress_with_stimulus_cues() -> None:
+    packet = build_packet(
+        ROOT / "benchmarks" / "rv_buffer" / "cases" / "assumption_bug_no_output_stalls.json"
+    )
+
+    prediction = structured_fallback(packet)
+
+    assert prediction["predicted_issue_type"] == "assumption_constraint_bug"
+    assert prediction["recommended_next_action"] == "fix_assumption_constraint"

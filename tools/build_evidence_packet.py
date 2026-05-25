@@ -66,6 +66,13 @@ UNDERCONSTRAINT_WORDS = (
     "producer-side contract",
 )
 
+STIMULUS_WORDS = (
+    "simulation should",
+    "stimulus should",
+    "testbench stimulus",
+    "should exercise",
+)
+
 
 def load_json(path: Path | None) -> object:
     if not path or not path.exists():
@@ -160,6 +167,7 @@ def build_packet(
         "witness_events": coverage_evidence.get("witness_events", [])
         if isinstance(coverage_evidence, dict)
         else [],
+        "stimulus_context": build_stimulus_context(case, coverage_context, coverage_evidence),
         "vacuity_context": build_vacuity_context(case, property_results, result_summary),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),
@@ -323,6 +331,129 @@ def assumption_vacuity_risk_cues(
             }
         )
     return cues
+
+
+def build_stimulus_context(
+    case: dict[str, object],
+    coverage_context: dict[str, object],
+    coverage_evidence: dict[str, object],
+) -> dict[str, object]:
+    coverage = coverage_context if isinstance(coverage_context, dict) else {}
+    evidence = coverage_evidence if isinstance(coverage_evidence, dict) else {}
+    task_type = str(case.get("task_type", ""))
+    property_id = str(case.get("property_id", ""))
+    property_intent = str(case.get("property_intent", ""))
+    design_intent = case.get("design_intent", [])
+    design_text = " ".join(str(item) for item in design_intent) if isinstance(design_intent, list) else str(design_intent)
+    combined_text = " ".join([property_id, property_intent, design_text]).lower()
+    expected_reachable = coverage.get("expected_reachable")
+    expected_hits = coverage.get("expected_test_hits")
+    cover_status = str(
+        evidence.get("observed_cover_status") or coverage.get("expected_cover_status") or ""
+    ).lower()
+    suggested_sequence = coverage.get("suggested_sequence")
+    has_suggested_sequence = isinstance(suggested_sequence, list) and bool(suggested_sequence)
+    witness_events = evidence.get("witness_events")
+    has_witness = isinstance(witness_events, list) and bool(witness_events)
+    related_signals = coverage.get("related_signals")
+    related_signal_text = " ".join(str(signal) for signal in related_signals) if isinstance(related_signals, list) else ""
+
+    cues: list[dict[str, str]] = []
+    is_invalid = expected_reachable is False or cover_status == "unreachable"
+    if is_invalid:
+        cues.append(
+            {
+                "kind": "invalid_or_unreachable_cover_goal",
+                "cue": "expected_reachable_false_or_unreachable_status",
+                "interpretation": "The coverage goal is illegal, unreachable, or invalid under the available design and coverage evidence.",
+            }
+        )
+    else:
+        stimulus_terms = [word for word in STIMULUS_WORDS if word in combined_text]
+        if task_type == "failure_triage" and stimulus_terms:
+            cues.append(
+                {
+                    "kind": "missing_required_stimulus",
+                    "cue": ", ".join(sorted(set(stimulus_terms))),
+                    "interpretation": "The evidence frames the failure as missing or insufficient simulation/testbench stimulus.",
+                }
+            )
+        if (
+            task_type == "failure_triage"
+            and coverage
+            and expected_reachable is True
+            and expected_hits in {0, "0", None}
+            and not has_suggested_sequence
+            and not has_witness
+        ):
+            cues.append(
+                {
+                    "kind": "cover_goal_unhit_because_stimulus_absent",
+                    "cue": "failure_triage_unhit_reachable_cover_without_witness_or_sequence",
+                    "interpretation": "The issue is a failure-triage stimulus gap, not a coverage-closure request for a new directed sequence.",
+                }
+            )
+        if (
+            task_type == "failure_triage"
+            and coverage
+            and ("eventual" in combined_text or "fairness" in combined_text)
+            and ("ready" in related_signal_text or "valid" in related_signal_text)
+        ):
+            cues.append(
+                {
+                    "kind": "stimulus_never_drives_condition",
+                    "cue": "liveness_or_fairness_goal_depends_on_ready_valid_stimulus",
+                    "interpretation": "A liveness/fairness-style coverage or property target depends on environment/testbench driving the ready/valid condition.",
+                }
+            )
+        if task_type == "coverage_closure" and expected_reachable is True and (
+            has_suggested_sequence or has_witness or cover_status in {"reachable", "uncovered"}
+        ):
+            cues.append(
+                {
+                    "kind": "reachable_cover_with_valid_environment",
+                    "cue": "coverage_closure_reachable_goal",
+                    "interpretation": "The goal is a reachable coverage closure target with a valid environment and should use directed sequence generation.",
+                }
+            )
+
+    if is_invalid:
+        triage_direction = "unreachable_or_invalid_coverage_goal"
+    elif any(
+        cue["kind"]
+        in {
+            "missing_required_stimulus",
+            "cover_goal_unhit_because_stimulus_absent",
+            "stimulus_never_drives_condition",
+        }
+        for cue in cues
+    ):
+        triage_direction = "testbench_stimulus_bug"
+    elif any(cue["kind"] == "reachable_cover_with_valid_environment" for cue in cues):
+        triage_direction = "reachable_coverage_gap"
+    else:
+        triage_direction = "unknown"
+
+    reason = ""
+    if triage_direction == "testbench_stimulus_bug":
+        reason = "Evidence indicates missing or insufficient testbench stimulus rather than a request for a new coverage-closure sequence."
+    elif triage_direction == "reachable_coverage_gap":
+        reason = "Evidence indicates a reachable coverage goal with a valid environment, suitable for directed coverage closure."
+    elif triage_direction == "unreachable_or_invalid_coverage_goal":
+        reason = "Evidence indicates the coverage goal is invalid or unreachable."
+
+    return {
+        "requires_stimulus_review": bool(cues),
+        "triage_direction": triage_direction,
+        "coverage_goal": coverage.get("coverage_goal"),
+        "expected_test_hits": expected_hits,
+        "expected_reachable": expected_reachable,
+        "expected_cover_status": coverage.get("expected_cover_status"),
+        "has_suggested_sequence": has_suggested_sequence,
+        "has_witness_events": has_witness,
+        "risk_cues": cues,
+        "reason": reason,
+    }
 
 
 def sort_trace_paths(

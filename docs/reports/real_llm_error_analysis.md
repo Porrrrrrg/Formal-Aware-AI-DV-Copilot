@@ -59,6 +59,18 @@ The scoped assumption/vacuity improvement transferred to the full triage setting
 
 The main side effect was a one-case regression in `testbench_stimulus_bug`: `rv_B8` changed from the correct `testbench_stimulus_bug` / `fix_testbench_or_stimulus` classification to `reachable_coverage_gap` / `add_directed_test_or_sequence`. The pre-existing `fifo_D17` stimulus miss remained. These two misses suggest that the next triage iteration should focus on distinguishing stimulus incompleteness from reachable coverage closure opportunities.
 
+## Stimulus-vs-Coverage Scoped Triage Gate
+
+Date: 2026-05-25.
+
+The follow-up scoped task added derived `stimulus_context` cues and prompt guidance for separating existing stimulus/testbench incompleteness from true reachable coverage closure. It did not change benchmark labels, rerun SVA repair or coverage closure, run JasperGold, or claim Codex CLI performance.
+
+Structured fallback regression with rebuilt packets reached 53/53 issue/action agreement. The target guardrails were `testbench_stimulus_bug` 4/4, `reachable_coverage_gap` 9/9, `unreachable_or_invalid_coverage_goal` 5/5, and `assumption_constraint_bug` 12/12.
+
+The real local Qwen scoped gate covered all 18 stimulus/coverage/invalid triage cases. It produced valid JSON 1.000, fallback 0.000, LLM error 0.000, hallucinated signal 0.000, and issue/action accuracy 18/18. The two known misses were corrected: `rv_B8` and `fifo_D17` both classified as `testbench_stimulus_bug` with `fix_testbench_or_stimulus`.
+
+This is a scoped local Qwen result, not a full benchmark rerun. The next validation step is a separate full local Qwen triage rerun to check transfer and non-target-label regressions.
+
 ## JasperGold Re-check Metrics
 
 Source checkpoint: `v1.1.2-local-qwen-full-benchmark`.
