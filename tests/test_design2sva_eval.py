@@ -105,7 +105,7 @@ def test_design2sva_replay_accepts_result_json_source(tmp_path, monkeypatch) -> 
             "--k",
             "3",
             "--replay",
-            "evaluation/results/design2sva_eval_codex_subset.json",
+            "evaluation/fixtures/design2sva_eval_codex_subset_fixture.json",
             "--out",
             str(out),
             "--markdown",

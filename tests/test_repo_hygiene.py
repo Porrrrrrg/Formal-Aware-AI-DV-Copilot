@@ -48,9 +48,17 @@ def tracked_files() -> list[str]:
 
 def test_repo_hygiene_docs_exist() -> None:
     required_paths = [
-        ROOT / "docs" / "repo_map.md",
+        ROOT / "README.md",
+        ROOT / "docs" / "architecture.md",
+        ROOT / "docs" / "evaluation.md",
+        ROOT / "docs" / "limitations_and_claims.md",
         ROOT / "docs" / "artifact_policy.md",
-        ROOT / "reports" / "index.md",
+        ROOT / "docs" / "environment" / "jaspergold.md",
+        ROOT / "docs" / "environment" / "llm_backend.md",
+        ROOT / "docs" / "environment" / "moore.md",
+        ROOT / "docs" / "reports" / "final_research_summary.md",
+        ROOT / "docs" / "reports" / "experiment_history.md",
+        ROOT / "evaluation" / "results" / "final_results.md",
         ROOT / ".gitattributes",
     ]
 
@@ -115,19 +123,24 @@ def test_ignore_rules_cover_required_local_artifact_classes() -> None:
         assert pattern in ignore_text
 
 
-def test_report_index_mentions_preserved_evidence_families() -> None:
-    index_text = (ROOT / "reports" / "index.md").read_text()
-    required_families = [
-        "reports/release/stage3_*",
-        "reports/release/stage4_*",
-        "reports/status/repo_hygiene_audit_*",
-        "reports/status/repo_cleanup_plan_*",
-        "reports/jasper/*summary*.md",
-        "reports/workflows/*",
-        "reports/alignment/*summary*.md",
-        "reports/fveval/*",
-        "reports/local_llm/*",
+def test_final_docs_preserve_result_boundaries() -> None:
+    final_results = (ROOT / "evaluation" / "results" / "final_results.md").read_text()
+    final_summary = (
+        ROOT / "docs" / "reports" / "final_research_summary.md"
+    ).read_text()
+    experiment_history = (
+        ROOT / "docs" / "reports" / "experiment_history.md"
+    ).read_text()
+    combined = "\n".join([final_results, final_summary, experiment_history])
+
+    required_phrases = [
+        "local Qwen",
+        "JasperGold",
+        "not Codex CLI",
+        "not official FVEval",
+        "production DV signoff",
+        "v1.1.9",
     ]
 
-    for family in required_families:
-        assert family in index_text
+    for phrase in required_phrases:
+        assert phrase in combined

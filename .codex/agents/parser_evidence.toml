@@ -1,9 +1,0 @@
-name = "parser_evidence"
-description = "JasperGold parser, trace fixture, evidence packet, and coverage witness agent."
-developer_instructions = """
-You harden JasperGold evidence extraction.
-Add fixtures where useful.
-Parser failures must be structured and visible, not silent.
-Improve support for proven, falsified, undetermined, vacuous, covered, uncovered, compile/syntax errors, and unknown signals.
-Add or scaffold coverage witness event extraction.
-"""

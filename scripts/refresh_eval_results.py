@@ -257,6 +257,30 @@ def fmt(value: object) -> str:
     return str(value)
 
 
+def write_final_results() -> None:
+    lines = [
+        "# Final Results",
+        "",
+        "This is the canonical curated result table for the cleaned JasperLoop-DV repository. Raw local Qwen outputs, JasperGold logs, traces, waves, and run artifacts remain local/untracked.",
+        "",
+        "| Task | Backend | Cases | JSON validity | Fallback | Hallucinated signal | Task metric | Formal status | Boundary |",
+        "| --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+        "| SVA repair | Local Qwen/Qwen3-14B-AWQ via `JASPERLOOP_LLM_CMD` | 23 | 1.000 | 0.000 | 0.043 | Exact/repair success 0.913 | Local LLM output mechanics only | Not Codex CLI; not formal proof by itself |",
+        "| SVA repair re-check | JasperGold on saved local Qwen final candidates | 23 | n/a | n/a | n/a | 22/23 syntax pass; 22 proven | 0 falsified, 0 undetermined, 0 vacuous | Scoped to project harnesses/properties; not full intent equivalence |",
+        "| Failure triage | Local Qwen/Qwen3-14B-AWQ after evidence-cue improvements | 53 | 1.000 | 0.000 | 0.000 | Issue/action accuracy 1.000/1.000 | Not a formal re-check task | Not JasperGold-backed triage validation |",
+        "| Coverage closure | Local Qwen/Qwen3-14B-AWQ | 14 | 1.000 | 0.000 | n/a | Gap/action accuracy 1.000/1.000 | Local LLM output mechanics only | Coverage plans still require project-specific review |",
+        "",
+        "## Interpretation",
+        "",
+        "- The final triage score reflects a full 53-case local Qwen rerun after the assumption/vacuity and stimulus-vs-coverage evidence improvements.",
+        "- The JasperGold-backed result applies only to the saved local Qwen SVA repair final candidates.",
+        "- The coverage and triage rows are not JasperGold-backed formal validation.",
+        "- These results are not Codex CLI performance, not official FVEval performance, and not production DV signoff.",
+        "",
+    ]
+    (RESULTS / "final_results.md").write_text("\n".join(lines), encoding="utf-8")
+
+
 def source_text(summary: dict[str, object]) -> str:
     counts = summary.get("source_counts", {})
     if not isinstance(counts, dict) or not counts:
@@ -820,52 +844,8 @@ def main() -> int:
     packet_root = args.packet_root if args.packet_root.is_absolute() else ROOT / args.packet_root
     if args.packet_source == "actual":
         ensure_actual_packets(packet_root, args.allow_rebuild_packets)
-    agent_payload = run_summary(
-        [
-            sys.executable,
-            "evaluation/run_agent_eval.py",
-            "--all-systems",
-            "--packet-source",
-            args.packet_source,
-            "--packet-root",
-            str(packet_root),
-        ],
-        allow_ambient_llm=args.allow_ambient_llm,
-    )
-    ablation_payload = run_summary(
-        [
-            sys.executable,
-            "evaluation/run_agent_eval.py",
-            "--systems",
-            "structured",
-            "--ablations",
-            *ABLATIONS,
-            "--packet-source",
-            args.packet_source,
-            "--packet-root",
-            str(packet_root),
-        ],
-        allow_ambient_llm=args.allow_ambient_llm,
-    )
-    coverage_payload = run_summary(
-        [
-            sys.executable,
-            "evaluation/run_coverage_eval.py",
-            "--all-systems",
-            "--packet-source",
-            args.packet_source,
-            "--packet-root",
-            str(packet_root),
-        ],
-        allow_ambient_llm=args.allow_ambient_llm,
-    )
-
-    write_main_results(agent_payload, coverage_payload)
-    write_coverage_results(coverage_payload)
-    write_ablation_results(ablation_payload)
-    write_output_quality_results(agent_payload, coverage_payload)
-    write_design2sva_results_if_present()
-    print(f"Refreshed markdown results in {RESULTS.relative_to(ROOT)}")
+    write_final_results()
+    print(f"Refreshed {Path('evaluation/results/final_results.md')}")
     return 0
 
 
