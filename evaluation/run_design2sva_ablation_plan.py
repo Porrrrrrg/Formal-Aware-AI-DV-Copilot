@@ -24,7 +24,7 @@ from evaluation.run_design2sva_native_oracle import (  # noqa: E402
 
 DEFAULT_CASES = Path("benchmarks/design2sva_cases.json")
 DEFAULT_OUT = Path("evaluation/results/design2sva_ablation_replay_local.json")
-DEFAULT_PLAN = Path("evaluation/results/design2sva_ablation_plan.md")
+DEFAULT_PLAN = Path("artifacts/design2sva/design2sva_ablation_plan.md")
 
 REQUIRED_METRICS = [
     "syntax@1",

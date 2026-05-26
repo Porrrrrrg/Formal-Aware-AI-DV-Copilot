@@ -68,7 +68,7 @@ from copilot.sva_library import (  # noqa: E402
 
 DEFAULT_CASES = Path("benchmarks/design2sva_cases.json")
 DEFAULT_OUT = Path("evaluation/results/design2sva_eval_local.json")
-DEFAULT_MARKDOWN = Path("evaluation/results/design2sva_results.md")
+DEFAULT_MARKDOWN = Path("artifacts/design2sva/design2sva_results.md")
 DEFAULT_JASPER_REPLAY_PATH = Path("evaluation/fixtures/design2sva_anti_vacuity_replay.jsonl")
 DEFAULT_NATIVE_ORACLE_PATH = Path(
     "evaluation/results/design2sva_native_reference_oracle_jasper.json"

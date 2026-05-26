@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evaluation" / "results"
 
 DEFAULT_SUMMARY = Path("evaluation/results/design2sva_ablation_summary.json")
-DEFAULT_MARKDOWN = Path("evaluation/results/design2sva_ablation_results.md")
+DEFAULT_MARKDOWN = Path("artifacts/design2sva/design2sva_ablation_results.md")
 
 METRIC_KEYS = [
     "cases",
