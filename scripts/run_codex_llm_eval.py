@@ -144,7 +144,7 @@ def run_eval_task(args: argparse.Namespace) -> int:
         if args.cases:
             cmd.extend(["--cases", args.cases])
         markdown_path = (
-            ROOT / "evaluation" / "results" / "design2sva_eval_codex_expanded_subset.md"
+            ROOT / "artifacts" / "codex_llm_eval" / "design2sva_eval_codex_expanded_subset.md"
         )
         if args.markdown:
             markdown_path = ROOT / args.markdown

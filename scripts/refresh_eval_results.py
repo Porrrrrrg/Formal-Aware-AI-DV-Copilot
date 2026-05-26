@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh scaffold evaluation JSON artifacts and markdown result tables."""
+"""Refresh the final curated evaluation result table."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evaluation" / "results"
+DEFAULT_RESULTS = ROOT / "evaluation" / "results"
 DEFAULT_PACKET_ROOT = Path("jasper/reports/case_packets")
 CASE_DIRS = [
     Path("benchmarks/arbiter_rr2/cases"),
@@ -336,7 +337,7 @@ def write_main_results(agent_payload: dict[str, object], coverage_payload: dict[
     lines.extend(
         [
             "",
-            "Source/fallback metrics for Codex-backed runs are tracked in `evaluation/results/output_quality_results.md`.",
+            "Source/fallback metrics are summarized in `evaluation/results/final_results.md`.",
             "",
             "## Coverage Closure Scaffold",
             "",
@@ -362,11 +363,13 @@ def write_main_results(agent_payload: dict[str, object], coverage_payload: dict[
     lines.extend(
         [
             "",
-            "Detailed coverage closure results are tracked in `evaluation/results/coverage_closure_results.md`.",
+            "Coverage closure results are summarized in `evaluation/results/final_results.md`.",
             "",
         ]
     )
-    (RESULTS / "main_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("main_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_coverage_results(coverage_payload: dict[str, object]) -> None:
@@ -401,7 +404,9 @@ def write_coverage_results(coverage_payload: dict[str, object]) -> None:
             "",
         ]
     )
-    (RESULTS / "coverage_closure_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("coverage_closure_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_ablation_results(ablation_payload: dict[str, object]) -> None:
@@ -428,7 +433,9 @@ def write_ablation_results(ablation_payload: dict[str, object]) -> None:
         )
     lines.append("| No repair loop | TBD | TBD | TBD | Applies to SVA repair experiments, not current triage scaffold. |")
     lines.append("")
-    (RESULTS / "ablation_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("ablation_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_output_quality_results(
@@ -509,7 +516,9 @@ def write_output_quality_results(
             "",
         ]
     )
-    (RESULTS / "output_quality_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("output_quality_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def fmt_design2sva(value: object) -> str:
@@ -527,6 +536,16 @@ def counts_text(counts: object) -> str:
 def design2sva_result_paths() -> list[Path]:
     paths = {path.name: path for path in RESULTS.glob("design2sva*.json")}
     return sorted(paths.values(), key=design2sva_result_sort_key)
+
+
+def legacy_markdown_path(filename: str) -> Path:
+    if RESULTS.resolve() == DEFAULT_RESULTS.resolve():
+        return ROOT / "artifacts" / "legacy_results" / filename
+    return RESULTS / filename
+
+
+def design2sva_markdown_path() -> Path:
+    return legacy_markdown_path("design2sva_results.md")
 
 
 def design2sva_source_text(payload: dict[str, object], summary: dict[str, object]) -> str:
@@ -710,12 +729,11 @@ def write_design2sva_results_if_present() -> None:
         "",
         "These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact, provenance, and formal-check status so deterministic, replay, real LLM, and JasperGold-measured outcomes are not conflated.",
         "",
-        "## Stage Result Links",
+        "## Canonical Result Links",
         "",
-        "- Stage 15 oracle validation: [docs/design2sva_expanded_oracle_stage15.md](../../docs/design2sva_expanded_oracle_stage15.md)",
-        "- Stage 16 expanded Codex result: [docs/design2sva_expanded_codex_stage16_error_analysis.md](../../docs/design2sva_expanded_codex_stage16_error_analysis.md)",
-        "- Stage 17 ablation summary: [evaluation/results/design2sva_ablation_results.md](design2sva_ablation_results.md)",
-        "- Stage 17 paper package: [docs/paper_result_package_stage17.md](../../docs/paper_result_package_stage17.md)",
+        "- Final curated result table: [evaluation/results/final_results.md](final_results.md)",
+        "- Final research summary: [docs/reports/final_research_summary.md](../../docs/reports/final_research_summary.md)",
+        "- Experiment history: [docs/reports/experiment_history.md](../../docs/reports/experiment_history.md)",
     ]
     written: set[str] = set()
     for title, description, artifact_names in DESIGN2SVA_SECTIONS:
@@ -785,7 +803,9 @@ def write_design2sva_results_if_present() -> None:
             "",
         ]
     )
-    (RESULTS / "design2sva_results.md").write_text("\n".join(lines))
+    markdown_path = design2sva_markdown_path()
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
