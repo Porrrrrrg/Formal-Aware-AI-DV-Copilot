@@ -2,8 +2,9 @@
 """Run Stage 4A SVA repair ablations.
 
 The runner intentionally separates local scaffold metrics from live JasperGold
-proof metrics. Unless ``--jasper-check`` is used on Moore, generated candidates
-are reported as needing a Moore handoff for final proof/vacuity validation.
+proof metrics. Unless ``--jasper-check`` is used in a JasperGold-capable
+environment, generated candidates are reported as needing a JasperGold handoff
+for final proof/vacuity validation.
 """
 
 from __future__ import annotations
@@ -102,7 +103,7 @@ def main() -> int:
     parser.add_argument(
         "--stage3-final-proof-manifest",
         type=Path,
-        default=Path("reports/jasper/codex_repair_final_proof_manifest_20260511T053413Z.json"),
+        default=Path("artifacts/sva_repair_ablation/final_proof_manifest.json"),
     )
     args = parser.parse_args()
 
@@ -265,7 +266,7 @@ def variant_summary(
         "case_level_pass_at_1": pass_metric_from_rows(rows, proof_run),
         "case_level_pass_at_k": pass_metric_from_rows(rows, proof_run),
         "final_jasper_proof_run": proof_run,
-        "jasper_note": "not_run_moore_handoff_required" if not proof_run else "live_jasper_requested",
+        "jasper_note": "not_run_jasper_handoff_required" if not proof_run else "live_jasper_requested",
         "rows": rows,
     }
 
@@ -451,7 +452,7 @@ def render_summary(payload: dict[str, object], artifact_meta: dict[str, object] 
             "",
             "## Stage 3D Formal Reference",
             "",
-            "The Stage 3D Moore/JasperGold manifest remains the only live final-proof result for restored Codex repair candidates in this branch.",
+            "A real JasperGold manifest is required before any live final-proof result for restored repair candidates is claimed.",
         ]
     )
     final_ref = payload.get("stage3_final_proof_reference", {})
@@ -470,7 +471,7 @@ def render_summary(payload: dict[str, object], artifact_meta: dict[str, object] 
         lines.extend(
             [
                 "",
-                "## Moore Handoff Artifact",
+                "## JasperGold Handoff Artifact",
                 "",
                 f"- Path: `{artifact_meta['path']}`",
                 f"- Rows: {artifact_meta['rows']}",
@@ -484,7 +485,7 @@ def render_summary(payload: dict[str, object], artifact_meta: dict[str, object] 
             "## Notes",
             "",
             "- Best-of-k is reported only as an upper-bound search metric, never as single-output repair success.",
-            "- Stage 4A generated candidates require Moore final proof before any new formal-success claim.",
+            "- Stage 4A generated candidates require JasperGold final proof before any new formal-success claim.",
             "- `jasper_vacuity_status == null` in Stage 3D is not an independent explicit non-vacuity certificate.",
             "",
         ]

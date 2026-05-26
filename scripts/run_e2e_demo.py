@@ -18,7 +18,7 @@ from app.cli import main  # noqa: E402
 
 DEMO_CASE = Path("examples/workflows/sva_repair_demo/demo_case.json")
 DEFAULT_OUT_DIR = Path("artifacts/workflow-demo")
-DEFAULT_REPORTS_DIR = Path("reports/workflows")
+DEFAULT_REPORTS_DIR = Path("artifacts/workflow-demo/reports")
 CLAIM_BOUNDARY = (
     "Stage 5F end-to-end demo evidence only. The replay demo loads local fixtures, "
     "prepares local manifests, imports a sanitized verifier sample, and runs static "

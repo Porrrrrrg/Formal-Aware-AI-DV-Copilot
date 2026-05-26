@@ -130,7 +130,7 @@ def test_moore_handoff_validate_catches_missing_input_artifacts(tmp_path: Path) 
                         "sha256": "0" * 64,
                     }
                 ],
-                "expected_outputs": ["reports/jasper/example_summary.md"],
+                "expected_outputs": ["artifacts/jasper/example_summary.md"],
                 "forbidden_outputs": ["*.log"],
             }
         ),
@@ -173,7 +173,7 @@ def test_moore_handoff_import_result_emits_artifact_manifest(
             {
                 "run_id": "moore_test",
                 "summary": {"candidate_count": 1},
-                "artifacts": [{"path": "reports/jasper/lightweight_summary.md"}],
+                "artifacts": [{"path": "artifacts/jasper/lightweight_summary.md"}],
             }
         ),
         encoding="utf-8",
@@ -197,7 +197,7 @@ def test_moore_handoff_import_result_accepts_utf8_bom_manifest(tmp_path: Path) -
             {
                 "run_id": "moore_test",
                 "summary": {"candidate_count": 1},
-                "artifacts": [{"path": "reports/jasper/lightweight_summary.md"}],
+                "artifacts": [{"path": "artifacts/jasper/lightweight_summary.md"}],
             }
         ),
         encoding="utf-8-sig",
