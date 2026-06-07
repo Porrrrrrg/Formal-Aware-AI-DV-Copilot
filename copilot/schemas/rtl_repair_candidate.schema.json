@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RTL Repair Candidate",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "issue_type",
+    "target_files",
+    "unified_diff",
+    "suspect_signals",
+    "rationale",
+    "expected_effect",
+    "risk_notes",
+    "requires_recheck"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "rtl_repair_candidate_v1" },
+    "issue_type": {
+      "type": "string",
+      "enum": [
+        "rtl_design_bug",
+        "assertion_property_bug",
+        "assumption_constraint_bug",
+        "harness_bug",
+        "unknown"
+      ]
+    },
+    "target_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "unified_diff": { "type": "string" },
+    "suspect_signals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rationale": { "type": "string" },
+    "expected_effect": { "type": "string" },
+    "risk_notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "requires_recheck": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}
