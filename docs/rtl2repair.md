@@ -28,6 +28,29 @@ With JasperGold configured, remove `--dry-run` and add `--jasper-check`. If the
 Jasper executable is unavailable, the runner reports `formal_metrics_status` as
 `blocked` instead of fabricating measured formal metrics.
 
+Deterministic replay patch closure command:
+
+```bash
+python evaluation/run_rtl2repair_eval.py \
+  --rtl benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_double_grant.sv \
+  --top arbiter_rr2 \
+  --clock clk \
+  --reset rst \
+  --reset-polarity active_high \
+  --intent "The arbiter must never grant both clients in the same cycle." \
+  --k 3 \
+  --max-sva-rounds 3 \
+  --max-rtl-rounds 1 \
+  --rtl-repair-replay evaluation/fixtures/rtl_repair_replay_outputs.jsonl \
+  --jasper-check \
+  --out artifacts/rtl2repair/arbiter_double_grant_jasper/rtl2repair_eval.json
+```
+
+This result is JasperGold-backed only when `--jasper-check` runs with a real
+`JASPER_BIN` in a configured Cadence/JasperGold environment. The replay fixture
+removes LLM patch-generation variance; it does not bypass patch safety,
+scratch apply, patched-manifest generation, or target/regression recheck.
+
 Patch recheck behavior:
 
 - Candidate SVA quality gates use schema validation, local syntax scaffolding,
@@ -43,6 +66,10 @@ Patch recheck behavior:
 - The recheck gate runs the target SVA on the patched manifest and then re-runs
   accepted regression SVAs from earlier rounds. Dry-run mode records
   `not_run`; it does not count the patch as accepted.
+- Patch recheck output records `target_before`, `target_after`, and
+  `acceptance_reason`. A patch is accepted only when the target was reachable
+  falsified before patch, the patched target proves non-vacuous, and every
+  regression recheck passes.
 
 Claim boundaries:
 

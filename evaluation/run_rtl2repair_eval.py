@@ -40,7 +40,10 @@ from copilot.agents.design2sva_repair_agent import (  # noqa: E402
     repair_design2sva_candidate,
     validate_repair_candidate as validate_design2sva_repair_candidate,
 )
-from copilot.agents.rtl_repair_agent import propose_rtl_repair  # noqa: E402
+from copilot.agents.rtl_repair_agent import (  # noqa: E402
+    propose_rtl_repair,
+    validate_candidate as validate_rtl_repair_candidate,
+)
 from copilot.retrieval import Design2SVAContextOptions, build_design2sva_context  # noqa: E402
 from copilot.sva_library import hallucinated_identifiers, syntax_scaffold_ok  # noqa: E402
 from tools.apply_rtl_patch import apply_rtl_patch  # noqa: E402
@@ -61,6 +64,55 @@ def resolve_repo_path(path: Path) -> Path:
 def load_json(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     return data if isinstance(data, dict) else {}
+
+
+def load_rtl_repair_replay(path: Path | None) -> list[dict[str, Any]]:
+    if not path:
+        return []
+    resolved = resolve_repo_path(path)
+    records: list[dict[str, Any]] = []
+    for line_number, line in enumerate(resolved.read_text(encoding="utf-8").splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        data = json.loads(stripped)
+        if not isinstance(data, dict):
+            raise ValueError(f"{resolved}:{line_number} must contain a JSON object.")
+        records.append(data)
+    return records
+
+
+def select_rtl_repair_replay_candidate(
+    records: list[dict[str, Any]],
+    *,
+    task: dict[str, Any],
+    manifest: dict[str, Any],
+) -> dict[str, Any] | None:
+    if not records:
+        return None
+    case_id = str(task.get("case_id") or "")
+    design_id = str(task.get("design_id") or manifest.get("design_id") or "")
+    property_id = str(task.get("property_id") or "")
+    for record in records:
+        if not replay_record_matches(record, case_id=case_id, design_id=design_id, property_id=property_id):
+            continue
+        response = record.get("response")
+        candidate = response if isinstance(response, dict) else record
+        if not isinstance(candidate, dict):
+            continue
+        validate_rtl_repair_candidate(candidate)
+        return candidate
+    return None
+
+
+def replay_record_matches(record: dict[str, Any], *, case_id: str, design_id: str, property_id: str) -> bool:
+    if str(record.get("task") or "rtl2repair") != "rtl2repair":
+        return False
+    for key, expected in (("case_id", case_id), ("design_id", design_id), ("property_id", property_id)):
+        value = str(record.get(key) or "")
+        if value and value != expected:
+            return False
+    return True
 
 
 def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
@@ -88,6 +140,8 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
     accepted_properties: list[dict[str, Any]] = []
     rtl_patch_candidate: dict[str, Any] | None = None
     rtl_patch_stable_sva: dict[str, Any] | None = None
+    rtl_patch_target_before: dict[str, Any] | None = None
+    rtl_repair_replay_records = load_rtl_repair_replay(args.rtl_repair_replay)
     formal_metrics_status = "not_run"
 
     for index, candidate in enumerate(candidates):
@@ -145,16 +199,30 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
             if bundle["repair_recommendation"]["next_owner"] == "rtl":
                 if args.max_rtl_rounds > 0:
                     rtl_patch_stable_sva = current
-                    rtl_patch_candidate = propose_rtl_repair(
-                        rtl_project_manifest=manifest,
-                        formal_debug_bundle=bundle,
-                        stable_sva=current,
-                        triage={"predicted_issue_type": "rtl_design_bug", "evidence": [bundle["repair_recommendation"]["reason"]]},
-                        suspect_signals=bundle["root_cause_signals"].get("unknown_signals", []),
-                        allowed_patch_files=[str(resolve_repo_path(Path(path))) for path in manifest.get("rtl_files", [])],
-                        use_llm=bool(args.rtl_repair_llm),
-                        llm_command=args.rtl_repair_llm_command,
+                    rtl_patch_target_before = {
+                        "candidate": current,
+                        "check_result": check_result,
+                        "row": row,
+                        "formal_status": check_status,
+                    }
+                    replay_candidate = select_rtl_repair_replay_candidate(
+                        rtl_repair_replay_records,
+                        task=task,
+                        manifest=manifest,
                     )
+                    if replay_candidate is not None:
+                        rtl_patch_candidate = replay_candidate
+                    else:
+                        rtl_patch_candidate = propose_rtl_repair(
+                            rtl_project_manifest=manifest,
+                            formal_debug_bundle=bundle,
+                            stable_sva=current,
+                            triage={"predicted_issue_type": "rtl_design_bug", "evidence": [bundle["repair_recommendation"]["reason"]]},
+                            suspect_signals=bundle["root_cause_signals"].get("unknown_signals", []),
+                            allowed_patch_files=[str(resolve_repo_path(Path(path))) for path in manifest.get("rtl_files", [])],
+                            use_llm=bool(args.rtl_repair_llm),
+                            llm_command=args.rtl_repair_llm_command,
+                        )
                 break
             if round_index >= args.max_sva_rounds:
                 break
@@ -178,6 +246,7 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
         task=task,
         rtl_patch_candidate=rtl_patch_candidate,
         stable_sva=rtl_patch_stable_sva,
+        target_before=rtl_patch_target_before,
         accepted_properties=accepted_properties,
         out_path=out_path,
     )
@@ -530,22 +599,27 @@ def run_patch_recheck(
     task: dict[str, Any],
     rtl_patch_candidate: dict[str, Any] | None,
     stable_sva: dict[str, Any] | None,
+    target_before: dict[str, Any] | None,
     accepted_properties: list[dict[str, Any]],
     out_path: Path,
 ) -> dict[str, Any]:
     recheck = empty_patch_recheck(rtl_patch_candidate)
+    recheck["target_before"] = target_before
     if not rtl_patch_candidate:
         return validate_patch_recheck(recheck)
     if str(rtl_patch_candidate.get("issue_type") or "") != "rtl_design_bug":
         recheck["reason"] = "Patch candidate issue_type is not rtl_design_bug."
+        recheck["acceptance_reason"] = recheck["reason"]
         return validate_patch_recheck(recheck)
     if not str(rtl_patch_candidate.get("unified_diff") or "").strip():
         recheck["reason"] = "Patch candidate has no unified diff."
+        recheck["acceptance_reason"] = recheck["reason"]
         return validate_patch_recheck(recheck)
     if stable_sva is None:
         recheck["status"] = "blocked"
         recheck["attempted"] = True
         recheck["reason"] = "No stable falsified SVA was available for target recheck."
+        recheck["acceptance_reason"] = recheck["reason"]
         return validate_patch_recheck(recheck)
 
     recheck["attempted"] = True
@@ -569,6 +643,7 @@ def run_patch_recheck(
     except (PatchSafetyError, ValueError, OSError) as exc:
         recheck["status"] = "blocked"
         recheck["reason"] = str(exc)
+        recheck["acceptance_reason"] = recheck["reason"]
         return validate_patch_recheck(recheck)
 
     recheck["status"] = "applied"
@@ -591,6 +666,7 @@ def run_patch_recheck(
         "formal_status": target_status,
         "pass": target_property_passes(target_check),
     }
+    recheck["target_after"] = recheck["target_check"]
 
     regression_checks = []
     for regression_index, regression in enumerate(accepted_properties):
@@ -613,7 +689,8 @@ def run_patch_recheck(
             }
         )
     recheck["regression_checks"] = regression_checks
-    target_pass = bool(recheck["target_check"]["pass"])
+    target_before_pass = target_before_is_falsified_reachable(target_before)
+    target_pass = bool(recheck["target_after"]["pass"])
     regression_pass_count = sum(1 for item in regression_checks if item.get("pass"))
     regression_total = len(regression_checks)
     regression_pass_rate = 1.0 if regression_total == 0 else rate(regression_pass_count, regression_total)
@@ -623,13 +700,19 @@ def run_patch_recheck(
         "regression_total": regression_total,
         "regression_pass_rate": regression_pass_rate,
     }
-    recheck["accepted"] = target_pass and regression_pass_count == regression_total
+    recheck["accepted"] = target_before_pass and target_pass and regression_pass_count == regression_total
     recheck["status"] = "accepted" if recheck["accepted"] else "rejected"
-    recheck["reason"] = (
+    recheck["acceptance_reason"] = (
         "Patch passed target and regression rechecks."
         if recheck["accepted"]
-        else "Patch failed target or regression recheck."
+        else patch_rejection_reason(
+            target_before_pass=target_before_pass,
+            target_after_pass=target_pass,
+            regression_pass_count=regression_pass_count,
+            regression_total=regression_total,
+        )
     )
+    recheck["reason"] = recheck["acceptance_reason"]
     return validate_patch_recheck(recheck)
 
 
@@ -640,9 +723,12 @@ def empty_patch_recheck(rtl_patch_candidate: dict[str, Any] | None) -> dict[str,
         "attempted": False,
         "accepted": False,
         "reason": "No RTL patch candidate was produced.",
+        "acceptance_reason": "No RTL patch candidate was produced.",
         "rtl_patch_candidate": rtl_patch_candidate,
         "apply_manifest": None,
         "patched_manifest": None,
+        "target_before": None,
+        "target_after": None,
         "target_check": None,
         "regression_checks": [],
         "metrics": {
@@ -691,6 +777,37 @@ def target_property_passes(check_result: dict[str, Any]) -> bool:
     vacuity_status = str(check_result.get("vacuity_status") or "").lower()
     syntax_pass = check_result.get("syntax_pass")
     return syntax_pass is not False and proof_status == "proven" and vacuity_status != "vacuous"
+
+
+def target_before_is_falsified_reachable(target_before: dict[str, Any] | None) -> bool:
+    if not isinstance(target_before, dict):
+        return False
+    row = target_before.get("row")
+    if isinstance(row, dict):
+        proof = row.get("proof_metadata") if isinstance(row.get("proof_metadata"), dict) else {}
+        proof_status = str(proof.get("proof_status") or "").lower()
+        return proof_status in {"falsified", "cex", "failed", "fail"} and row.get("antecedent_reachable") is True
+    check_result = target_before.get("check_result")
+    if isinstance(check_result, dict):
+        proof_status = str(check_result.get("proof_status") or "").lower()
+        return proof_status in {"falsified", "cex", "failed", "fail"} and check_result.get("antecedent_reachable") is True
+    return False
+
+
+def patch_rejection_reason(
+    *,
+    target_before_pass: bool,
+    target_after_pass: bool,
+    regression_pass_count: int,
+    regression_total: int,
+) -> str:
+    if not target_before_pass:
+        return "Target before state was not a reachable falsified property."
+    if not target_after_pass:
+        return "Target after recheck was not proven non-vacuous."
+    if regression_pass_count != regression_total:
+        return "One or more regression rechecks failed."
+    return "Patch failed target or regression recheck."
 
 
 def combine_formal_status(current: str, observed: str) -> str:
@@ -802,6 +919,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--repair-llm-command")
     parser.add_argument("--rtl-repair-llm", action="store_true")
     parser.add_argument("--rtl-repair-llm-command")
+    parser.add_argument("--rtl-repair-replay", type=Path)
     parser.add_argument("--jasper-check", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--out", required=True, type=Path)
