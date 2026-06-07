@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RTL Project Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_id",
+    "design_id",
+    "rtl_files",
+    "top_module",
+    "clock_reset",
+    "include_dirs",
+    "defines",
+    "assumption_files",
+    "property_module",
+    "property_instance",
+    "visible_signals",
+    "signal_roles",
+    "harness"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "rtl_project_manifest_v1" },
+    "project_id": { "type": "string", "minLength": 1 },
+    "design_id": { "type": "string", "minLength": 1 },
+    "rtl_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "top_module": { "type": "string", "minLength": 1 },
+    "clock_reset": {
+      "type": "object",
+      "required": ["clock", "clock_edge", "reset", "reset_polarity"],
+      "properties": {
+        "clock": { "type": "string", "minLength": 1 },
+        "clock_edge": { "type": "string", "enum": ["posedge", "negedge"] },
+        "reset": { "type": ["string", "null"] },
+        "reset_polarity": {
+          "type": "string",
+          "enum": ["active_high", "active_low", "unknown"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "include_dirs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "defines": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "assumption_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "property_module": { "type": "string", "minLength": 1 },
+    "property_instance": { "type": "string", "minLength": 1 },
+    "visible_signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "signal_roles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "harness": {
+      "type": "object",
+      "required": ["strategy", "harness_path"],
+      "properties": {
+        "strategy": { "type": "string", "enum": ["render_generic", "reuse_existing"] },
+        "harness_path": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

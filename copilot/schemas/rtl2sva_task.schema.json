@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RTL2SVA Task",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "task_type",
+    "project_id",
+    "design_id",
+    "property_id",
+    "module_name",
+    "intent",
+    "rtl_project_manifest_path",
+    "design_rtl_paths",
+    "visible_signals",
+    "clock_reset",
+    "helper_code_policy",
+    "source"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "rtl2sva_task_v1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "task_type": { "type": "string", "const": "rtl2sva" },
+    "project_id": { "type": "string", "minLength": 1 },
+    "design_id": { "type": "string", "minLength": 1 },
+    "property_id": { "type": "string", "minLength": 1 },
+    "module_name": { "type": "string", "minLength": 1 },
+    "intent": { "type": "string", "minLength": 1 },
+    "rtl_project_manifest_path": { "type": "string", "minLength": 1 },
+    "design_rtl_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "visible_signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "clock_reset": {
+      "type": "object",
+      "required": ["clock", "clock_edge", "reset", "reset_polarity"],
+      "properties": {
+        "clock": { "type": "string", "minLength": 1 },
+        "clock_edge": { "type": "string", "enum": ["posedge", "negedge"] },
+        "reset": { "type": ["string", "null"] },
+        "reset_polarity": {
+          "type": "string",
+          "enum": ["active_high", "active_low", "unknown"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "helper_code_policy": {
+      "type": "object",
+      "required": ["allowed", "allowed_kinds", "max_lines", "rationale"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "allowed_kinds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "max_lines": { "type": "integer", "minimum": 0 },
+        "rationale": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "source": { "type": "string", "enum": ["auto_intent", "spec"] }
+  },
+  "additionalProperties": false
+}
