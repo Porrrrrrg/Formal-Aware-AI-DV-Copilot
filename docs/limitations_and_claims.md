@@ -1,11 +1,12 @@
 # Limitations And Claims
 
-## Current Claims
+## Supported Claims
 
 - JasperLoop-DV is a research prototype for JasperGold-in-the-loop AI DV assistance.
 - Structured evidence packets provide a reproducible interface between formal evidence and LLM reasoning.
-- Local deterministic scaffold runs validate evaluation plumbing and parser/schema behavior.
-- JasperGold-backed claims are valid only for the checked RTL, harness, assumptions, properties, tool version, and command environment.
+- The generic `JASPERLOOP_LLM_CMD` route supports real local LLM evaluation without depending on one vendor CLI.
+- Local Qwen/Qwen3-14B-AWQ reached 1.000/1.000 issue/action accuracy on the 53-case failure-triage benchmark after targeted structured-evidence improvements.
+- Saved local Qwen SVA repair final candidates were re-checked with JasperGold: 22 of 23 passed syntax and proved under the project harnesses used for that run.
 - RTL2Repair can intake arbitrary RTL files, draft candidate SVA, build debug bundles, and propose RTL patches for scratch recheck.
 
 ## Non-Claims
@@ -13,27 +14,28 @@
 - The system is not production-ready.
 - The agent cannot sign off RTL.
 - The LLM is not the verification oracle.
-- Deterministic scaffold results are not Codex results.
-- A proof pass is not a proof of user intent equivalence.
-- Parser support is conservative and fixture-driven, not a guarantee across every JasperGold version or TCL flow.
-- The FVEval subset is not an official FVEval reproduction unless the exact external flow is imported and run.
-- Coverage witness extraction is complete only when report parser, trace parser, schema, prompt, and evaluation all consume witness events end to end.
+- Deterministic scaffold results are not hosted LLM results.
+- Local Qwen results are not Codex CLI results.
+- A JasperGold proof pass is not full semantic intent equivalence.
+- JasperGold-backed claims apply only to the checked RTL, harness, assumptions, properties, tool version, and command environment.
+- Failure-triage and coverage recommendations are not JasperGold-backed unless a separate formal check is defined and run.
+- The FVEval-compatible subset is not an official FVEval reproduction unless the exact external data and evaluation flow are imported and run.
 - RTL2Repair does not provide production RTL signoff, full semantic equivalence, or complete specification inference for arbitrary RTL.
-- RTL2Repair auto-intents are coverage aids and starting points for engineer-authored specifications.
 - RTL repair patches are proposals. By default they apply to scratch copies and require formal recheck plus engineer review before use.
 
 ## Known Risks
 
-- Small benchmark scale can overstate robustness.
-- Author labels are useful for evaluation plumbing but are not independently discovered truth.
-- Overconstraints and vacuous proofs can make an assertion look successful while checking little real behavior.
+- The benchmark remains modest in scale.
+- Author labels are useful for evaluation but are not independently discovered truth.
+- Overconstraints and vacuous proofs can make an assertion look successful while checking little behavior.
+- Parser support is conservative and fixture-driven, not a guarantee across every JasperGold version or Tcl flow.
 - Raw logs and generated reports can leak local paths or tool details; keep them out of git by default.
-- External LLM prompt export requires explicit audit and acknowledgement.
 - A passing target property after an RTL patch can still miss regressions unless prior accepted SVAs and native benchmark properties are re-run.
 
-## Pending Work
+## Next Work
 
-- Run real Codex benchmark subsets only after prompt audit, healthcheck, and small approved pilot runs.
-- Expand parser fixtures with more JasperGold report variants.
-- Bind JasperGold result summaries to run id, git SHA, tool version, and command manifest.
-- Improve coverage witness trace extraction beyond the current parser interface and fixtures.
+- Expand assumption/vacuity and stimulus-vs-coverage benchmark cases.
+- Add ablations that separate derived evidence cues, prompt wording, and normalization.
+- Improve SVA repair intent-equivalence metrics beyond exact-template match and proof pass.
+- Reproduce official FVEval-style metrics only if the exact external flow is available.
+- Close the RTL2Repair patch recheck loop with scratch manifest generation, target re-run, and regression-property re-run accounting.

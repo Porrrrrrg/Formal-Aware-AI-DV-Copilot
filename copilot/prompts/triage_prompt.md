@@ -25,6 +25,18 @@ Allowed next actions:
 - `prove_unreachable_or_waive_coverage_goal`
 - `rerun_jaspergold`
 
-`suspect_rtl_signals` must come from supplied signal maps, counterexample changed signals, or coverage related signals. Do not invent signals or local paths.
+`suspect_rtl_signals` must come from the explicit allowed signal list supplied in the rendered prompt. If no allowed signal is directly supported by evidence, return an empty `suspect_rtl_signals` list.
 
-Return only valid JSON matching `diagnosis_output.schema.json`; do not include Markdown.
+Do not invent signals, local paths, helper names, natural-language labels, coverage concepts, protocol phases, or internal shorthand as signal names. Examples of labels that must not be emitted as RTL signals unless they appear in the allowed signal list: `access`, `valid_addr`, `setup_phase`, `read_latency`, `write_phase`.
+
+If the RTL variant is marked correct and the property intent contradicts design intent, prefer `assertion_property_bug` over `rtl_design_bug` unless the packet provides concrete RTL signal evidence.
+
+When `ASSUMPTION_VACUITY_TRIAGE_HINTS` or `vacuity_context` contains blocking assumptions, reset-stuck assumptions, missing environment constraints, or vacuous properties, review `assumption_constraint_bug` before `assertion_property_bug`.
+
+If your hypothesis or evidence says an assumption or constraint removes, blocks, forbids, forces, allows impossible behavior, underconstrains environment behavior, or makes the trigger/coverage goal unreachable, then `predicted_issue_type` must be `assumption_constraint_bug` and `recommended_next_action` must be `fix_assumption_constraint`.
+
+When `STIMULUS_VS_COVERAGE_HINTS` indicates missing or insufficient stimulus or environment driving, prefer `testbench_stimulus_bug` and `fix_testbench_or_stimulus`. When formal cover/witness evidence or an explicit directed sequence shows a reachable coverage goal under a valid environment, prefer `reachable_coverage_gap` and `add_directed_test_or_sequence`. When the coverage goal is illegal, invalid, or unreachable, prefer `unreachable_or_invalid_coverage_goal`.
+
+An unhit coverage goal alone is insufficient evidence for `reachable_coverage_gap`; do not classify a stimulus/testbench problem as coverage closure merely because a cover goal has zero hits.
+
+Return exactly one valid JSON object matching `diagnosis_output.schema.json`; do not include Markdown, comments, code fences, or explanations outside the JSON object.

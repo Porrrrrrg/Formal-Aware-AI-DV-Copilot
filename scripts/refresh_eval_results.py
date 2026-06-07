@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh scaffold evaluation JSON artifacts and markdown result tables."""
+"""Refresh the final curated evaluation result table."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evaluation" / "results"
+DEFAULT_RESULTS = ROOT / "evaluation" / "results"
 DEFAULT_PACKET_ROOT = Path("jasper/reports/case_packets")
 CASE_DIRS = [
     Path("benchmarks/arbiter_rr2/cases"),
@@ -257,6 +258,30 @@ def fmt(value: object) -> str:
     return str(value)
 
 
+def write_final_results() -> None:
+    lines = [
+        "# Final Results",
+        "",
+        "This is the canonical curated result table for the cleaned JasperLoop-DV repository. Raw local Qwen outputs, JasperGold logs, traces, waves, and run artifacts remain local/untracked.",
+        "",
+        "| Task | Backend | Cases | JSON validity | Fallback | Hallucinated signal | Task metric | Formal status | Boundary |",
+        "| --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+        "| SVA repair | Local Qwen/Qwen3-14B-AWQ via `JASPERLOOP_LLM_CMD` | 23 | 1.000 | 0.000 | 0.043 | Exact/repair success 0.913 | Local LLM output mechanics only | Not Codex CLI; not formal proof by itself |",
+        "| SVA repair re-check | JasperGold on saved local Qwen final candidates | 23 | n/a | n/a | n/a | 22/23 syntax pass; 22 proven | 0 falsified, 0 undetermined, 0 vacuous | Scoped to project harnesses/properties; not full intent equivalence |",
+        "| Failure triage | Local Qwen/Qwen3-14B-AWQ after evidence-cue improvements | 53 | 1.000 | 0.000 | 0.000 | Issue/action accuracy 1.000/1.000 | Not a formal re-check task | Not JasperGold-backed triage validation |",
+        "| Coverage closure | Local Qwen/Qwen3-14B-AWQ | 14 | 1.000 | 0.000 | n/a | Gap/action accuracy 1.000/1.000 | Local LLM output mechanics only | Coverage plans still require project-specific review |",
+        "",
+        "## Interpretation",
+        "",
+        "- The final triage score reflects a full 53-case local Qwen rerun after the assumption/vacuity and stimulus-vs-coverage evidence improvements.",
+        "- The JasperGold-backed result applies only to the saved local Qwen SVA repair final candidates.",
+        "- The coverage and triage rows are not JasperGold-backed formal validation.",
+        "- These results are not Codex CLI performance, not official FVEval performance, and not production DV signoff.",
+        "",
+    ]
+    (RESULTS / "final_results.md").write_text("\n".join(lines), encoding="utf-8")
+
+
 def source_text(summary: dict[str, object]) -> str:
     counts = summary.get("source_counts", {})
     if not isinstance(counts, dict) or not counts:
@@ -312,7 +337,7 @@ def write_main_results(agent_payload: dict[str, object], coverage_payload: dict[
     lines.extend(
         [
             "",
-            "Source/fallback metrics for Codex-backed runs are tracked in `evaluation/results/output_quality_results.md`.",
+            "Source/fallback metrics are summarized in `evaluation/results/final_results.md`.",
             "",
             "## Coverage Closure Scaffold",
             "",
@@ -338,11 +363,13 @@ def write_main_results(agent_payload: dict[str, object], coverage_payload: dict[
     lines.extend(
         [
             "",
-            "Detailed coverage closure results are tracked in `evaluation/results/coverage_closure_results.md`.",
+            "Coverage closure results are summarized in `evaluation/results/final_results.md`.",
             "",
         ]
     )
-    (RESULTS / "main_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("main_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_coverage_results(coverage_payload: dict[str, object]) -> None:
@@ -377,7 +404,9 @@ def write_coverage_results(coverage_payload: dict[str, object]) -> None:
             "",
         ]
     )
-    (RESULTS / "coverage_closure_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("coverage_closure_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_ablation_results(ablation_payload: dict[str, object]) -> None:
@@ -404,7 +433,9 @@ def write_ablation_results(ablation_payload: dict[str, object]) -> None:
         )
     lines.append("| No repair loop | TBD | TBD | TBD | Applies to SVA repair experiments, not current triage scaffold. |")
     lines.append("")
-    (RESULTS / "ablation_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("ablation_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_output_quality_results(
@@ -485,7 +516,9 @@ def write_output_quality_results(
             "",
         ]
     )
-    (RESULTS / "output_quality_results.md").write_text("\n".join(lines))
+    path = legacy_markdown_path("output_quality_results.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def fmt_design2sva(value: object) -> str:
@@ -503,6 +536,16 @@ def counts_text(counts: object) -> str:
 def design2sva_result_paths() -> list[Path]:
     paths = {path.name: path for path in RESULTS.glob("design2sva*.json")}
     return sorted(paths.values(), key=design2sva_result_sort_key)
+
+
+def legacy_markdown_path(filename: str) -> Path:
+    if RESULTS.resolve() == DEFAULT_RESULTS.resolve():
+        return ROOT / "artifacts" / "legacy_results" / filename
+    return RESULTS / filename
+
+
+def design2sva_markdown_path() -> Path:
+    return legacy_markdown_path("design2sva_results.md")
 
 
 def design2sva_source_text(payload: dict[str, object], summary: dict[str, object]) -> str:
@@ -686,12 +729,11 @@ def write_design2sva_results_if_present() -> None:
         "",
         "These results are generated from the retrieval-assisted Design2SVA scaffold. Rows are separated by artifact, provenance, and formal-check status so deterministic, replay, real LLM, and JasperGold-measured outcomes are not conflated.",
         "",
-        "## Stage Result Links",
+        "## Canonical Result Links",
         "",
-        "- Stage 15 oracle validation: [docs/design2sva_expanded_oracle_stage15.md](../../docs/design2sva_expanded_oracle_stage15.md)",
-        "- Stage 16 expanded Codex result: [docs/design2sva_expanded_codex_stage16_error_analysis.md](../../docs/design2sva_expanded_codex_stage16_error_analysis.md)",
-        "- Stage 17 ablation summary: [evaluation/results/design2sva_ablation_results.md](design2sva_ablation_results.md)",
-        "- Stage 17 paper package: [docs/paper_result_package_stage17.md](../../docs/paper_result_package_stage17.md)",
+        "- Final curated result table: [evaluation/results/final_results.md](final_results.md)",
+        "- Final research summary: [docs/reports/final_research_summary.md](../../docs/reports/final_research_summary.md)",
+        "- Experiment history: [docs/reports/experiment_history.md](../../docs/reports/experiment_history.md)",
     ]
     written: set[str] = set()
     for title, description, artifact_names in DESIGN2SVA_SECTIONS:
@@ -761,7 +803,9 @@ def write_design2sva_results_if_present() -> None:
             "",
         ]
     )
-    (RESULTS / "design2sva_results.md").write_text("\n".join(lines))
+    markdown_path = design2sva_markdown_path()
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def design2sva_result_sort_key(path: Path) -> tuple[int, str]:
@@ -820,52 +864,8 @@ def main() -> int:
     packet_root = args.packet_root if args.packet_root.is_absolute() else ROOT / args.packet_root
     if args.packet_source == "actual":
         ensure_actual_packets(packet_root, args.allow_rebuild_packets)
-    agent_payload = run_summary(
-        [
-            sys.executable,
-            "evaluation/run_agent_eval.py",
-            "--all-systems",
-            "--packet-source",
-            args.packet_source,
-            "--packet-root",
-            str(packet_root),
-        ],
-        allow_ambient_llm=args.allow_ambient_llm,
-    )
-    ablation_payload = run_summary(
-        [
-            sys.executable,
-            "evaluation/run_agent_eval.py",
-            "--systems",
-            "structured",
-            "--ablations",
-            *ABLATIONS,
-            "--packet-source",
-            args.packet_source,
-            "--packet-root",
-            str(packet_root),
-        ],
-        allow_ambient_llm=args.allow_ambient_llm,
-    )
-    coverage_payload = run_summary(
-        [
-            sys.executable,
-            "evaluation/run_coverage_eval.py",
-            "--all-systems",
-            "--packet-source",
-            args.packet_source,
-            "--packet-root",
-            str(packet_root),
-        ],
-        allow_ambient_llm=args.allow_ambient_llm,
-    )
-
-    write_main_results(agent_payload, coverage_payload)
-    write_coverage_results(coverage_payload)
-    write_ablation_results(ablation_payload)
-    write_output_quality_results(agent_payload, coverage_payload)
-    write_design2sva_results_if_present()
-    print(f"Refreshed markdown results in {RESULTS.relative_to(ROOT)}")
+    write_final_results()
+    print(f"Refreshed {Path('evaluation/results/final_results.md')}")
     return 0
 
 

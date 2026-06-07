@@ -22,7 +22,7 @@ from copilot.sva_library import extract_identifiers, normalize_sva, syntax_scaff
 from evaluation.metrics import valid_json_rate  # noqa: E402
 
 DEFAULT_CASES = Path("benchmarks/fveval_subset/cases.json")
-DEFAULT_MARKDOWN = Path("evaluation/results/fveval_subset_results.md")
+DEFAULT_MARKDOWN = Path("artifacts/fveval_subset/fveval_subset_results.md")
 
 EVIDENCE_FIELDS = [
     "Source benchmark: FVEval-compatible subset.",

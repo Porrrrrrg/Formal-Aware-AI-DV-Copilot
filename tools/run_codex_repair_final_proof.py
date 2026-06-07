@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare and run Moore JasperGold checks for restored Codex repair candidates."""
+"""Prepare and run JasperGold checks for restored repair candidates."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from tools.check_generated_sva import check_generated_sva  # noqa: E402
 
-DEFAULT_ARTIFACT = Path("reports/repair/artifacts/codex_repair_outputs_20260511T035613Z.jsonl")
+DEFAULT_ARTIFACT = Path("artifacts/repair/codex_repair_outputs.jsonl")
 DEFAULT_EXPECTED_SHA256 = "DB469CDAAAECF06953260CFFB1BD6EAA24A7B76E66F2CD56A4CAE44F8DBDBD9B"
 DEFAULT_JASPER_OUT_ROOT = Path("jasper/reports/codex_repair_final_proof")
 
@@ -88,7 +88,7 @@ def summarize_candidate(
     index: int,
     dry_run: bool,
 ) -> dict[str, Any]:
-    status = "pending_moore_execution" if dry_run else "jasper_checked"
+    status = "pending_jasper_execution" if dry_run else "jasper_checked"
     if not dry_run and check.get("syntax_pass") is False:
         status = "jasper_syntax_failed"
     return {
@@ -122,13 +122,7 @@ def repo_relative(value: object) -> str | None:
         return str(value)
 
 
-def ensure_moore_ready(jasper_bin: str | None) -> None:
-    host = platform.node().lower()
-    if "moore" not in host:
-        raise RuntimeError(
-            f"Refusing to run JasperGold on non-Moore host {platform.node()!r}. "
-            "Run this command on moore.wot.ece.northwestern.edu."
-        )
+def ensure_jasper_ready(jasper_bin: str | None) -> None:
     if not jasper_bin:
         raise RuntimeError(
             "JASPER_BIN is not set. Source the Cadence environment and set JASPER_BIN "
@@ -174,8 +168,8 @@ def build_manifest(
         "summary": {
             "candidate_count": len(candidate_rows),
             "case_count": len(cases),
-            "pending_moore_cases": 0 if checked else len(cases),
-            "pending_moore_candidates": 0 if checked else len(candidate_rows),
+            "pending_jasper_cases": 0 if checked else len(cases),
+            "pending_jasper_candidates": 0 if checked else len(candidate_rows),
             "jasper_syntax_pass_count": count_value(candidate_rows, "jasper_syntax_pass", True),
             "jasper_syntax_fail_count": count_value(candidate_rows, "jasper_syntax_pass", False),
             "jasper_proven_count": count_value(candidate_rows, "jasper_proof_status", "proven"),
@@ -204,13 +198,13 @@ def main() -> int:
     parser.add_argument("--artifact", type=Path, default=DEFAULT_ARTIFACT)
     parser.add_argument("--expected-sha256", default=DEFAULT_EXPECTED_SHA256)
     parser.add_argument("--no-hash-check", action="store_true")
-    parser.add_argument("--jasper-check", action="store_true", help="Run JasperGold; requires Moore.")
+    parser.add_argument("--jasper-check", action="store_true", help="Run JasperGold; requires JASPER_BIN.")
     parser.add_argument("--dry-run", action="store_true", help="Render harnesses without JasperGold.")
     parser.add_argument("--out-root", type=Path, default=DEFAULT_JASPER_OUT_ROOT)
     parser.add_argument(
         "--manifest-out",
         type=Path,
-        default=Path("reports/jasper/codex_repair_final_proof_manifest.json"),
+        default=Path("artifacts/jasper/codex_repair_final_proof_manifest.json"),
     )
     args = parser.parse_args()
 
@@ -226,7 +220,7 @@ def main() -> int:
     rows = load_jsonl(artifact_path)
 
     if args.jasper_check:
-        ensure_moore_ready(os.environ.get("JASPER_BIN"))
+        ensure_jasper_ready(os.environ.get("JASPER_BIN"))
 
     candidate_rows = []
     for index, row in enumerate(rows, start=1):

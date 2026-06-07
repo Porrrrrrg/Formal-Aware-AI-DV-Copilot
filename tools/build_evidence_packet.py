@@ -42,6 +42,37 @@ ALLOWED_NEXT_ACTIONS = [
     "rerun_jaspergold",
 ]
 
+OVERCONSTRAINT_WORDS = (
+    "force",
+    "forces",
+    "forbid",
+    "forbids",
+    "restrict",
+    "restricts",
+    "keep",
+    "keeps",
+    "hold",
+    "holds",
+    "stuck",
+    "never",
+)
+
+UNDERCONSTRAINT_WORDS = (
+    "contract should constrain",
+    "should constrain",
+    "missing assumption",
+    "missing constraint",
+    "environment may",
+    "producer-side contract",
+)
+
+STIMULUS_WORDS = (
+    "simulation should",
+    "stimulus should",
+    "testbench stimulus",
+    "should exercise",
+)
+
 
 def load_json(path: Path | None) -> object:
     if not path or not path.exists():
@@ -136,6 +167,7 @@ def build_packet(
         "witness_events": coverage_evidence.get("witness_events", [])
         if isinstance(coverage_evidence, dict)
         else [],
+        "stimulus_context": build_stimulus_context(case, coverage_context, coverage_evidence),
         "vacuity_context": build_vacuity_context(case, property_results, result_summary),
         "rtl_context": rtl_context,
         "assertion_intent": case.get("assertion_intent", {}),
@@ -206,13 +238,221 @@ def build_vacuity_context(
         for item in active_assumptions
         if isinstance(item, dict) and item.get("id")
     ]
+    assumption_risk_cues = assumption_vacuity_risk_cues(case, vacuous_properties)
+    has_overconstraint = any(
+        cue["kind"] in {"blocking_assumption", "reset_stuck_assumption"}
+        for cue in assumption_risk_cues
+    )
+    has_underconstraint = any(cue["kind"] == "missing_environment_constraint" for cue in assumption_risk_cues)
+    if has_overconstraint:
+        constraint_direction = "overconstraint"
+    elif has_underconstraint:
+        constraint_direction = "underconstraint"
+    else:
+        constraint_direction = "unknown"
+    reason = ""
+    if vacuous_properties and suspect_assumptions:
+        reason = "Active assumptions may make the target antecedent or coverage goal unreachable."
+    elif has_overconstraint:
+        reason = (
+            "Active assumptions contain blocking/reset-stuck cues; review whether "
+            "they remove legal trigger behavior before blaming the assertion."
+        )
+    elif has_underconstraint:
+        reason = "The property intent describes an environment contract or missing constraint; review underconstraint before blaming the assertion."
     return {
         "vacuity_status": "vacuous" if vacuous_properties else "not_observed",
         "vacuous_properties": [str(item) for item in vacuous_properties if item],
         "suspect_assumptions": [str(item) for item in suspect_assumptions],
-        "reason": "Active assumptions may make the target antecedent or coverage goal unreachable."
-        if vacuous_properties and suspect_assumptions
-        else "",
+        "assumption_risk_cues": assumption_risk_cues,
+        "constraint_direction": constraint_direction,
+        "requires_assumption_review": bool(assumption_risk_cues or vacuous_properties),
+        "reason": reason,
+    }
+
+
+def assumption_vacuity_risk_cues(
+    case: dict[str, object],
+    vacuous_properties: object,
+) -> list[dict[str, str]]:
+    cues: list[dict[str, str]] = []
+    active_assumptions = case.get("active_assumptions", [])
+    if isinstance(active_assumptions, list):
+        for item in active_assumptions:
+            if not isinstance(item, dict):
+                continue
+            assumption_id = str(item.get("id", ""))
+            intent = str(item.get("intent", ""))
+            lowered = intent.lower()
+            matched_words = [word for word in OVERCONSTRAINT_WORDS if word in lowered]
+            if not matched_words:
+                continue
+            reset_stuck = "reset" in lowered and any(
+                word in lowered for word in ("stuck", "hold", "holds", "keep", "keeps")
+            )
+            kind = "reset_stuck_assumption" if reset_stuck else "blocking_assumption"
+            cues.append(
+                {
+                    "kind": kind,
+                    "assumption_id": assumption_id,
+                    "intent": intent,
+                    "cue": ", ".join(sorted(set(matched_words))),
+                    "interpretation": (
+                        "This assumption may block legal behavior needed by the "
+                        "failing property or coverage goal."
+                    ),
+                }
+            )
+
+    property_text = " ".join(
+        str(case.get(key, ""))
+        for key in ("property_id", "property_intent")
+    ).lower()
+    matched_underconstraint = [word for word in UNDERCONSTRAINT_WORDS if word in property_text]
+    if matched_underconstraint:
+        cues.append(
+            {
+                "kind": "missing_environment_constraint",
+                "assumption_id": "",
+                "intent": str(case.get("property_intent", "")),
+                "cue": ", ".join(sorted(set(matched_underconstraint))),
+                "interpretation": "The failure may be caused by an underconstrained environment contract rather than a bad assertion.",
+            }
+        )
+
+    if vacuous_properties:
+        cues.append(
+            {
+                "kind": "vacuous_property",
+                "assumption_id": "",
+                "intent": ", ".join(str(item) for item in vacuous_properties if item),
+                "cue": "vacuous_property",
+                "interpretation": "A vacuous result requires assumption and trigger-reachability review before an assertion fix.",
+            }
+        )
+    return cues
+
+
+def build_stimulus_context(
+    case: dict[str, object],
+    coverage_context: dict[str, object],
+    coverage_evidence: dict[str, object],
+) -> dict[str, object]:
+    coverage = coverage_context if isinstance(coverage_context, dict) else {}
+    evidence = coverage_evidence if isinstance(coverage_evidence, dict) else {}
+    task_type = str(case.get("task_type", ""))
+    property_id = str(case.get("property_id", ""))
+    property_intent = str(case.get("property_intent", ""))
+    design_intent = case.get("design_intent", [])
+    design_text = " ".join(str(item) for item in design_intent) if isinstance(design_intent, list) else str(design_intent)
+    combined_text = " ".join([property_id, property_intent, design_text]).lower()
+    expected_reachable = coverage.get("expected_reachable")
+    expected_hits = coverage.get("expected_test_hits")
+    cover_status = str(
+        evidence.get("observed_cover_status") or coverage.get("expected_cover_status") or ""
+    ).lower()
+    suggested_sequence = coverage.get("suggested_sequence")
+    has_suggested_sequence = isinstance(suggested_sequence, list) and bool(suggested_sequence)
+    witness_events = evidence.get("witness_events")
+    has_witness = isinstance(witness_events, list) and bool(witness_events)
+    related_signals = coverage.get("related_signals")
+    related_signal_text = " ".join(str(signal) for signal in related_signals) if isinstance(related_signals, list) else ""
+
+    cues: list[dict[str, str]] = []
+    is_invalid = expected_reachable is False or cover_status == "unreachable"
+    if is_invalid:
+        cues.append(
+            {
+                "kind": "invalid_or_unreachable_cover_goal",
+                "cue": "expected_reachable_false_or_unreachable_status",
+                "interpretation": "The coverage goal is illegal, unreachable, or invalid under the available design and coverage evidence.",
+            }
+        )
+    else:
+        stimulus_terms = [word for word in STIMULUS_WORDS if word in combined_text]
+        if task_type == "failure_triage" and stimulus_terms:
+            cues.append(
+                {
+                    "kind": "missing_required_stimulus",
+                    "cue": ", ".join(sorted(set(stimulus_terms))),
+                    "interpretation": "The evidence frames the failure as missing or insufficient simulation/testbench stimulus.",
+                }
+            )
+        if (
+            task_type == "failure_triage"
+            and coverage
+            and expected_reachable is True
+            and expected_hits in {0, "0", None}
+            and not has_suggested_sequence
+            and not has_witness
+        ):
+            cues.append(
+                {
+                    "kind": "cover_goal_unhit_because_stimulus_absent",
+                    "cue": "failure_triage_unhit_reachable_cover_without_witness_or_sequence",
+                    "interpretation": "The issue is a failure-triage stimulus gap, not a coverage-closure request for a new directed sequence.",
+                }
+            )
+        if (
+            task_type == "failure_triage"
+            and coverage
+            and ("eventual" in combined_text or "fairness" in combined_text)
+            and ("ready" in related_signal_text or "valid" in related_signal_text)
+        ):
+            cues.append(
+                {
+                    "kind": "stimulus_never_drives_condition",
+                    "cue": "liveness_or_fairness_goal_depends_on_ready_valid_stimulus",
+                    "interpretation": "A liveness/fairness-style coverage or property target depends on environment/testbench driving the ready/valid condition.",
+                }
+            )
+        if task_type == "coverage_closure" and expected_reachable is True and (
+            has_suggested_sequence or has_witness or cover_status in {"reachable", "uncovered"}
+        ):
+            cues.append(
+                {
+                    "kind": "reachable_cover_with_valid_environment",
+                    "cue": "coverage_closure_reachable_goal",
+                    "interpretation": "The goal is a reachable coverage closure target with a valid environment and should use directed sequence generation.",
+                }
+            )
+
+    if is_invalid:
+        triage_direction = "unreachable_or_invalid_coverage_goal"
+    elif any(
+        cue["kind"]
+        in {
+            "missing_required_stimulus",
+            "cover_goal_unhit_because_stimulus_absent",
+            "stimulus_never_drives_condition",
+        }
+        for cue in cues
+    ):
+        triage_direction = "testbench_stimulus_bug"
+    elif any(cue["kind"] == "reachable_cover_with_valid_environment" for cue in cues):
+        triage_direction = "reachable_coverage_gap"
+    else:
+        triage_direction = "unknown"
+
+    reason = ""
+    if triage_direction == "testbench_stimulus_bug":
+        reason = "Evidence indicates missing or insufficient testbench stimulus rather than a request for a new coverage-closure sequence."
+    elif triage_direction == "reachable_coverage_gap":
+        reason = "Evidence indicates a reachable coverage goal with a valid environment, suitable for directed coverage closure."
+    elif triage_direction == "unreachable_or_invalid_coverage_goal":
+        reason = "Evidence indicates the coverage goal is invalid or unreachable."
+
+    return {
+        "requires_stimulus_review": bool(cues),
+        "triage_direction": triage_direction,
+        "coverage_goal": coverage.get("coverage_goal"),
+        "expected_test_hits": expected_hits,
+        "expected_reachable": expected_reachable,
+        "expected_cover_status": coverage.get("expected_cover_status"),
+        "has_suggested_sequence": has_suggested_sequence,
+        "has_witness_events": has_witness,
+        "risk_cues": cues,
+        "reason": reason,
     }
 
 

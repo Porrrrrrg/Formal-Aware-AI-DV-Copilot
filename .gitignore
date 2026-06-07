@@ -23,6 +23,7 @@ evaluation/results/agent_eval*.json
 evaluation/results/sva_eval*.json
 evaluation/results/sva_repair*.json
 evaluation/results/coverage_eval*.json
+evaluation/results/*.json
 evaluation/prompt_previews/
 copilot/baselines/*([0-9]).py
 *.jou
@@ -63,6 +64,7 @@ stage5-cli-validation/
 *.llm.log
 llm_logs/
 raw_llm_logs/
+reports/local_llm/**
 reports/local_llm/raw/**
 reports/llm/raw/**
 /models/
