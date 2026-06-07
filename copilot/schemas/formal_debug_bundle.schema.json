@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Formal Debug Bundle",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "case_id",
+    "design_id",
+    "property_id",
+    "candidate_sva",
+    "status",
+    "debug_artifacts",
+    "root_cause_signals",
+    "repair_recommendation"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "formal_debug_bundle_v1" },
+    "case_id": { "type": "string" },
+    "design_id": { "type": "string" },
+    "property_id": { "type": "string" },
+    "candidate_sva": { "type": "string" },
+    "status": {
+      "type": "object",
+      "required": ["syntax_status", "proof_status", "vacuity_status"],
+      "properties": {
+        "syntax_status": { "type": "string" },
+        "proof_status": { "type": "string" },
+        "vacuity_status": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "debug_artifacts": {
+      "type": "object",
+      "required": [
+        "report_dir",
+        "embedding_audit_json",
+        "embedding_audit_markdown",
+        "generated_properties",
+        "generated_harness",
+        "run_command",
+        "log",
+        "properties_report",
+        "cover_report",
+        "vacuity_report",
+        "candidate_json",
+        "rtl_project_manifest"
+      ],
+      "properties": {
+        "report_dir": { "type": ["string", "null"] },
+        "embedding_audit_json": { "type": ["string", "null"] },
+        "embedding_audit_markdown": { "type": ["string", "null"] },
+        "generated_properties": { "type": ["string", "null"] },
+        "generated_harness": { "type": ["string", "null"] },
+        "run_command": { "type": ["string", "null"] },
+        "log": { "type": ["string", "null"] },
+        "properties_report": { "type": ["string", "null"] },
+        "cover_report": { "type": ["string", "null"] },
+        "vacuity_report": { "type": ["string", "null"] },
+        "candidate_json": { "type": ["string", "null"] },
+        "rtl_project_manifest": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "root_cause_signals": {
+      "type": "object",
+      "required": [
+        "embedding_issues",
+        "clock_reset_mismatch",
+        "unknown_signals",
+        "wrapper_parity_pass",
+        "antecedent_reachable"
+      ],
+      "properties": {
+        "embedding_issues": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "clock_reset_mismatch": { "type": "boolean" },
+        "unknown_signals": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "wrapper_parity_pass": { "type": ["boolean", "null"] },
+        "antecedent_reachable": { "type": ["boolean", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "repair_recommendation": {
+      "type": "object",
+      "required": ["next_owner", "reason"],
+      "properties": {
+        "next_owner": {
+          "type": "string",
+          "enum": ["sva", "harness", "assumption", "rtl", "unknown"]
+        },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
