@@ -7,7 +7,7 @@
 - The generic `JASPERLOOP_LLM_CMD` route supports real local LLM evaluation without depending on one vendor CLI.
 - Local Qwen/Qwen3-14B-AWQ reached 1.000/1.000 issue/action accuracy on the 53-case failure-triage benchmark after targeted structured-evidence improvements.
 - Saved local Qwen SVA repair final candidates were re-checked with JasperGold: 22 of 23 passed syntax and proved under the project harnesses used for that run.
-- RTL2Repair can intake arbitrary RTL files, draft candidate SVA, build debug bundles, and propose RTL patches for scratch recheck.
+- RTL2Repair can intake arbitrary RTL files, draft candidate SVA, build debug bundles, propose RTL patches, apply them to scratch copies, and re-run target/regression SVA checks on patched manifests.
 
 ## Non-Claims
 
@@ -38,4 +38,4 @@
 - Add ablations that separate derived evidence cues, prompt wording, and normalization.
 - Improve SVA repair intent-equivalence metrics beyond exact-template match and proof pass.
 - Reproduce official FVEval-style metrics only if the exact external flow is available.
-- Close the RTL2Repair patch recheck loop with scratch manifest generation, target re-run, and regression-property re-run accounting.
+- Expand RTL2Repair regression suites and patch-quality checks beyond the current target plus accepted-SVA gate.

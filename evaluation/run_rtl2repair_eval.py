@@ -9,17 +9,49 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    from jsonschema import Draft202012Validator
+except ModuleNotFoundError:  # pragma: no cover - dependency-minimal local smoke runs.
+
+    class Draft202012Validator:  # type: ignore[no-redef]
+        def __init__(self, _schema: dict[str, Any]) -> None:
+            pass
+
+        def validate(self, _instance: dict[str, Any]) -> None:
+            return None
+
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from copilot.agents.design2sva_agent import generate_candidates  # noqa: E402
-from copilot.agents.design2sva_repair_agent import repair_design2sva_candidate  # noqa: E402
+from copilot.agents.design2sva_agent import (  # noqa: E402
+    allowed_signal_set,
+    candidate_referenced_signals,
+    generate_candidates,
+    validate_candidate as validate_design2sva_candidate,
+)
+from copilot.agents.design2sva_reachability import (  # noqa: E402
+    apply_cover_status,
+    antecedent_reachable,
+    build_antecedent_metadata,
+)
+from copilot.agents.design2sva_repair_agent import (  # noqa: E402
+    repair_design2sva_candidate,
+    validate_repair_candidate as validate_design2sva_repair_candidate,
+)
 from copilot.agents.rtl_repair_agent import propose_rtl_repair  # noqa: E402
 from copilot.retrieval import Design2SVAContextOptions, build_design2sva_context  # noqa: E402
+from copilot.sva_library import hallucinated_identifiers, syntax_scaffold_ok  # noqa: E402
+from tools.apply_rtl_patch import apply_rtl_patch  # noqa: E402
+from tools.build_patched_manifest import build_patched_manifest  # noqa: E402
 from tools.build_formal_debug_bundle import build_formal_debug_bundle  # noqa: E402
 from tools.check_generated_sva import check_generated_sva  # noqa: E402
+from tools.rtl_patch_safety import PatchSafetyError, diff_touched_paths  # noqa: E402
 from tools.rtl_project_intake import create_rtl_project  # noqa: E402
+
+
+PATCH_RECHECK_SCHEMA = ROOT / "copilot" / "schemas" / "rtl_patch_recheck.schema.json"
 
 
 def resolve_repo_path(path: Path) -> Path:
@@ -55,6 +87,7 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
     candidate_records = []
     accepted_properties: list[dict[str, Any]] = []
     rtl_patch_candidate: dict[str, Any] | None = None
+    rtl_patch_stable_sva: dict[str, Any] | None = None
     formal_metrics_status = "not_run"
 
     for index, candidate in enumerate(candidates):
@@ -71,6 +104,23 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
                 out_path=out_path,
             )
             formal_metrics_status = combine_formal_status(formal_metrics_status, check_status)
+            check_result, cover_status = attach_antecedent_reachability(
+                args=args,
+                task=task,
+                candidate=current,
+                check_result=check_result,
+                manifest_path=manifest_path,
+                candidate_index=index,
+                round_index=round_index,
+                out_path=out_path,
+            )
+            formal_metrics_status = combine_formal_status(formal_metrics_status, cover_status)
+            check_result = attach_candidate_quality(
+                task=task,
+                context=context,
+                candidate=current,
+                check_result=check_result,
+            )
             bundle = build_formal_debug_bundle(
                 check_result=check_result,
                 embedding_audit=check_result.get("embedding_audit")
@@ -78,7 +128,8 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
                 else None,
                 candidate=current,
             )
-            row = candidate_row(task, current, check_result, bundle)
+            row = candidate_row(task, context, current, check_result, bundle)
+            apply_candidate_quality_to_bundle(row, bundle)
             rounds.append(
                 {
                     "round": round_index,
@@ -93,6 +144,7 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
                 break
             if bundle["repair_recommendation"]["next_owner"] == "rtl":
                 if args.max_rtl_rounds > 0:
+                    rtl_patch_stable_sva = current
                     rtl_patch_candidate = propose_rtl_repair(
                         rtl_project_manifest=manifest,
                         formal_debug_bundle=bundle,
@@ -119,6 +171,20 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
             )
         candidate_records.append({"candidate_index": index, "rounds": rounds})
 
+    patch_recheck = run_patch_recheck(
+        args=args,
+        manifest=manifest,
+        manifest_path=manifest_path,
+        task=task,
+        rtl_patch_candidate=rtl_patch_candidate,
+        stable_sva=rtl_patch_stable_sva,
+        accepted_properties=accepted_properties,
+        out_path=out_path,
+    )
+    if patch_recheck["status"] == "blocked":
+        formal_metrics_status = combine_formal_status(formal_metrics_status, "blocked")
+    elif patch_recheck["attempted"]:
+        formal_metrics_status = combine_formal_status(formal_metrics_status, "ran" if args.jasper_check and not args.dry_run else "not_run")
     payload = {
         "schema_version": "rtl2repair_eval_v1",
         "rtl_project_manifest": str(manifest_path),
@@ -127,7 +193,8 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
         "generated_sva_candidates": candidate_records,
         "accepted_properties": accepted_properties,
         "rtl_patch_candidate": rtl_patch_candidate,
-        "metrics": summarize_metrics(candidate_records, rtl_patch_candidate, formal_metrics_status),
+        "patch_recheck": patch_recheck,
+        "metrics": summarize_metrics(candidate_records, patch_recheck, formal_metrics_status),
         "claim_boundaries": claim_boundaries(),
     }
     out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -220,13 +287,15 @@ def run_dynamic_check(
     candidate_index: int,
     round_index: int,
     out_path: Path,
+    system: str | None = None,
 ) -> tuple[dict[str, Any], str]:
     dry_run = bool(args.dry_run or not args.jasper_check)
+    system = system or f"rtl2repair_c{candidate_index}_r{round_index}"
     try:
         result = check_generated_sva(
             case=task,
             prediction=candidate,
-            system=f"rtl2repair_c{candidate_index}_r{round_index}",
+            system=system,
             out_root=out_path.parent / "jasper",
             dry_run=dry_run,
             design_manifest=manifest_path,
@@ -239,40 +308,116 @@ def run_dynamic_check(
             "proof_status": None,
             "vacuity_status": None,
             "feedback": str(exc),
-            "report_dir": str(out_path.parent / "jasper" / f"rtl2repair_c{candidate_index}_r{round_index}"),
+            "report_dir": str(out_path.parent / "jasper" / system),
             "artifact_paths": {},
         }, "blocked"
 
 
+def attach_antecedent_reachability(
+    *,
+    args: argparse.Namespace,
+    task: dict[str, Any],
+    candidate: dict[str, Any],
+    check_result: dict[str, Any],
+    manifest_path: Path,
+    candidate_index: int,
+    round_index: int,
+    out_path: Path,
+) -> tuple[dict[str, Any], str]:
+    updated = dict(check_result)
+    property_id = str(candidate.get("property_id") or task.get("property_id") or "generated_property")
+    metadata = build_antecedent_metadata(str(candidate.get("sva") or ""), property_id)
+    cover_status = "not_run"
+    if metadata.get("requires_antecedent_cover") and metadata.get("cover_sva"):
+        cover_candidate = {
+            "property_id": metadata["cover_property_id"],
+            "sva": metadata["cover_sva"],
+            "helper_code": "",
+            "check_kind": "cover",
+        }
+        cover_result, cover_status = run_dynamic_check(
+            args=args,
+            task=task,
+            candidate=cover_candidate,
+            manifest_path=manifest_path,
+            candidate_index=candidate_index,
+            round_index=round_index,
+            out_path=out_path,
+            system=f"rtl2repair_c{candidate_index}_r{round_index}_antecedent_cover",
+        )
+        metadata = apply_cover_status(metadata, proof_metadata_from_check_result(cover_result))
+        updated["antecedent_cover_check"] = cover_result
+    updated["antecedent_metadata"] = metadata
+    updated["antecedent_reachable"] = antecedent_reachable(metadata)
+    updated["cover_reachable"] = antecedent_reachable(metadata)
+    return updated, cover_status
+
+
+def attach_candidate_quality(
+    *,
+    task: dict[str, Any],
+    context: dict[str, Any],
+    candidate: dict[str, Any],
+    check_result: dict[str, Any],
+) -> dict[str, Any]:
+    updated = dict(check_result)
+    valid_json, validation_error = validate_candidate_json(candidate)
+    sva = str(candidate.get("sva") or "")
+    helper_code = str(candidate.get("helper_code") or "")
+    allowed = sorted(allowed_signal_set(task, context) | {str(candidate.get("property_id") or task.get("property_id") or "")})
+    unknown = hallucinated_identifiers(sva, allowed)
+    updated["valid_json"] = valid_json
+    updated["validation_error"] = validation_error
+    updated["unknown_signals"] = unknown
+    updated["hallucinated_identifiers"] = unknown
+    updated["referenced_signals"] = candidate_referenced_signals(task, context, sva)
+    updated["unsupported_helper_code_issue"] = helper_code_disallowed(task, helper_code)
+    updated["reset_clock_mismatch"] = reset_clock_mismatch(task, sva)
+    return updated
+
+
 def candidate_row(
     task: dict[str, Any],
+    context: dict[str, Any],
     candidate: dict[str, Any],
     check_result: dict[str, Any],
     bundle: dict[str, Any],
 ) -> dict[str, Any]:
-    proof_status = check_result.get("proof_status")
-    vacuity_status = check_result.get("vacuity_status")
     syntax_pass = check_result.get("syntax_pass")
+    sva = str(candidate.get("sva") or "")
+    syntax_ok = syntax_pass is True or (syntax_pass is None and syntax_scaffold_ok(sva))
+    if syntax_pass is False:
+        syntax_ok = False
+    validation_error = str(check_result.get("validation_error") or "")
+    hallucinated = [str(item) for item in list_value(check_result.get("hallucinated_identifiers"))]
+    antecedent_metadata = check_result.get("antecedent_metadata")
+    if not isinstance(antecedent_metadata, dict):
+        antecedent_metadata = build_antecedent_metadata(
+            sva,
+            str(candidate.get("property_id") or task.get("property_id") or "generated_property"),
+        )
+    proof_metadata = proof_metadata_from_check_result(check_result)
     row = {
-        "valid_json": True,
-        "syntax_ok": syntax_pass is not False,
-        "has_hallucinated_signal": False,
-        "unsupported_helper_code_issue": False,
-        "reset_clock_mismatch": bool(bundle["root_cause_signals"].get("clock_reset_mismatch")),
+        "valid_json": bool(check_result.get("valid_json")),
+        "validation_error": validation_error,
+        "syntax_ok": syntax_ok,
+        "has_hallucinated_signal": bool(hallucinated),
+        "unsupported_helper_code_issue": bool(check_result.get("unsupported_helper_code_issue")),
+        "reset_clock_mismatch": bool(check_result.get("reset_clock_mismatch"))
+        or bool(bundle["root_cause_signals"].get("clock_reset_mismatch")),
         "exact_match": None,
-        "antecedent_reachable": bundle["root_cause_signals"].get("antecedent_reachable"),
-        "antecedent_metadata": {"extraction_status": "unknown"},
-        "proof_metadata": {
-            "proof_status": proof_status,
-            "vacuity_status": vacuity_status,
-            "syntax_status": "passed" if syntax_pass is True else "not_run" if syntax_pass is None else "syntax_error",
-            "artifact_paths": check_result.get("artifact_paths", {}),
-        },
-        "failure_category": bundle["repair_recommendation"]["next_owner"],
-        "hallucinated_identifiers": [],
-        "candidate_sva": candidate.get("sva"),
+        "antecedent_reachable": antecedent_reachable(antecedent_metadata),
+        "cover_reachable": antecedent_reachable(antecedent_metadata),
+        "antecedent_metadata": antecedent_metadata,
+        "proof_metadata": proof_metadata,
+        "failure_category": "not_run",
+        "hallucinated_identifiers": hallucinated,
+        "referenced_signals": list_value(check_result.get("referenced_signals")),
+        "candidate_sva": sva,
         "property_id": candidate.get("property_id") or task.get("property_id"),
+        "source": str(candidate.get("source") or "unknown"),
     }
+    row["failure_category"] = candidate_failure_category(row, bundle)
     row["usable_for_rtl_triage"] = row_sva_usable_for_rtl_triage(row)
     return row
 
@@ -290,9 +435,262 @@ def row_sva_usable_for_rtl_triage(row: dict[str, Any]) -> bool:
         and (
             proof_status == "proven"
             and vacuity_status != "vacuous"
-            or proof_status in {"falsified", "cex"} and row.get("antecedent_reachable") is True
+            or proof_status in {"falsified", "cex", "failed", "fail"} and row.get("antecedent_reachable") is True
         )
     )
+
+
+def validate_candidate_json(candidate: dict[str, Any]) -> tuple[bool, str]:
+    validators = (validate_design2sva_candidate, validate_design2sva_repair_candidate)
+    errors: list[str] = []
+    for validator in validators:
+        try:
+            validator(candidate)
+            return True, ""
+        except Exception as exc:  # noqa: BLE001 - report schema validation detail in row metrics.
+            errors.append(str(exc).splitlines()[0])
+    return False, " | ".join(error for error in errors if error)
+
+
+def helper_code_disallowed(task: dict[str, Any], helper_code: str) -> bool:
+    policy = task.get("helper_code_policy")
+    allowed = bool(policy.get("allowed")) if isinstance(policy, dict) else False
+    return bool(helper_code.strip()) and not allowed
+
+
+def reset_clock_mismatch(task: dict[str, Any], sva: str) -> bool:
+    clock_reset = task.get("clock_reset")
+    if not isinstance(clock_reset, dict):
+        return False
+    clock = str(clock_reset.get("clock") or "")
+    reset = str(clock_reset.get("reset") or "")
+    polarity = str(clock_reset.get("reset_polarity") or "unknown")
+    if clock and f"@(posedge {clock})" not in sva:
+        return True
+    if "disable iff" not in sva or not reset:
+        return False
+    expected = f"disable iff (!{reset})" if polarity == "active_low" else f"disable iff ({reset})"
+    return expected not in sva
+
+
+def proof_metadata_from_check_result(check_result: dict[str, Any]) -> dict[str, Any]:
+    syntax_pass = check_result.get("syntax_pass")
+    return {
+        "proof_status": check_result.get("proof_status"),
+        "vacuity_status": check_result.get("vacuity_status"),
+        "syntax_status": "passed" if syntax_pass is True else "not_run" if syntax_pass is None else "syntax_error",
+        "artifact_paths": check_result.get("artifact_paths", {}),
+        "report_dir": check_result.get("report_dir"),
+    }
+
+
+def candidate_failure_category(row: dict[str, Any], bundle: dict[str, Any]) -> str:
+    if not row.get("valid_json"):
+        return "invalid_json"
+    if row.get("has_hallucinated_signal"):
+        return "unknown_signal"
+    if row.get("unsupported_helper_code_issue"):
+        return "unsupported_helper_code"
+    if row.get("reset_clock_mismatch"):
+        return "reset_clock_mismatch"
+    if row.get("syntax_ok") is False:
+        return "syntax_error"
+    antecedent = row.get("antecedent_metadata")
+    if isinstance(antecedent, dict) and antecedent_reachable(antecedent) is False:
+        return "unreachable_antecedent"
+    return str(bundle.get("repair_recommendation", {}).get("next_owner") or "unknown")
+
+
+def apply_candidate_quality_to_bundle(row: dict[str, Any], bundle: dict[str, Any]) -> None:
+    category = str(row.get("failure_category") or "")
+    if category in {
+        "invalid_json",
+        "unknown_signal",
+        "unsupported_helper_code",
+        "reset_clock_mismatch",
+        "syntax_error",
+        "unreachable_antecedent",
+    }:
+        bundle["repair_recommendation"] = {
+            "next_owner": "sva",
+            "reason": f"Candidate quality gate failed: {category}.",
+        }
+    root = bundle.setdefault("root_cause_signals", {})
+    if isinstance(root, dict):
+        root["unknown_signals"] = row.get("hallucinated_identifiers", [])
+        root["clock_reset_mismatch"] = bool(row.get("reset_clock_mismatch"))
+        root["antecedent_reachable"] = row.get("antecedent_reachable")
+
+
+def run_patch_recheck(
+    *,
+    args: argparse.Namespace,
+    manifest: dict[str, Any],
+    manifest_path: Path,
+    task: dict[str, Any],
+    rtl_patch_candidate: dict[str, Any] | None,
+    stable_sva: dict[str, Any] | None,
+    accepted_properties: list[dict[str, Any]],
+    out_path: Path,
+) -> dict[str, Any]:
+    recheck = empty_patch_recheck(rtl_patch_candidate)
+    if not rtl_patch_candidate:
+        return validate_patch_recheck(recheck)
+    if str(rtl_patch_candidate.get("issue_type") or "") != "rtl_design_bug":
+        recheck["reason"] = "Patch candidate issue_type is not rtl_design_bug."
+        return validate_patch_recheck(recheck)
+    if not str(rtl_patch_candidate.get("unified_diff") or "").strip():
+        recheck["reason"] = "Patch candidate has no unified diff."
+        return validate_patch_recheck(recheck)
+    if stable_sva is None:
+        recheck["status"] = "blocked"
+        recheck["attempted"] = True
+        recheck["reason"] = "No stable falsified SVA was available for target recheck."
+        return validate_patch_recheck(recheck)
+
+    recheck["attempted"] = True
+    unified_diff = str(rtl_patch_candidate["unified_diff"])
+    allowed_files = [resolve_repo_path(Path(path)) for path in manifest.get("rtl_files", [])]
+    try:
+        patch_repo_root = infer_patch_repo_root(allowed_files, unified_diff)
+        apply_manifest = apply_rtl_patch(
+            unified_diff=unified_diff,
+            allowed_patch_files=allowed_files,
+            scratch_dir=out_path.parent / "patched_rtl",
+            repo_root=patch_repo_root,
+            out_path=out_path.parent / "patched_rtl" / "applied_patch_manifest.json",
+        )
+        patched_manifest_path = out_path.parent / "patched_rtl_project_manifest.json"
+        build_patched_manifest(
+            original_manifest=manifest,
+            applied_patch_manifest=apply_manifest,
+            out_path=patched_manifest_path,
+        )
+    except (PatchSafetyError, ValueError, OSError) as exc:
+        recheck["status"] = "blocked"
+        recheck["reason"] = str(exc)
+        return validate_patch_recheck(recheck)
+
+    recheck["status"] = "applied"
+    recheck["apply_manifest"] = apply_manifest
+    recheck["patched_manifest"] = str(patched_manifest_path)
+
+    target_check, target_status = run_dynamic_check(
+        args=args,
+        task=task,
+        candidate=stable_sva,
+        manifest_path=patched_manifest_path,
+        candidate_index=0,
+        round_index=0,
+        out_path=out_path,
+        system="rtl2repair_patch_target",
+    )
+    recheck["target_check"] = {
+        "candidate": stable_sva,
+        "check_result": target_check,
+        "formal_status": target_status,
+        "pass": target_property_passes(target_check),
+    }
+
+    regression_checks = []
+    for regression_index, regression in enumerate(accepted_properties):
+        regression_result, regression_status = run_dynamic_check(
+            args=args,
+            task=task,
+            candidate=regression,
+            manifest_path=patched_manifest_path,
+            candidate_index=regression_index,
+            round_index=0,
+            out_path=out_path,
+            system=f"rtl2repair_patch_regression_{regression_index}",
+        )
+        regression_checks.append(
+            {
+                "candidate": regression,
+                "check_result": regression_result,
+                "formal_status": regression_status,
+                "pass": target_property_passes(regression_result),
+            }
+        )
+    recheck["regression_checks"] = regression_checks
+    target_pass = bool(recheck["target_check"]["pass"])
+    regression_pass_count = sum(1 for item in regression_checks if item.get("pass"))
+    regression_total = len(regression_checks)
+    regression_pass_rate = 1.0 if regression_total == 0 else rate(regression_pass_count, regression_total)
+    recheck["metrics"] = {
+        "target_pass": target_pass,
+        "regression_pass_count": regression_pass_count,
+        "regression_total": regression_total,
+        "regression_pass_rate": regression_pass_rate,
+    }
+    recheck["accepted"] = target_pass and regression_pass_count == regression_total
+    recheck["status"] = "accepted" if recheck["accepted"] else "rejected"
+    recheck["reason"] = (
+        "Patch passed target and regression rechecks."
+        if recheck["accepted"]
+        else "Patch failed target or regression recheck."
+    )
+    return validate_patch_recheck(recheck)
+
+
+def empty_patch_recheck(rtl_patch_candidate: dict[str, Any] | None) -> dict[str, Any]:
+    return {
+        "schema_version": "rtl_patch_recheck_v1",
+        "status": "not_attempted",
+        "attempted": False,
+        "accepted": False,
+        "reason": "No RTL patch candidate was produced.",
+        "rtl_patch_candidate": rtl_patch_candidate,
+        "apply_manifest": None,
+        "patched_manifest": None,
+        "target_check": None,
+        "regression_checks": [],
+        "metrics": {
+            "target_pass": False,
+            "regression_pass_count": 0,
+            "regression_total": 0,
+            "regression_pass_rate": 0.0,
+        },
+    }
+
+
+def validate_patch_recheck(recheck: dict[str, Any]) -> dict[str, Any]:
+    schema = json.loads(PATCH_RECHECK_SCHEMA.read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(recheck)
+    return recheck
+
+
+def infer_patch_repo_root(allowed_files: list[Path], unified_diff: str) -> Path:
+    touched = diff_touched_paths(unified_diff)
+    allowed_resolved = {path.resolve() for path in allowed_files}
+    for candidate in [ROOT, *candidate_roots_from_touched_paths(allowed_resolved, touched)]:
+        root = candidate.resolve()
+        try:
+            if all((root / touched_path).resolve() in allowed_resolved for touched_path in touched):
+                return root
+        except OSError:
+            continue
+    return ROOT
+
+
+def candidate_roots_from_touched_paths(allowed_files: set[Path], touched: list[str]) -> list[Path]:
+    roots: list[Path] = []
+    for file_path in allowed_files:
+        for touched_path in touched:
+            parts = Path(touched_path).parts
+            root = file_path
+            for _ in parts:
+                root = root.parent
+            if root not in roots:
+                roots.append(root)
+    return roots
+
+
+def target_property_passes(check_result: dict[str, Any]) -> bool:
+    proof_status = str(check_result.get("proof_status") or "").lower()
+    vacuity_status = str(check_result.get("vacuity_status") or "").lower()
+    syntax_pass = check_result.get("syntax_pass")
+    return syntax_pass is not False and proof_status == "proven" and vacuity_status != "vacuous"
 
 
 def combine_formal_status(current: str, observed: str) -> str:
@@ -302,7 +700,7 @@ def combine_formal_status(current: str, observed: str) -> str:
 
 def summarize_metrics(
     candidate_records: list[dict[str, Any]],
-    rtl_patch_candidate: dict[str, Any] | None,
+    patch_recheck: dict[str, Any],
     formal_metrics_status: str,
 ) -> dict[str, Any]:
     rows = [
@@ -333,12 +731,14 @@ def summarize_metrics(
             1
             for row in rows
             if str((row.get("proof_metadata") or {}).get("proof_status") or "").lower()
-            in {"falsified", "cex"}
+            in {"falsified", "cex", "failed", "fail"}
             and row.get("antecedent_reachable") is True
         ),
-        "rtl_patch_attempt_count": 1 if rtl_patch_candidate else 0,
-        "rtl_patch_accept_count": 0,
-        "regression_pass_rate": 0.0,
+        "rtl_patch_attempt_count": 1 if patch_recheck.get("attempted") else 0,
+        "rtl_patch_accept_count": 1 if patch_recheck.get("accepted") else 0,
+        "regression_pass_rate": float(
+            (patch_recheck.get("metrics") or {}).get("regression_pass_rate", 0.0)
+        ),
         "fallback_rate": 0.0,
         "formal_metrics_status": formal_metrics_status,
     }
@@ -346,6 +746,10 @@ def summarize_metrics(
 
 def rate(count: int, total: int) -> float:
     return count / total if total else 0.0
+
+
+def list_value(value: object) -> list[Any]:
+    return value if isinstance(value, list) else []
 
 
 def claim_boundaries() -> list[str]:
@@ -366,6 +770,8 @@ def render_markdown_report(payload: dict[str, Any]) -> str:
         f"- Formal metrics status: `{payload['formal_metrics_status']}`",
         f"- Candidates: `{len(payload['generated_sva_candidates'])}`",
         f"- RTL patch attempted: `{metrics['rtl_patch_attempt_count']}`",
+        f"- RTL patch accepted: `{metrics['rtl_patch_accept_count']}`",
+        f"- Patch recheck status: `{payload['patch_recheck']['status']}`",
         "",
         "## Claim Boundaries",
         "",

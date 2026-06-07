@@ -28,6 +28,22 @@ With JasperGold configured, remove `--dry-run` and add `--jasper-check`. If the
 Jasper executable is unavailable, the runner reports `formal_metrics_status` as
 `blocked` instead of fabricating measured formal metrics.
 
+Patch recheck behavior:
+
+- Candidate SVA quality gates use schema validation, local syntax scaffolding,
+  hallucinated-signal detection, helper-code policy checks, clock/reset checks,
+  and antecedent cover metadata.
+- RTL patch proposals are considered only when triage assigns the issue to
+  `rtl_design_bug` and the candidate contains a non-empty unified diff.
+- Patches apply to a scratch copy by default. The original RTL file is not
+  modified by the evaluator.
+- `tools/build_patched_manifest.py` emits a standard `rtl_project_manifest_v1`
+  whose `rtl_files` point at the scratch-patched RTL, so existing SVA check
+  plumbing can re-run without a special harness path.
+- The recheck gate runs the target SVA on the patched manifest and then re-runs
+  accepted regression SVAs from earlier rounds. Dry-run mode records
+  `not_run`; it does not count the patch as accepted.
+
 Claim boundaries:
 
 - RTL2Repair drafts and debugs candidate assertions and proposes RTL patches.
