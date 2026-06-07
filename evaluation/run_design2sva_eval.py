@@ -36,6 +36,7 @@ from copilot.agents.design2sva_agent import (  # noqa: E402
     structured_candidate,
     validate_candidate,
 )
+from copilot.agents.design2sva_repair_agent import repair_design2sva_candidate  # noqa: E402
 from copilot.agents.design2sva_reachability import (  # noqa: E402
     antecedent_reachable,
     antecedent_unreachable,
@@ -298,6 +299,8 @@ def run_case(
     context_budget: int,
     native_oracle: dict[str, Any] | None = None,
     run_harness_diagnostics: bool = False,
+    repair_with_llm: bool = False,
+    repair_llm_command: str | None = None,
 ) -> dict[str, Any]:
     context = build_context(case, context_budget=context_budget)
     if reference_oracle:
@@ -345,6 +348,8 @@ def run_case(
                 candidate_index,
                 round_index + 1,
                 replay_records=replay_records,
+                repair_with_llm=repair_with_llm,
+                repair_llm_command=repair_llm_command,
             )
         candidate_paths.append(
             {
@@ -607,12 +612,27 @@ def repair_candidate(
     candidate_index: int,
     round_index: int,
     replay_records: list[dict[str, Any]] | None = None,
+    repair_with_llm: bool = False,
+    repair_llm_command: str | None = None,
 ) -> dict[str, Any]:
     repaired = (
         replay_candidate_for_round(case, replay_records, candidate_index, round_index)
         if replay_records is not None
         else None
     )
+    if repaired is None and repair_with_llm:
+        repaired = repair_design2sva_candidate(
+            task=case,
+            context=context,
+            current_candidate=candidate,
+            metrics=metrics,
+            formal_debug_bundle=None,
+            jasper_feedback=failure_feedback(metrics),
+            active_assumptions=case.get("active_assumptions", []),
+            round_index=round_index,
+            use_llm=True,
+            llm_command=repair_llm_command,
+        )
     if repaired is None:
         repaired = structured_candidate(case)
     repaired["source"] = "repair"
@@ -1219,6 +1239,30 @@ def formal_success(row: dict[str, Any]) -> bool:
     return antecedent_reachable_row(row)
 
 
+def row_sva_usable_for_rtl_triage(row: dict[str, Any]) -> bool:
+    return (
+        bool(row.get("valid_json"))
+        and bool(row.get("syntax_ok"))
+        and not bool(row.get("has_hallucinated_signal"))
+        and not bool(row.get("unsupported_helper_code_issue"))
+        and not bool(row.get("reset_clock_mismatch"))
+        and (formal_success(row) or falsified_with_reachable_cex(row))
+    )
+
+
+def falsified_with_reachable_cex(row: dict[str, Any]) -> bool:
+    proof = row.get("proof_metadata", {})
+    if not isinstance(proof, dict):
+        return False
+    syntax_status = str(proof.get("syntax_status") or "").lower()
+    proof_status = str(proof.get("proof_status") or "").lower()
+    if syntax_status in {"syntax_error", "failed", "error"}:
+        return False
+    if proof_status not in {"falsified", "cex", "failed", "fail"}:
+        return False
+    return bool(row.get("antecedent_reachable") is True or antecedent_reachable_row(row))
+
+
 def antecedent_reachable_row(row: dict[str, Any]) -> bool:
     metadata = row.get("antecedent_metadata")
     return isinstance(metadata, dict) and antecedent_reachable(metadata)
@@ -1744,6 +1788,8 @@ def main() -> int:
     parser.add_argument("--replay", nargs="?", const=DEFAULT_REPLAY_PATH, type=Path)
     parser.add_argument("--llm", action="store_true")
     parser.add_argument("--llm-command")
+    parser.add_argument("--repair-with-llm", action="store_true")
+    parser.add_argument("--repair-llm-command")
     parser.add_argument("--jasper-check", action="store_true")
     parser.add_argument("--jasper-replay", nargs="?", const=DEFAULT_JASPER_REPLAY_PATH, type=Path)
     parser.add_argument("--jasper-out-root", type=Path, default=Path("jasper/reports/design2sva"))
@@ -1790,6 +1836,8 @@ def main() -> int:
             reference_oracle=args.reference_oracle,
             use_llm=bool(args.llm and not args.reference_oracle),
             llm_command=args.llm_command,
+            repair_with_llm=bool(args.repair_with_llm and not args.reference_oracle),
+            repair_llm_command=args.repair_llm_command,
             replay_records=None if args.reference_oracle else replay_records,
             jasper_check=jasper_check,
             jasper_dry_run=jasper_dry_run,
