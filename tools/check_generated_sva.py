@@ -9,9 +9,11 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 try:
     from tools.parse_jg_report import parse_report
@@ -19,6 +21,10 @@ except ModuleNotFoundError:
     from parse_jg_report import parse_report
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from copilot.retrieval.rtl_index import build_rtl_index  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -35,6 +41,92 @@ class DesignConfig:
     native_run_tcl: str = ""
     property_module: str = "generated_sva_properties"
     property_instance: str = "generated_properties_i"
+    rtl_files: tuple[str, ...] = ()
+    assumption_files: tuple[str, ...] = ()
+    design_top: str = ""
+    harness_strategy: str = "reuse_existing"
+    dynamic_manifest: str = ""
+    include_dirs: tuple[str, ...] = ()
+    defines: tuple[str, ...] = ()
+
+    @classmethod
+    def from_manifest(
+        cls,
+        manifest: dict[str, object],
+        root: Path | None = None,
+        manifest_path: Path | None = None,
+    ) -> "DesignConfig":
+        root = root or ROOT
+        top_module = str(manifest["top_module"])
+        design_id = str(manifest.get("design_id") or top_module)
+        rtl_files = tuple(
+            str(resolve_manifest_path(str(path), root=root))
+            for path in list_value(manifest.get("rtl_files"))
+        )
+        assumption_files = tuple(
+            str(resolve_manifest_path(str(path), root=root))
+            for path in list_value(manifest.get("assumption_files"))
+        )
+        include_dirs = tuple(
+            str(resolve_manifest_path(str(path), root=root))
+            for path in list_value(manifest.get("include_dirs"))
+        )
+        raw_defines = manifest.get("defines") if isinstance(manifest.get("defines"), dict) else {}
+        defines = tuple(f"{key}={value}" for key, value in sorted(raw_defines.items()))
+        if not rtl_files:
+            raise ValueError("RTL project manifest must include at least one rtl_files entry.")
+
+        clock_reset = manifest.get("clock_reset") if isinstance(manifest.get("clock_reset"), dict) else {}
+        property_module = str(manifest.get("property_module") or "generated_sva_properties")
+        property_instance = str(manifest.get("property_instance") or "generated_properties_i")
+        visible_signals = [str(signal) for signal in list_value(manifest.get("visible_signals"))]
+        index = build_rtl_index([Path(path) for path in rtl_files])
+        properties_header = render_dynamic_properties_header(
+            index=index,
+            top_module=top_module,
+            property_module=property_module,
+            visible_signals=visible_signals,
+        )
+
+        harness = manifest.get("harness") if isinstance(manifest.get("harness"), dict) else {}
+        harness_path = harness.get("harness_path")
+        harness_strategy = str(harness.get("strategy") or "render_generic")
+        if harness_path:
+            resolved_harness = resolve_manifest_path(str(harness_path), root=root)
+            harness_text = resolved_harness.read_text(encoding="utf-8")
+            harness_modules = extract_module_names(harness_text)
+            jasper_top = harness_modules[0] if harness_modules else top_module
+            harness_strategy = "reuse_existing"
+        else:
+            jasper_top = sanitize_sv_identifier(f"{design_id}_generated_harness")
+            harness_text = render_generic_harness(
+                index=index,
+                dut_module=top_module,
+                harness_module=jasper_top,
+                property_module=property_module,
+                property_instance=property_instance,
+                visible_signals=visible_signals,
+            )
+            harness_strategy = "render_generic"
+
+        return cls(
+            rtl=rtl_files[0],
+            assumptions=assumption_files[0] if assumption_files else "",
+            top=jasper_top,
+            clock=str(clock_reset.get("clock") or ""),
+            reset_cmd=reset_command_from_clock_reset(clock_reset),
+            properties_header=properties_header,
+            harness=harness_text,
+            property_module=property_module,
+            property_instance=property_instance,
+            rtl_files=rtl_files,
+            assumption_files=assumption_files,
+            design_top=top_module,
+            harness_strategy=harness_strategy,
+            dynamic_manifest=str(manifest_path) if manifest_path else "",
+            include_dirs=include_dirs,
+            defines=defines,
+        )
 
 
 DESIGNS = {
@@ -237,11 +329,22 @@ def check_generated_sva(
     system: str,
     out_root: Path | None = None,
     dry_run: bool = False,
+    design_manifest: Path | dict[str, object] | None = None,
 ) -> dict[str, object]:
     design_id = str(case["design_id"])
-    if design_id not in DESIGNS:
+    config: DesignConfig
+    manifest_path: Path | None = None
+    if design_manifest is not None:
+        manifest_data, manifest_path = load_manifest_input(design_manifest)
+        config = DesignConfig.from_manifest(
+            manifest_data,
+            root=manifest_path.parent if manifest_path else ROOT,
+            manifest_path=manifest_path,
+        )
+    elif design_id not in DESIGNS:
         raise ValueError(f"Unsupported design for generated SVA check: {design_id}")
-    config = DESIGNS[design_id]
+    else:
+        config = DESIGNS[design_id]
     case_id = str(case["case_id"])
     property_id = str(
         prediction.get("property_id") or case.get("property_id", "generated_property")
@@ -256,7 +359,7 @@ def check_generated_sva(
     generated_harness = report_dir / "generated_harness.sv"
     candidate_json = report_dir / "candidate_sva.json"
     generated_properties.write_text(
-        render_generated_properties(config, sva, property_id),
+        render_generated_properties(config, sva, property_id, case, prediction),
         encoding="utf-8",
     )
     generated_harness.write_text(render_generated_harness(config), encoding="utf-8")
@@ -265,17 +368,23 @@ def check_generated_sva(
 
     env = os.environ.copy()
     env["JASPERLOOP_ROOT"] = str(ROOT)
-    env["JASPERLOOP_RTL"] = str(ROOT / config.rtl)
-    env["JASPERLOOP_ASSUMPTIONS"] = str(ROOT / config.assumptions)
+    rtl_files = resolved_config_files(config.rtl_files or (config.rtl,))
+    assumption_files = resolved_config_files(config.assumption_files or ((config.assumptions,) if config.assumptions else ()))
+    env["JASPERLOOP_RTL"] = rtl_files[0] if rtl_files else ""
+    env["JASPERLOOP_RTL_FILES"] = "\n".join(rtl_files)
+    env["JASPERLOOP_ASSUMPTIONS"] = assumption_files[0] if assumption_files else ""
+    env["JASPERLOOP_ASSUMPTION_FILES"] = "\n".join(assumption_files)
+    env["JASPERLOOP_INCLUDE_DIRS"] = "\n".join(config.include_dirs)
+    env["JASPERLOOP_DEFINES"] = "\n".join(config.defines)
     env["JASPERLOOP_GENERATED_PROPERTIES"] = str(generated_properties)
     env["JASPERLOOP_GENERATED_HARNESS"] = str(generated_harness)
     env["JASPERLOOP_TOP"] = config.top
     env["JASPERLOOP_CLOCK"] = config.clock
     env["JASPERLOOP_RESET_CMD"] = config.reset_cmd
     env["JASPERLOOP_FORMAL_MODE"] = formal_mode
-    env["JASPERLOOP_NATIVE_PROPERTIES"] = str(ROOT / config.native_properties)
-    env["JASPERLOOP_NATIVE_HARNESS"] = str(ROOT / config.native_harness)
-    env["JASPERLOOP_NATIVE_RUN_TCL"] = str(ROOT / config.native_run_tcl)
+    env["JASPERLOOP_NATIVE_PROPERTIES"] = resolved_config_file(config.native_properties)
+    env["JASPERLOOP_NATIVE_HARNESS"] = resolved_config_file(config.native_harness)
+    env["JASPERLOOP_NATIVE_RUN_TCL"] = resolved_config_file(config.native_run_tcl)
     env["JASPERLOOP_PROPERTY_MODULE"] = config.property_module
     env["JASPERLOOP_PROPERTY_INSTANCE"] = config.property_instance
     env["JASPERLOOP_REPORT_DIR"] = str(report_dir)
@@ -301,6 +410,8 @@ def check_generated_sva(
         candidate_json=candidate_json,
         run_command=run_command,
         tcl=tcl,
+        rtl_project_manifest=manifest_path,
+        dynamic_harness_strategy=config.harness_strategy if config.dynamic_manifest else None,
     )
     embedding_audit = build_embedding_audit(
         case=case,
@@ -368,8 +479,24 @@ def check_generated_sva(
     return attach_artifacts(result, artifact_paths, embedding_audit)
 
 
-def render_generated_properties(config: DesignConfig, sva: str, property_id: str) -> str:
-    return config.properties_header + "\n\n  " + ensure_labeled_property(sva, property_id) + "\n\nendmodule\n"
+def render_generated_properties(
+    config: DesignConfig,
+    sva: str,
+    property_id: str,
+    case: dict[str, object],
+    prediction: dict[str, object],
+) -> str:
+    helper_code = str(prediction.get("helper_code") or "")
+    helper_policy = case.get("helper_code_policy") if isinstance(case.get("helper_code_policy"), dict) else {}
+    helper_allowed = bool(helper_policy.get("allowed")) if isinstance(helper_policy, dict) else False
+    helper_block = f"\n\n  {helper_code.strip()}\n" if helper_allowed and helper_code.strip() else ""
+    return (
+        config.properties_header
+        + helper_block
+        + "\n\n  "
+        + ensure_labeled_property(sva, property_id)
+        + "\n\nendmodule\n"
+    )
 
 
 def ensure_labeled_property(sva: str, property_id: str) -> str:
@@ -397,6 +524,132 @@ def render_generated_harness(config: DesignConfig) -> str:
     if config.native_harness:
         return (ROOT / config.native_harness).read_text(encoding="utf-8")
     return config.harness
+
+
+def render_dynamic_properties_header(
+    *,
+    index: dict[str, Any],
+    top_module: str,
+    property_module: str,
+    visible_signals: list[str],
+) -> str:
+    declarations = signal_declarations(index, top_module)
+    ports = [
+        f"  input {declarations.get(signal, 'logic')} {signal}"
+        for signal in visible_signals
+    ]
+    return "module " + property_module + " (\n" + ",\n".join(ports) + "\n);"
+
+
+def render_generic_harness(
+    *,
+    index: dict[str, Any],
+    dut_module: str,
+    harness_module: str,
+    property_module: str,
+    property_instance: str,
+    visible_signals: list[str],
+) -> str:
+    module = index.get("modules", {}).get(dut_module, {})
+    ports = [port for port in module.get("ports", []) if isinstance(port, dict)]
+    declarations = signal_declarations(index, dut_module)
+    lines = [f"module {harness_module};"]
+    for port in ports:
+        name = str(port.get("name") or "")
+        if name:
+            lines.append(f"  {declarations.get(name, 'logic')} {name};")
+    lines.extend(["", f"  {dut_module} dut ("])
+    dut_connections = [f"    .{port['name']}({port['name']})" for port in ports if port.get("name")]
+    lines.append(",\n".join(dut_connections))
+    lines.extend(["  );", "", f"  {property_module} {property_instance} ("])
+    top_port_names = {str(port.get("name")) for port in ports if port.get("name")}
+    property_connections = []
+    for signal in visible_signals:
+        expression = signal if signal in top_port_names else f"dut.{signal}"
+        property_connections.append(f"    .{signal}({expression})")
+    lines.append(",\n".join(property_connections))
+    lines.extend(["  );", "endmodule", ""])
+    return "\n".join(lines)
+
+
+def signal_declarations(index: dict[str, Any], top_module: str) -> dict[str, str]:
+    module = index.get("modules", {}).get(top_module, {})
+    declarations: dict[str, str] = {}
+    for port in module.get("ports", []):
+        if isinstance(port, dict) and port.get("name"):
+            declarations[str(port["name"])] = normalize_sv_type(str(port.get("type") or "logic"))
+    for signal in module.get("signals", []):
+        if isinstance(signal, dict) and signal.get("name"):
+            kind = str(signal.get("kind") or "logic")
+            width = str(signal.get("type") or "").strip()
+            declarations[str(signal["name"])] = normalize_sv_type(f"{kind} {width}".strip())
+    return declarations
+
+
+def normalize_sv_type(value: str) -> str:
+    text = " ".join(value.split())
+    if not text:
+        return "logic"
+    if text.startswith("["):
+        return f"logic {text}"
+    if not re.search(r"\b(?:logic|wire|reg)\b", text):
+        return f"logic {text}".strip()
+    return text
+
+
+def load_manifest_input(
+    design_manifest: Path | dict[str, object],
+) -> tuple[dict[str, object], Path | None]:
+    if isinstance(design_manifest, dict):
+        return design_manifest, None
+    path = design_manifest.resolve()
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must contain a JSON object.")
+    return data, path
+
+
+def list_value(value: object) -> list[object]:
+    return value if isinstance(value, list) else []
+
+
+def resolve_manifest_path(path_text: str, root: Path) -> Path:
+    path = Path(path_text)
+    if path.is_absolute():
+        return path.resolve()
+    candidates = [ROOT / path, root / path, Path.cwd() / path]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.resolve()
+    return (root / path).resolve()
+
+
+def resolved_config_file(path_text: str) -> str:
+    if not path_text:
+        return ""
+    path = Path(path_text)
+    return str(path if path.is_absolute() else ROOT / path)
+
+
+def resolved_config_files(paths: tuple[str, ...]) -> list[str]:
+    return [resolved_config_file(path) for path in paths if path]
+
+
+def reset_command_from_clock_reset(clock_reset: dict[str, object]) -> str:
+    reset = str(clock_reset.get("reset") or "")
+    if not reset:
+        return ""
+    polarity = str(clock_reset.get("reset_polarity") or "unknown")
+    if polarity == "active_low":
+        return f"reset -expression {{!{reset}}}"
+    return f"reset {reset}"
+
+
+def sanitize_sv_identifier(value: str) -> str:
+    sanitized = re.sub(r"[^A-Za-z0-9_$]", "_", value.strip())
+    if not sanitized or not re.match(r"^[A-Za-z_]", sanitized):
+        sanitized = f"m_{sanitized or 'generated'}"
+    return sanitized
 
 
 def infer_formal_mode(prediction: dict[str, object]) -> str:
@@ -488,6 +741,8 @@ def build_artifact_paths(
     candidate_json: Path,
     run_command: Path,
     tcl: Path,
+    rtl_project_manifest: Path | None = None,
+    dynamic_harness_strategy: str | None = None,
 ) -> dict[str, object]:
     debug_dir = report_dir / "embedding_audit"
     debug_artifacts = {
@@ -500,7 +755,9 @@ def build_artifact_paths(
         "audit_json": str(debug_dir / "embedding_audit.json"),
         "audit_markdown": str(debug_dir / "embedding_audit.md"),
     }
-    return {
+    if rtl_project_manifest:
+        debug_artifacts["rtl_project_manifest"] = str(debug_dir / rtl_project_manifest.name)
+    artifact_paths: dict[str, object] = {
         "report_dir": str(report_dir),
         "generated_properties": str(generated_properties),
         "generated_harness": str(generated_harness),
@@ -522,6 +779,12 @@ def build_artifact_paths(
         "embedding_audit_markdown": debug_artifacts["audit_markdown"],
         "debug_artifacts": debug_artifacts,
     }
+    if rtl_project_manifest:
+        artifact_paths["rtl_project_manifest"] = str(rtl_project_manifest)
+        artifact_paths["debug_rtl_project_manifest"] = debug_artifacts["rtl_project_manifest"]
+    if dynamic_harness_strategy:
+        artifact_paths["dynamic_harness_strategy"] = dynamic_harness_strategy
+    return artifact_paths
 
 
 def write_debug_artifacts(
@@ -544,6 +807,10 @@ def write_debug_artifacts(
         candidate_json: Path(str(artifact_paths["debug_candidate_json"])),
         run_command: Path(str(artifact_paths["debug_run_command"])),
     }
+    if artifact_paths.get("rtl_project_manifest") and artifact_paths.get("debug_rtl_project_manifest"):
+        copies[Path(str(artifact_paths["rtl_project_manifest"]))] = Path(
+            str(artifact_paths["debug_rtl_project_manifest"])
+        )
     for source, target in copies.items():
         if source.exists():
             shutil.copy2(source, target)
@@ -807,25 +1074,34 @@ def wrapper_parity_value(audit: dict[str, object], key: str) -> object:
 
 
 def native_flow_metadata(config: DesignConfig) -> dict[str, object]:
+    rtl_files = list(config.rtl_files or (config.rtl,))
+    assumption_files = list(config.assumption_files or ((config.assumptions,) if config.assumptions else ()))
+    file_order = [
+        *rtl_files,
+        *assumption_files,
+        *([config.native_properties] if config.native_properties else []),
+        *([config.native_harness] if config.native_harness else []),
+    ]
     return {
         "rtl": config.rtl,
+        "rtl_files": rtl_files,
         "assumptions": config.assumptions,
+        "assumption_files": assumption_files,
         "properties": config.native_properties,
         "harness": config.native_harness,
         "run_tcl": config.native_run_tcl,
-        "file_order": [
-            config.rtl,
-            config.assumptions,
-            config.native_properties,
-            config.native_harness,
-        ],
+        "file_order": file_order,
         "top_module": config.top,
+        "design_top": config.design_top,
         "property_module": config.property_module,
         "property_instance": config.property_instance,
         "clock": config.clock,
         "reset_cmd": config.reset_cmd,
         "formal_modes": ["prove", "cover", "vacuity"],
-        "include_paths": [],
+        "include_paths": list(config.include_dirs),
+        "defines": list(config.defines),
+        "dynamic_manifest": config.dynamic_manifest,
+        "harness_strategy": config.harness_strategy,
     }
 
 
@@ -837,27 +1113,35 @@ def wrapper_flow_metadata(
     env: dict[str, str],
 ) -> dict[str, object]:
     formal_mode = env.get("JASPERLOOP_FORMAL_MODE", "prove")
+    rtl_files = list(config.rtl_files or (config.rtl,))
+    assumption_files = list(config.assumption_files or ((config.assumptions,) if config.assumptions else ()))
     return {
         "rtl": config.rtl,
+        "rtl_files": rtl_files,
         "assumptions": config.assumptions,
+        "assumption_files": assumption_files,
         "generated_properties": str(generated_properties),
         "generated_harness": str(generated_harness),
-        "generated_harness_source": config.native_harness or "inline_generated_harness",
+        "generated_harness_source": config.native_harness or config.harness_strategy,
         "tcl": str(tcl),
         "file_order": [
-            config.rtl,
-            config.assumptions,
+            *rtl_files,
+            *assumption_files,
             str(generated_properties),
             str(generated_harness),
         ],
         "top_module": env.get("JASPERLOOP_TOP", ""),
+        "design_top": config.design_top,
         "property_module": config.property_module,
         "property_instance": config.property_instance,
         "clock": env.get("JASPERLOOP_CLOCK", ""),
         "reset_cmd": env.get("JASPERLOOP_RESET_CMD", ""),
         "formal_mode": formal_mode,
-        "include_paths": [],
+        "include_paths": list(config.include_dirs),
+        "defines": list(config.defines),
         "binding_style": "native_harness_instantiation",
+        "dynamic_manifest": config.dynamic_manifest,
+        "harness_strategy": config.harness_strategy,
     }
 
 
@@ -876,6 +1160,12 @@ def wrapper_parity_checks(
     reset_match = native_flow.get("reset_cmd") == wrapper_flow.get("reset_cmd")
     property_module_match = property_module in extract_module_names(generated_properties_text)
     harness_reused = wrapper_flow.get("generated_harness_source") == native_flow.get("harness")
+    dynamic_harness = not native_flow.get("harness")
+    harness_relation_ok = (
+        wrapper_flow.get("generated_harness_source") in {"render_generic", "reuse_existing"}
+        if dynamic_harness
+        else harness_reused
+    )
     property_instance_connected = bool(
         property_module
         and re.search(
@@ -893,15 +1183,18 @@ def wrapper_parity_checks(
         "top_declared_in_harness": top_declared,
         "property_module_replaces_native": property_module_match,
         "property_instance_connected": property_instance_connected,
-        "native_harness_reused": harness_reused,
+        "native_harness_reused": harness_relation_ok,
         "clock_match": clock_match,
         "reset_command_match": reset_match,
     }
     return {
         "parity_pass": all(critical.values()),
         "critical_checks": critical,
-        "file_order_relation": "native_property_module_replaced_in_native_harness_order",
-        "assumptions_applied": assumption_path_match and "assumptions_i" in generated_harness_text,
+        "file_order_relation": "dynamic_generated_harness_order"
+        if dynamic_harness
+        else "native_property_module_replaced_in_native_harness_order",
+        "assumptions_applied": assumption_path_match
+        and (not native_flow.get("assumptions") or "assumptions_i" in generated_harness_text),
         "reset_polarity_source": "native_reset_command",
         "formal_mode": wrapper_flow.get("formal_mode"),
     }
@@ -1494,6 +1787,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--case", required=True, type=Path)
     parser.add_argument("--prediction", required=True, type=Path)
+    parser.add_argument("--design-manifest", type=Path)
     parser.add_argument("--system", default="manual")
     parser.add_argument("--out-root", type=Path, default=Path("jasper/reports/sva_generation"))
     parser.add_argument("--dry-run", action="store_true")
@@ -1507,6 +1801,7 @@ def main() -> int:
         system=args.system,
         out_root=args.out_root,
         dry_run=args.dry_run,
+        design_manifest=args.design_manifest,
     )
     print(json.dumps(result, indent=2))
     return 0
