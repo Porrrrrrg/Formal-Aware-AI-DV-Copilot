@@ -69,6 +69,7 @@ See [docs/architecture_agentic_refactor.md](docs/architecture_agentic_refactor.m
 - Local Qwen endpoint plumbing for a bounded 3+3+3 workflow subset.
 - FVEval-compatible local subset runner, kept separate from official FVEval reproduction claims.
 - Retrieval-assisted Design2SVA scaffold with pass@k dry-run/replay evaluation and optional JasperGold checks.
+- RTL2Repair dry-run loop for arbitrary RTL intake, dynamic SVA checking, FormalDebugBundle triage, and scratch-only RTL patch proposal plumbing.
 - DV playbooks and YAML rule libraries for repair, counterexample debugging, assumptions/vacuity, triage, and coverage closure guidance.
 
 ## Current Research Status
@@ -154,6 +155,31 @@ The Design2SVA commands above are local scaffold/replay paths unless `--llm` or
 `--jasper-check` is explicitly enabled. They do not claim ProofLoop-level
 performance or production signoff capability.
 
+RTL2Repair local dry-run:
+
+```bash
+python tools/rtl_project_intake.py \
+  --rtl benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv \
+  --top arbiter_rr2 \
+  --clock clk \
+  --reset rst \
+  --reset-polarity active_high \
+  --out artifacts/rtl2repair/arbiter_intake/rtl_project_manifest.json
+
+python evaluation/run_rtl2repair_eval.py \
+  --manifest artifacts/rtl2repair/arbiter_intake/rtl_project_manifest.json \
+  --intent "The arbiter must never grant both clients in the same cycle." \
+  --k 2 \
+  --max-sva-rounds 1 \
+  --max-rtl-rounds 0 \
+  --dry-run \
+  --out artifacts/rtl2repair/arbiter_dry_run/rtl2repair_eval.json
+```
+
+See [docs/rtl2repair.md](docs/rtl2repair.md). RTL2Repair drafts and debugs
+candidate assertions and can propose scratch-only RTL patches; it does not sign
+off RTL or claim arbitrary-RTL specification completeness.
+
 Prompt audit before any external benchmark submission:
 
 ```bash
@@ -227,6 +253,7 @@ JasperGold execution.
 - The Qwen 3+3+3 subset is local-only readiness evidence, not a full Qwen benchmark and not a Qwen-vs-Codex comparison.
 - Replay and dry-run workflow artifacts are not real model performance and not new JasperGold results.
 - Benchmark expected labels are authored metadata, not automatically discovered truth.
+- RTL2Repair arbitrary RTL auto-intents are coverage aids, not complete specifications; any RTL patch must be rechecked and reviewed before use.
 
 ## Reference Links
 
