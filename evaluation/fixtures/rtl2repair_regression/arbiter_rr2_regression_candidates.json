@@ -1,0 +1,23 @@
+[
+  {
+    "property_id": "p_no_spurious_gnt0",
+    "sva": "p_no_spurious_gnt0: assert property (@(posedge clk) disable iff (rst) gnt0 |-> req0);",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Grant 0 should only assert when request 0 is active."
+  },
+  {
+    "property_id": "p_no_spurious_gnt1",
+    "sva": "p_no_spurious_gnt1: assert property (@(posedge clk) disable iff (rst) gnt1 |-> req1);",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Grant 1 should only assert when request 1 is active."
+  },
+  {
+    "property_id": "p_mutex",
+    "sva": "p_mutex: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "The arbiter must not grant both clients in the same cycle."
+  }
+]

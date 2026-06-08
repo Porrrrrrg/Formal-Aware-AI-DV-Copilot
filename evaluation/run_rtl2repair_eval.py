@@ -82,6 +82,70 @@ def load_rtl_repair_replay(path: Path | None) -> list[dict[str, Any]]:
     return records
 
 
+def load_regression_candidates(
+    path: Path | None,
+    *,
+    task: dict[str, Any],
+    context: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if not path:
+        return []
+    resolved = resolve_repo_path(path)
+    data = json.loads(resolved.read_text(encoding="utf-8"))
+    if not isinstance(data, list):
+        raise ValueError(f"{resolved} must contain a JSON array of regression candidates.")
+    candidates: list[dict[str, Any]] = []
+    for index, item in enumerate(data):
+        if not isinstance(item, dict):
+            raise ValueError(f"{resolved}[{index}] must be a JSON object.")
+        candidates.append(
+            normalize_regression_candidate(
+                item,
+                task=task,
+                context=context,
+                source_path=resolved,
+                index=index,
+            )
+        )
+    return candidates
+
+
+def normalize_regression_candidate(
+    raw: dict[str, Any],
+    *,
+    task: dict[str, Any],
+    context: dict[str, Any],
+    source_path: Path,
+    index: int,
+) -> dict[str, Any]:
+    property_id = str(raw.get("property_id") or "").strip()
+    sva = str(raw.get("sva") or "").strip()
+    if not property_id:
+        raise ValueError(f"{source_path}[{index}] is missing property_id.")
+    if not sva:
+        raise ValueError(f"{source_path}[{index}] is missing sva.")
+    helper_code = str(raw.get("helper_code") or "")
+    referenced = raw.get("referenced_signals")
+    candidate = {
+        "property_id": property_id,
+        "sva": sva,
+        "helper_code": helper_code,
+        "referenced_signals": [str(item) for item in referenced]
+        if isinstance(referenced, list)
+        else candidate_referenced_signals(task, context, sva),
+        "intent_summary": str(raw.get("intent_summary") or task.get("intent") or "Regression candidate."),
+        "source": str(raw.get("source") or "regression_suite"),
+        "repair_metadata": {
+            "round": 0,
+            "failure_category": str(raw.get("failure_category") or "regression_candidate"),
+            "feedback": str(raw.get("feedback") or ""),
+            "changed_by_repair": False,
+        },
+    }
+    validate_design2sva_repair_candidate(candidate)
+    return candidate
+
+
 def select_rtl_repair_replay_candidate(
     records: list[dict[str, Any]],
     *,
@@ -135,6 +199,11 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
         k=args.k,
         use_llm=bool(args.llm),
         llm_command=args.llm_command,
+    )
+    regression_candidates = load_regression_candidates(
+        args.regression_candidates,
+        task=task,
+        context=context,
     )
     candidate_records = []
     accepted_properties: list[dict[str, Any]] = []
@@ -248,6 +317,7 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
         stable_sva=rtl_patch_stable_sva,
         target_before=rtl_patch_target_before,
         accepted_properties=accepted_properties,
+        regression_candidates=regression_candidates,
         out_path=out_path,
     )
     if patch_recheck["status"] == "blocked":
@@ -261,6 +331,7 @@ def run_rtl2repair(args: argparse.Namespace) -> dict[str, Any]:
         "formal_metrics_status": formal_metrics_status,
         "generated_sva_candidates": candidate_records,
         "accepted_properties": accepted_properties,
+        "regression_candidates": regression_candidates,
         "rtl_patch_candidate": rtl_patch_candidate,
         "patch_recheck": patch_recheck,
         "metrics": summarize_metrics(candidate_records, patch_recheck, formal_metrics_status),
@@ -601,6 +672,7 @@ def run_patch_recheck(
     stable_sva: dict[str, Any] | None,
     target_before: dict[str, Any] | None,
     accepted_properties: list[dict[str, Any]],
+    regression_candidates: list[dict[str, Any]],
     out_path: Path,
 ) -> dict[str, Any]:
     recheck = empty_patch_recheck(rtl_patch_candidate)
@@ -668,8 +740,24 @@ def run_patch_recheck(
     }
     recheck["target_after"] = recheck["target_check"]
 
+    regression_inputs = [
+        {
+            "source": "current_run_accepted",
+            "source_index": index,
+            "candidate": regression,
+        }
+        for index, regression in enumerate(accepted_properties)
+    ] + [
+        {
+            "source": "regression_candidates_file",
+            "source_index": index,
+            "candidate": regression,
+        }
+        for index, regression in enumerate(regression_candidates)
+    ]
     regression_checks = []
-    for regression_index, regression in enumerate(accepted_properties):
+    for regression_index, regression_item in enumerate(regression_inputs):
+        regression = regression_item["candidate"]
         regression_result, regression_status = run_dynamic_check(
             args=args,
             task=task,
@@ -682,6 +770,9 @@ def run_patch_recheck(
         )
         regression_checks.append(
             {
+                "source": regression_item["source"],
+                "source_index": regression_item["source_index"],
+                "property_id": regression.get("property_id"),
                 "candidate": regression,
                 "check_result": regression_result,
                 "formal_status": regression_status,
@@ -920,6 +1011,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--rtl-repair-llm", action="store_true")
     parser.add_argument("--rtl-repair-llm-command")
     parser.add_argument("--rtl-repair-replay", type=Path)
+    parser.add_argument("--regression-candidates", type=Path)
     parser.add_argument("--jasper-check", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--out", required=True, type=Path)

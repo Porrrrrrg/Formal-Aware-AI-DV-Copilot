@@ -1,0 +1,30 @@
+[
+  {
+    "property_id": "p_pready_response_valid",
+    "sva": "p_pready_response_valid: assert property (@(posedge pclk) disable iff (!presetn) psel && penable |-> pready);",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Every APB access phase should receive a ready response."
+  },
+  {
+    "property_id": "p_invalid_address_behavior",
+    "sva": "p_invalid_address_behavior: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && !(paddr inside {8'h00, 8'h04}) |-> pslverr);",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Invalid APB addresses should report slave error."
+  },
+  {
+    "property_id": "p_write_updates_reg0",
+    "sva": "p_write_updates_reg0: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && pwrite && pready && paddr == 8'h00 |=> reg0 == $past(pwdata));",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Writes to address 0x00 should update reg0."
+  },
+  {
+    "property_id": "p_write_updates_reg1",
+    "sva": "p_write_updates_reg1: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && pwrite && pready && paddr == 8'h04 |=> reg1 == $past(pwdata));",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Writes to address 0x04 should update reg1."
+  }
+]

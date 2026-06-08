@@ -1,0 +1,23 @@
+[
+  {
+    "property_id": "p_out_valid_equals_full",
+    "sva": "p_out_valid_equals_full: assert property (@(posedge clk) disable iff (rst) out_valid == full);",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "The buffer output-valid flag should reflect full state."
+  },
+  {
+    "property_id": "p_in_ready_when_empty",
+    "sva": "p_in_ready_when_empty: assert property (@(posedge clk) disable iff (rst) !full |-> in_ready);",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "An empty buffer should be ready for input."
+  },
+  {
+    "property_id": "p_data_stable_while_stalled",
+    "sva": "p_data_stable_while_stalled: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));",
+    "helper_code": "",
+    "source": "regression_suite",
+    "intent_summary": "Buffered output data should remain stable while stalled."
+  }
+]

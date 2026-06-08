@@ -1,0 +1,67 @@
+{
+  "schema_version": "rtl2repair_llm_patch_subset_v1",
+  "description": "Phase A subset for real LLM RTL patch proposal evaluation with stable target SVAs.",
+  "claim_boundary": "Stable target SVA generation is deterministic/manual; patch source is real LLM only when the runner is invoked with an LLM command and explicit external-send acknowledgement.",
+  "cases": [
+    {
+      "case_id": "arbiter_rr2_bug_double_grant",
+      "design_id": "arbiter_rr2",
+      "rtl_path": "benchmarks/arbiter_rr2/rtl/arbiter_rr2_bug_double_grant.sv",
+      "top": "arbiter_rr2",
+      "clock": "clk",
+      "reset": "rst",
+      "reset_polarity": "active_high",
+      "intent": "The arbiter must never grant both clients in the same cycle.",
+      "stable_sva": {
+        "property_id": "p_rtl2repair_01",
+        "sva": "p_rtl2repair_01: assert property (@(posedge clk) disable iff (rst) !(gnt0 && gnt1));",
+        "helper_code": "",
+        "referenced_signals": ["clk", "rst", "gnt0", "gnt1"],
+        "intent_summary": "The arbiter must never grant both clients in the same cycle."
+      },
+      "regression_candidates": "evaluation/fixtures/rtl2repair_regression/arbiter_rr2_regression_candidates.json",
+      "expected_bug_type": "double_grant",
+      "claim_boundary": "Measures RTL patch proposal under a deterministic mutual-exclusion SVA, not SVA generation quality."
+    },
+    {
+      "case_id": "rv_buffer_bug_overwrite",
+      "design_id": "rv_buffer",
+      "rtl_path": "benchmarks/rv_buffer/rtl/rv_buffer_bug_overwrite.sv",
+      "top": "rv_buffer",
+      "clock": "clk",
+      "reset": "rst",
+      "reset_polarity": "active_high",
+      "intent": "The buffer must keep output data stable while stalled and must not overwrite buffered data before dequeue.",
+      "stable_sva": {
+        "property_id": "p_rtl2repair_01",
+        "sva": "p_rtl2repair_01: assert property (@(posedge clk) disable iff (rst) out_valid && !out_ready |=> out_valid && $stable(out_data));",
+        "helper_code": "",
+        "referenced_signals": ["clk", "rst", "out_valid", "out_ready", "out_data"],
+        "intent_summary": "Buffered output data should remain stable while stalled."
+      },
+      "regression_candidates": "evaluation/fixtures/rtl2repair_regression/rv_buffer_regression_candidates.json",
+      "expected_bug_type": "overwrite",
+      "claim_boundary": "Measures RTL patch proposal under a deterministic stalled-data stability SVA."
+    },
+    {
+      "case_id": "apb_regblock_bug_wrong_addr",
+      "design_id": "apb_regblock",
+      "rtl_path": "benchmarks/apb_regblock/rtl/apb_regblock_bug_wrong_addr.sv",
+      "top": "apb_regblock",
+      "clock": "pclk",
+      "reset": "presetn",
+      "reset_polarity": "active_low",
+      "intent": "APB writes must update only the register selected by paddr.",
+      "stable_sva": {
+        "property_id": "p_rtl2repair_01",
+        "sva": "p_rtl2repair_01: assert property (@(posedge pclk) disable iff (!presetn) psel && penable && pwrite && pready && paddr == 8'h00 |=> reg0 == $past(pwdata));",
+        "helper_code": "",
+        "referenced_signals": ["pclk", "presetn", "psel", "penable", "pwrite", "pready", "paddr", "reg0", "pwdata"],
+        "intent_summary": "Writes to address 0x00 should update reg0."
+      },
+      "regression_candidates": "evaluation/fixtures/rtl2repair_regression/apb_regblock_regression_candidates.json",
+      "expected_bug_type": "wrong_address_decode",
+      "claim_boundary": "Measures RTL patch proposal under a deterministic APB address-select SVA."
+    }
+  ]
+}
