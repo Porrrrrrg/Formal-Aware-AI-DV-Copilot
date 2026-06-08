@@ -72,6 +72,19 @@ python evaluation/run_sva_repair_eval.py --out evaluation/results/sva_repair_loc
 
 JSON outputs under `evaluation/results/` are local artifacts by default and are ignored unless explicitly curated.
 
+Retrieval-assisted Design2SVA and RTL2Repair dry-run paths are available for
+local scaffold development:
+
+```bash
+python evaluation/run_design2sva_eval.py --limit 3 --k 3 --dry-run --out evaluation/results/design2sva_eval_local.json
+python tools/rtl_project_intake.py --rtl benchmarks/arbiter_rr2/rtl/arbiter_rr2_correct.sv --top arbiter_rr2 --clock clk --reset rst --reset-polarity active_high --out artifacts/rtl2repair/arbiter_intake/rtl_project_manifest.json
+python evaluation/run_rtl2repair_eval.py --manifest artifacts/rtl2repair/arbiter_intake/rtl_project_manifest.json --intent "The arbiter must never grant both clients in the same cycle." --k 2 --max-sva-rounds 1 --max-rtl-rounds 0 --dry-run --out artifacts/rtl2repair/arbiter_dry_run/rtl2repair_eval.json
+```
+
+See [rtl2repair.md](docs/rtl2repair.md). RTL2Repair drafts and debugs
+candidate assertions and can propose scratch-only RTL patches; it does not sign
+off RTL or infer complete arbitrary-RTL specifications.
+
 ## Real LLM Backend
 
 The model backend is intentionally generic:
@@ -146,5 +159,7 @@ JasperLoop-DV is a research prototype. The current repository does not claim:
 - full semantic intent equivalence from proof pass
 - JasperGold-backed validation for triage or coverage recommendations
 - generalization beyond the included benchmark scope
+- RTL2Repair production signoff, full semantic equivalence, or complete
+  specification inference for arbitrary RTL
 
 See [limitations_and_claims.md](docs/limitations_and_claims.md) and [final_research_summary.md](docs/reports/final_research_summary.md).

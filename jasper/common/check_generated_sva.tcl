@@ -2,7 +2,9 @@ clear -all
 source jasper/common/jg_common.tcl
 
 set rtl_file [jl_rtl]
+set rtl_files [jl_getenv JASPERLOOP_RTL_FILES ""]
 set assumptions_file [jl_getenv JASPERLOOP_ASSUMPTIONS ""]
+set assumption_files [jl_getenv JASPERLOOP_ASSUMPTION_FILES ""]
 set generated_properties_file [jl_getenv JASPERLOOP_GENERATED_PROPERTIES ""]
 set generated_harness_file [jl_getenv JASPERLOOP_GENERATED_HARNESS ""]
 set top_module [jl_getenv JASPERLOOP_TOP ""]
@@ -13,9 +15,6 @@ set report_dir [jl_report_dir]
 
 if {$rtl_file == ""} {
   error "JASPERLOOP_RTL is required"
-}
-if {$assumptions_file == ""} {
-  error "JASPERLOOP_ASSUMPTIONS is required"
 }
 if {$generated_properties_file == ""} {
   error "JASPERLOOP_GENERATED_PROPERTIES is required"
@@ -30,8 +29,24 @@ if {$clock_signal == ""} {
   error "JASPERLOOP_CLOCK is required"
 }
 
-analyze -sv $rtl_file
-analyze -sv $assumptions_file
+if {$rtl_files != ""} {
+  foreach rtl_path [split $rtl_files "\n"] {
+    if {$rtl_path != ""} {
+      analyze -sv $rtl_path
+    }
+  }
+} else {
+  analyze -sv $rtl_file
+}
+if {$assumption_files != ""} {
+  foreach assumption_path [split $assumption_files "\n"] {
+    if {$assumption_path != ""} {
+      analyze -sv $assumption_path
+    }
+  }
+} elseif {$assumptions_file != ""} {
+  analyze -sv $assumptions_file
+}
 analyze -sv $generated_properties_file
 analyze -sv $generated_harness_file
 elaborate -top $top_module

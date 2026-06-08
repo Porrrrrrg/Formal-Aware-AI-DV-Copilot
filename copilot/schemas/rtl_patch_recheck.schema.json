@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RTL Patch Recheck",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "attempted",
+    "accepted",
+    "reason",
+    "acceptance_reason",
+    "rtl_patch_candidate",
+    "apply_manifest",
+    "patched_manifest",
+    "target_before",
+    "target_after",
+    "target_check",
+    "regression_checks",
+    "metrics"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "rtl_patch_recheck_v1" },
+    "status": {
+      "type": "string",
+      "enum": ["not_attempted", "blocked", "applied", "rechecked", "accepted", "rejected"]
+    },
+    "attempted": { "type": "boolean" },
+    "accepted": { "type": "boolean" },
+    "reason": { "type": "string" },
+    "acceptance_reason": { "type": "string" },
+    "rtl_patch_candidate": {
+      "type": ["object", "null"]
+    },
+    "apply_manifest": {
+      "type": ["object", "null"]
+    },
+    "patched_manifest": {
+      "type": ["string", "null"]
+    },
+    "target_before": {
+      "type": ["object", "null"]
+    },
+    "target_after": {
+      "type": ["object", "null"]
+    },
+    "target_check": {
+      "type": ["object", "null"]
+    },
+    "regression_checks": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "target_pass",
+        "regression_pass_count",
+        "regression_total",
+        "regression_pass_rate"
+      ],
+      "properties": {
+        "target_pass": { "type": "boolean" },
+        "regression_pass_count": { "type": "integer", "minimum": 0 },
+        "regression_total": { "type": "integer", "minimum": 0 },
+        "regression_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

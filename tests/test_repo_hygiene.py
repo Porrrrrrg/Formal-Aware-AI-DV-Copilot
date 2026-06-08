@@ -23,6 +23,9 @@ DENIED_PATH_PARTS = {
 DENIED_PREFIXES = (
     "artifacts/",
     "jasper/reports/",
+    "local_reports/",
+    "reports/",
+    "runs/",
     "reports/local_llm/raw/",
     "reports/llm/raw/",
     "llm_logs/",
@@ -105,6 +108,9 @@ def test_ignore_rules_cover_required_local_artifact_classes() -> None:
     required_patterns = [
         "jasper/reports/**",
         "artifacts/**",
+        "local_reports/",
+        "runs/",
+        "/reports/",
         "**/traces/**",
         "__pycache__/",
         ".venv/",
