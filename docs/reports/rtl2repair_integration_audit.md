@@ -6,7 +6,7 @@ Branch: `feature/rtl2repair-loop`
 
 Base reference used for this audit: `origin/main` at `8e8a7a5be68c5b0ef20a7757b144c55265ae159b`
 
-Head: `d412d307814580c522ecaa652c60918b36d5cd54`
+Head: `620279ecc42565afbf889bf644b0fafaaee70ad2`
 
 Purpose: stabilize the RTL2Repair closed-loop infrastructure for PR review and eventual main integration. The branch adds arbitrary RTL intake, generated-SVA checking against dynamic manifests, FormalDebugBundle triage, SVA repair support, scratch-only RTL patch proposal plumbing, patched-manifest target/regression recheck, and a deterministic replay-patch path for JasperGold closure experiments.
 
@@ -14,6 +14,7 @@ This branch does not claim production RTL signoff, arbitrary RTL auto-repair, or
 
 ## Commit List
 
+- `620279e` Stabilize RTL2Repair integration docs
 - `d412d30` Add RTL2Repair replay patch closure path
 - `8613440` Close RTL2Repair patch recheck loop
 - `4f30607` Merge origin/main into RTL2Repair loop
@@ -94,6 +95,9 @@ Current local validation status:
 - `compileall`: passed
 - `pytest`: `459 passed, 2 skipped`
 - `secret_scan`: passed
+- `dry-run smoke`: passed
+- `replay patch scratch apply`: passed
+- `raw artifact check`: only `jasper/reports/.gitkeep`
 
 ## Dry-Run Smoke
 
